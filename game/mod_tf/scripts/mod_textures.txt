@@ -348,10 +348,10 @@
 		}
 		"nailgun"
 		{
-				"dfile"	"HUD/d_images"
-				"dnegfile"	"HUD/dneg_images"
+				"dfile"	"HUD/d_images_mod"
+				"dnegfile"	"HUD/dneg_images_mod"
 				"x"		"0"
-				"y"		"64"
+				"y"		"0"
 				"width"		"64"
 				"height"	"32"
 		}
