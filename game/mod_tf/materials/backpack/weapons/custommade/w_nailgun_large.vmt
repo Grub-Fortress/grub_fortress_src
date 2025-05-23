@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+    "$baseTexture" "backpack/weapons/custommade/w_nailgun_large"
+    "$translucent" 1
+    "$vertexcolor" 1
+}
