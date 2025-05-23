@@ -1,6 +1,0 @@
-"UnlitGeneric"
-{
-	"$baseTexture" "backpack\crafting\op_case_cyan"
-	$translucent 1
-	$vertexcolor 1
-}

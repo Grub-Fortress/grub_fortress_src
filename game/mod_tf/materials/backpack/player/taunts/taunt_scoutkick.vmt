@@ -1,6 +1,0 @@
-"UnlitGeneric"
-{
-	"$baseTexture" "backpack/player/taunts/taunt_scoutkick"
-	"$translucent" 1
-	"$vertexcolor" 1
-}
