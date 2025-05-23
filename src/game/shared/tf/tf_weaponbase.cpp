@@ -867,7 +867,7 @@ void CTFWeaponBase::Equip( CBaseCombatCharacter *pOwner )
 void CTFWeaponBase::UpdateHands( void )
 {
 	const CEconItemView *pItem = GetAttributeContainer()->GetItem();
-	if ( pItem->IsValid() && pItem->GetStaticData()->ShouldAttachToHands() )
+	if ( pItem->IsValid() )
 	{
 		m_iViewModelIndex = CBaseEntity::PrecacheModel( GetViewModel() );
 	}
