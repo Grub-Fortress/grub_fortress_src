@@ -1,4 +1,4 @@
-$Macro OUTBINNAME "mod_tf"
+$Macro OUTBINNAME "grub_fortress"
 
 $Conditional "MOD_LAUNCHER" "1"
 
