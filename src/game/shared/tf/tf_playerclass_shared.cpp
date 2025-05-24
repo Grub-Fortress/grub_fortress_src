@@ -160,9 +160,21 @@ const char *g_HACK_GunslingerEngineerArmsOverride = "models\\weapons\\c_models\\
 
 const char *CTFPlayerClassShared::GetHandModelName( int iHandIndex = 0 ) const
 {
-	return iHandIndex == 0
-		 ? GetPlayerClassData( m_iClass )->m_szHandModelName
-		 :g_HACK_GunslingerEngineerArmsOverride;				// this is precached in the CTFRobotArm class
+	switch(iHandIndex)
+	{
+	case 1:
+		return g_HACK_GunslingerEngineerArmsOverride;
+		break;
+	case 2:
+		return g_szBotViewmodels[m_iClass];
+		break;
+	case 3:
+		return g_szBotBossViewmodels[m_iClass];
+		break;
+	default:
+		return GetPlayerClassData(m_iClass)->m_szHandModelName;
+		break;
+	}				
 }
 //-----------------------------------------------------------------------------
 // Purpose: Initialize the player class.

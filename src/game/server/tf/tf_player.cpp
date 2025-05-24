@@ -2859,9 +2859,13 @@ void CTFPlayer::PrecacheMvM()
 		COMPILE_TIME_ASSERT( ARRAYSIZE( g_szBotModels ) == TF_LAST_NORMAL_CLASS );
 		int iModelIndex = PrecacheModel( g_szBotModels[ i ] );
 		PrecacheGibsForModel( iModelIndex );
+		iModelIndex = PrecacheModel( g_szBotViewmodels[ i ] );
+		PrecacheGibsForModel( iModelIndex );
 
 		COMPILE_TIME_ASSERT( ARRAYSIZE( g_szBotBossModels ) == TF_LAST_NORMAL_CLASS );
 		iModelIndex = PrecacheModel( g_szBotBossModels[ i ] );
+		PrecacheGibsForModel( iModelIndex );
+		iModelIndex = PrecacheModel( g_szBotBossViewmodels[ i ] );
 		PrecacheGibsForModel( iModelIndex );
 	}
 
@@ -3770,23 +3774,28 @@ void CTFPlayer::Spawn()
 		}
 		//MVM Versus
 		int nRobotClassIndex = (GetPlayerClass() ? GetPlayerClass()->GetClassIndex() : TF_CLASS_UNDEFINED);
-		if( TFGameRules()->IsMannVsMachineMode() && !IsFakeClient() && GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+		if( TFGameRules()->IsMannVsMachineMode() && !IsFakeClient() )
 		{
-			if(nRobotClassIndex >= TF_CLASS_SCOUT && nRobotClassIndex <= TF_CLASS_ENGINEER)
+			if(GetTeamNumber() == TF_TEAM_PVE_INVADERS)
 			{
-				if((-1.0f >= tf_mvm_miniboss_scale.GetFloat() || IsMiniBoss()) && g_pFullFileSystem->FileExists(g_szBotBossModels[nRobotClassIndex]))
+				if(nRobotClassIndex >= TF_CLASS_SCOUT && nRobotClassIndex <= TF_CLASS_ENGINEER)
 				{
-					GetPlayerClass()->SetCustomModel(g_szBotBossModels[nRobotClassIndex], USE_CLASS_ANIMATIONS);
-					UpdateModel();
-					SetBloodColor(DONT_BLEED);
-				}
-				else if(g_pFullFileSystem->FileExists(g_szBotModels[nRobotClassIndex]))
-				{
-					GetPlayerClass()->SetCustomModel(g_szBotModels[nRobotClassIndex], USE_CLASS_ANIMATIONS);
-					UpdateModel();
-					SetBloodColor(DONT_BLEED);
+					if((GetModelScale() >= tf_mvm_miniboss_scale.GetFloat() || IsMiniBoss()) && g_pFullFileSystem->FileExists(g_szBotBossModels[nRobotClassIndex]))
+					{
+						GetPlayerClass()->SetCustomModel(g_szBotBossModels[nRobotClassIndex],USE_CLASS_ANIMATIONS);
+						UpdateModel();
+						SetBloodColor(DONT_BLEED);
+					}
+					else if(g_pFullFileSystem->FileExists(g_szBotModels[nRobotClassIndex]))
+					{
+						GetPlayerClass()->SetCustomModel(g_szBotModels[nRobotClassIndex],USE_CLASS_ANIMATIONS);
+						UpdateModel();
+						SetBloodColor(DONT_BLEED);
+					}
 				}
 			}
+			else
+				GetPlayerClass()->SetCustomModel(NULL,USE_CLASS_ANIMATIONS);
 		}
 
 
@@ -12410,6 +12419,7 @@ void CTFPlayer::Event_Killed( const CTakeDamageInfo &info )
 			}
 		}
 
+		//MVM Versus
 		if ( GetTeamNumber() != TF_TEAM_PVE_INVADERS && !m_hReviveMarker )
 		{
 			m_hReviveMarker = CTFReviveMarker::Create( this );

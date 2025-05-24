@@ -148,6 +148,36 @@ const char g_szBotBossModels[][ MAX_PATH ] =
 	"models/bots/engineer/bot_engineer.mdl",
 };
 
+const char g_szBotViewmodels[][MAX_PATH] =
+{
+	"", //TF_CLASS_UNDEFINED
+
+	"models/weapons/c_models/mvm/c_scout_arms.mdl",
+	"models/weapons/c_models/mvm/c_sniper_arms.mdl",
+	"models/weapons/c_models/mvm/c_soldier_arms.mdl",
+	"models/weapons/c_models/mvm/c_demo_arms.mdl",
+	"models/weapons/c_models/mvm/c_medic_arms.mdl",
+	"models/weapons/c_models/mvm/c_heavy_arms.mdl",
+	"models/weapons/c_models/mvm/c_pyro_arms.mdl",
+	"models/weapons/c_models/mvm/c_spy_arms.mdl",
+	"models/weapons/c_models/mvm/c_engineer_arms.mdl",
+};
+
+const char g_szBotBossViewmodels[][MAX_PATH] =
+{
+	"", //TF_CLASS_UNDEFINED
+
+	"models/weapons/c_models/mvm/c_scout_arms.mdl",
+	"models/weapons/c_models/mvm/c_sniper_arms.mdl",
+	"models/weapons/c_models/mvm/c_soldier_arms.mdl",
+	"models/weapons/c_models/mvm/c_demo_arms.mdl",
+	"models/weapons/c_models/mvm/c_medic_arms.mdl",
+	"models/weapons/c_models/mvm/c_heavy_arms.mdl",
+	"models/weapons/c_models/mvm/c_pyro_arms.mdl",
+	"models/weapons/c_models/mvm/c_spy_arms.mdl",
+	"models/weapons/c_models/mvm/c_engineer_arms.mdl",
+};
+
 const char g_szBotBossSentryBusterModel[ MAX_PATH ] = "models/bots/demo/bot_sentry_buster.mdl";
 
 // Rome 2 promo models

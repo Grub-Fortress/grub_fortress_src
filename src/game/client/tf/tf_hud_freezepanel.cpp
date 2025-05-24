@@ -613,6 +613,7 @@ void CTFFreezePanel::FireGameEvent( IGameEvent * event )
 				{					
 					pchNemesisText = g_pVGuiLocalize->Find( "#TF_FreezeNemesis" );
 				}
+				// MVM Versus
 				// UNDONE: We're not shipping this for now
 				/*else if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && pTFKiller && pTFKiller->GetTeamNumber() == TF_TEAM_PVE_INVADERS )
 				{

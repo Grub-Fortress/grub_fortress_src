@@ -581,8 +581,7 @@ CON_COMMAND_F( tf_bot_kill, "Kill a TFBot by name, or all bots (\"all\").", FCVA
 				( player->GetTeamNumber() == iTeam ) ||
 				( player->GetTeamNumber() == iTeam ) )
 			{
-				CTakeDamageInfo info( player, player, 9999999.9f, DMG_ENERGYBEAM, TF_DMG_CUSTOM_NONE );
-				player->TakeDamage( info );
+				player->CommitSuicide();
 			}
 		}
 	}

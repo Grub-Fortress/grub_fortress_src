@@ -179,8 +179,8 @@ void CHudInspectPanel::UserCmd_InspectTarget( void )
 				
 				pUpgradePanel->InspectUpgradesForPlayer( pTargetPlayer );
 			}
-			// Inspect self
-			else if ( !pTargetPlayer && pLocalTFPlayer  )
+			// Inspect self | MVM Versus
+			else if ( !pTargetPlayer && pLocalTFPlayer && pLocalTFPlayer->GetTeamNumber() != TF_TEAM_PVE_INVADERS  )
 			{
 				pUpgradePanel->InspectUpgradesForPlayer( pLocalTFPlayer );
 			}

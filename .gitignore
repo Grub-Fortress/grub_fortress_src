@@ -959,3 +959,17 @@ game/mod_tf/GameState.txt
 game/mod_tf/scripts/vscripts/mvmswitch.nut
 game/mod_tf/downloadlists/mvm_coaltown.lst
 *.lst
+game/mod_tf/steamstore/library/hero.png
+game/mod_tf/steamstore/library/librarysupertiny.png
+game/mod_tf/steamstore/library/librarytiny.png
+game/mod_tf/steamstore/library/logo.png
+game/mod_tf/steamstore/library/storeicon.png
+game/mod_tf/steamstore/library/storeicon_medium.png
+game/mod_tf/steamstore/library/vertical.png
+game/mod_tf/steamstore/promoscreen.pdn
+game/mod_tf/steamstore/promoscreen.png
+game/mod_tf/steamstore/promoscreen2.png
+game/mod_tf/steamstore/promoscreen3.png
+game/mod_tf/steamstore/promoscreen4.png
+game/mod_tf/steamstore/promoscreen5.png
+game/mod_tf/steamstore/promoscreen6.png
