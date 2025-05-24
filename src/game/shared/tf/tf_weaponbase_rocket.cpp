@@ -267,6 +267,14 @@ CTFBaseRocket *CTFBaseRocket::Create( CBaseEntity *pLauncher, const char *pszCla
 	// Spawn.
 	pRocket->Spawn();
 
+	float flGravity = 0.0f;
+	CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pLauncher, flGravity, mod_rocket_gravity );
+	if ( flGravity )
+	{
+		pRocket->SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_CUSTOM );
+		pRocket->SetGravity( flGravity );
+	}
+
 	// Setup the initial velocity.
 	Vector vecForward, vecRight, vecUp;
 	AngleVectors( vecAngles, &vecForward, &vecRight, &vecUp );
