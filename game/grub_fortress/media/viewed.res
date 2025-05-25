@@ -6,11 +6,11 @@
 	}
 	"ctf_2fort"
 	{
-		"viewed"		"7"
+		"viewed"		"10"
 	}
 	"itemtest"
 	{
-		"viewed"		"56"
+		"viewed"		"62"
 	}
 	"pl_goldrush"
 	{

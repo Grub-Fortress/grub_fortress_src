@@ -973,3 +973,8 @@ game/mod_tf/steamstore/promoscreen3.png
 game/mod_tf/steamstore/promoscreen4.png
 game/mod_tf/steamstore/promoscreen5.png
 game/mod_tf/steamstore/promoscreen6.png
+game/grub_fortress.7z
+game/grub_fortress/cfg/local_loadout.txt
+game/grub_fortress/cfg/server_blacklist.txt
+game/grub_fortress/GameState.txt
+game/grub_fortress/tf2_playerstats.dmx
