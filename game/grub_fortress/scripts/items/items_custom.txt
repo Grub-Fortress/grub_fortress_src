@@ -298,7 +298,7 @@ not sure if it should be used as a weapon"
 				"damage bonus"
 				{
 					"attribute_class"	"mult_dmg"
-					"value"				"1.25"
+					"value"				"1.15"
 				}
 				"clip size penalty"
 				{
