@@ -10,7 +10,7 @@
 	}
 	"itemtest"
 	{
-		"viewed"		"68"
+		"viewed"		"69"
 	}
 	"pl_goldrush"
 	{
@@ -18,7 +18,7 @@
 	}
 	"cp_dustbowl"
 	{
-		"viewed"		"2"
+		"viewed"		"4"
 	}
 	"koth_harvest_final"
 	{

@@ -18,7 +18,6 @@
 #include "tf_gamerules.h"
 #include "c_tf_team.h"
 #include "c_team_objectiveresource.h"
-#include "tf_hud_match_status.h"
 #include "tf_hud_teamgoal_tournament.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -132,22 +131,11 @@ void CHudTeamGoalTournament::FireGameEvent( IGameEvent * event )
 //-----------------------------------------------------------------------------
 void CHudTeamGoalTournament::ApplySchemeSettings( IScheme *pScheme )
 {
-	KeyValues *pConditions = NULL;
-	if ( ShouldUseMatchHUD() )
-	{
-		pConditions = new KeyValues( "conditions" );
-		AddSubKeyNamed( pConditions, "if_comp" );
-	}
 
 	// load control settings...
-	LoadControlSettings( "resource/UI/HudTeamGoalTournament.res", NULL, NULL, pConditions );
+	LoadControlSettings( "resource/UI/HudTeamGoalTournament.res", NULL, NULL, NULL );
 
 	BaseClass::ApplySchemeSettings( pScheme );
-
-	if ( pConditions )
-	{
-		pConditions->deleteThis();
-	}
 
 	m_cRegularColor = pScheme->GetColor( "TanLight", Color( 0, 0, 0 ) );
 	m_cHighlightColor = pScheme->GetColor( "GoalOrange", Color( 0, 0, 0 ) );

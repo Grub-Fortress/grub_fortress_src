@@ -34,7 +34,6 @@
 #include "tf_hud_tournament.h"
 #include "c_tf_objective_resource.h"
 #include "tf_time_panel.h"
-#include "tf_hud_match_status.h"
 
 #include "tf_gc_client.h"
 #include "tf_lobby_server.h"
@@ -1373,24 +1372,13 @@ void CHudStopWatch::LevelInit( void )
 //-----------------------------------------------------------------------------
 void CHudStopWatch::ApplySchemeSettings( IScheme *pScheme )
 {
-	KeyValues *pConditions = NULL;
-	if ( ShouldUseMatchHUD() )
-	{
-		pConditions = new KeyValues( "conditions" );
-		AddSubKeyNamed( pConditions, "if_comp" );
-	}
-
 	// load control settings...
-	LoadControlSettings( "resource/UI/HudStopWatch.res", NULL, NULL, pConditions );
+	LoadControlSettings( "resource/UI/HudStopWatch.res" );
 
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	m_pStopWatchDescriptionBG = FindChildByName( "HudStopWatchDescriptionBG" );
 
-	if ( pConditions )
-	{
-		pConditions->deleteThis();
-	}
 }
 
 //-----------------------------------------------------------------------------

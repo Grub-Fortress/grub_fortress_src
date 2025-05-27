@@ -54,6 +54,7 @@ CTFHudObjectiveStatus::CTFHudObjectiveStatus( const char *pElementName )
 	: CHudElement( pElementName )
 	, BaseClass( NULL, "HudObjectiveStatus" ) 
 	, m_pFlagPanel( NULL )
+	, m_pTimePanel(NULL)
 	, m_pControlPointIconsPanel( NULL )
 	, m_pControlPointProgressBar( NULL )
 	, m_pEscortPanel( NULL )
@@ -65,6 +66,7 @@ CTFHudObjectiveStatus::CTFHudObjectiveStatus( const char *pElementName )
 	SetParent( pParent );
 
 	m_pFlagPanel = new CTFHudFlagObjectives( this, "ObjectiveStatusFlagPanel" );
+	m_pTimePanel = new CTFHudTimeStatus( this, "ObjectiveStatusTimePanel" );
 	m_pControlPointIconsPanel = NULL;
 	m_pControlPointProgressBar = new CControlPointProgressBar( this );
 	m_pEscortPanel = new CTFHudEscort( this, "ObjectiveStatusEscort" );
@@ -113,6 +115,11 @@ void CTFHudObjectiveStatus::ApplySchemeSettings( IScheme *pScheme )
 //-----------------------------------------------------------------------------
 void CTFHudObjectiveStatus::Reset()
 {
+	if (m_pTimePanel)
+	{
+		m_pTimePanel->Reset();
+	}
+
 	if ( m_pFlagPanel )
 	{
 		m_pFlagPanel->Reset();
@@ -322,6 +329,80 @@ void CTFHudObjectiveStatus::Think()
 		return;
 
 	SetVisiblePanels();
+	
+	// check for an active timer and turn the time panel on or off if we need to
+	if ( m_pTimePanel )
+	{
+		// Don't draw in freezecam, or when the game's not running
+		C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+		bool bDisplayTimer = !(pPlayer && pPlayer->GetObserverMode() == OBS_MODE_FREEZECAM);
+
+		if ( TeamplayRoundBasedRules()->IsInTournamentMode() && TeamplayRoundBasedRules()->IsInWaitingForPlayers() )
+		{
+			bDisplayTimer = false;
+		}
+
+		if ( bDisplayTimer )
+		{
+			// is the time panel still pointing at an active timer?
+			int iCurrentTimer = m_pTimePanel->GetTimerIndex();
+			CTeamRoundTimer* pTimer = dynamic_cast<CTeamRoundTimer*>(ClientEntityList().GetEnt( iCurrentTimer ));
+
+			if ( pTimer && !pTimer->IsDormant() && !pTimer->IsDisabled() && pTimer->ShowInHud() )
+			{
+				// the current timer is fine, make sure the panel is visible
+				bDisplayTimer = true;
+			}
+			else if ( ObjectiveResource() )
+			{
+				// check for a different timer
+				int iActiveTimer = ObjectiveResource()->GetTimerToShowInHUD();
+
+				pTimer = dynamic_cast<CTeamRoundTimer*>(ClientEntityList().GetEnt( iActiveTimer ));
+				bDisplayTimer = (iActiveTimer != 0 && pTimer && !pTimer->IsDormant());
+				m_pTimePanel->SetTimerIndex( iActiveTimer );
+			}
+		}
+
+		if ( bDisplayTimer && !TFGameRules()->ShowMatchSummary() )
+		{
+			if ( !TFGameRules()->IsInKothMode() )
+			{
+				if ( !m_pTimePanel->IsVisible() )
+				{
+					m_pTimePanel->SetVisible( true );
+
+					// If our spectator GUI is visible, invalidate its layout so that it moves the reinforcement label
+					if ( g_pSpectatorGUI )
+					{
+						g_pSpectatorGUI->InvalidateLayout();
+					}
+				}
+			}
+			else
+			{
+				bool bVisible = TeamplayRoundBasedRules()->IsInWaitingForPlayers();
+
+				if ( m_pTimePanel->IsVisible() != bVisible )
+				{
+					m_pTimePanel->SetVisible( bVisible );
+
+					// If our spectator GUI is visible, invalidate its layout so that it moves the reinforcement label
+					if ( g_pSpectatorGUI )
+					{
+						g_pSpectatorGUI->InvalidateLayout();
+					}
+				}
+			}
+		}
+		else
+		{
+			if ( m_pTimePanel->IsVisible() )
+			{
+				m_pTimePanel->SetVisible( false );
+			}
+		}
+	}
 }
 
 
