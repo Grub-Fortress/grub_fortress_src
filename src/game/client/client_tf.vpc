@@ -31,7 +31,7 @@ $Configuration
 	}
 }
 
-$Project "Client (TF)"
+$Project "Client (Grub Fortress)"
 {
 	$Folder "Source Files"
 	{
@@ -204,6 +204,15 @@ $Project "Client (TF)"
 				$File	"tf\vgui\store\v2\tf_store_page_maps2.h"
 				$File	"tf\vgui\store\v2\tf_store_mapstamps_info_dialog.cpp"
 				$File	"tf\vgui\store\v2\tf_store_mapstamps_info_dialog.h"
+			}
+		}
+		
+		$Folder "Grub Fortress"
+		{
+			$Folder "VGUI"
+			{
+				$File "gf\vgui\gf_advcreditspanel.cpp"
+				$File "gf\vgui\gf_advcreditspanel.h"
 			}
 		}
 

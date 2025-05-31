@@ -32,7 +32,7 @@
 
 
 // Half-Life User Info Configuration Layout Script (stores last settings chosen, too)
-// File generated:  Sun May 25 10:06:36 AM
+// File generated:  Sat May 31 18:07:26 AM
 //
 //
 // Cvar	-	Setting
@@ -106,7 +106,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_Dingaling_Volume"
 		"#Tooltip_Dingaling_Volume"
 		{ SLIDER 0 1 }
-		{ "0.75" }
+		{ "1" }
 	}
 
 	"tf_dingalingaling_effect"
@@ -132,7 +132,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_Dingaling_PitchLowDmg"
 		"#Tooltip_Dingaling_PitchLowDmg"
 		{ SLIDER 1 255 }
-		{ "100" }
+		{ "76.099998" }
 	}
 
 	"tf_dingaling_pitchmaxdmg"
@@ -148,7 +148,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_LastHitbeeps"
 		"#Tooltip_Hitbeeps"
 		{ BOOL }
-		{ "1" }
+		{ "0" }
 	}
 
 	"tf_dingaling_lasthit_volume"
@@ -206,7 +206,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_CombatTextBatching"
 		"#Tooltip_CombatTextBatching"
 		{ BOOL }
-		{ "1" }
+		{ "0" }
 	}
 
 	"hud_combattext_doesnt_block_overhead_text"
@@ -262,7 +262,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_sniperbell"
 		"#Tooltip_sniperbell"
 		{ BOOL }
-		{ "1" }
+		{ "0" }
 	}
 
 	"category3"
@@ -276,7 +276,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_simple_disguise_menu_option"
 		"#Tooltip_simple_disguise_menu_option"
 		{ BOOL }
-		{ "1" }
+		{ "0" }
 	}
 
 	"cl_autorezoom"
@@ -346,7 +346,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_colorblindassist"
 		"#Tooltip_colorblindassist"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"cl_use_tournament_specgui"
@@ -362,7 +362,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_SpectateCarriedItems"
 		"#Tooltip_SpectateCarriedItems"
 		{ BOOL }
-		{ "1" }
+		{ "0" }
 	}
 
 	"glow_outline_effect_enable"
@@ -464,7 +464,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_RomeVisionOptIn"
 		"#Tooltip_RomeVisionOptIn"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"tf_hud_target_id_disable_floating_health"
@@ -472,7 +472,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_TargetID_Disable_Floating"
 		"#ToolTip_TargetID_Disable_Floating"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"tf_hud_target_id_alpha"
@@ -493,7 +493,7 @@ DESCRIPTION INFO_OPTIONS
 			"#TF_Contract_Progress_All" "1"
 			"#TF_Contract_Progress_Active" "2"
 		}
-		{ "1" }
+		{ "2" }
 	}
 
 	"tf_contract_competitive_show"
@@ -520,7 +520,7 @@ DESCRIPTION INFO_OPTIONS
 	{
 		"#TF_ScoreBoard_PingAsText"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"tf_scoreboard_alt_class_icons"
@@ -626,7 +626,7 @@ DESCRIPTION INFO_OPTIONS
 		"#Valve_Multiplayer_Decal_Limit"
 		"#Tooltip_Multiplayer_Decal_Limit"
 		{ NUMBER 0 4096 }
-		{ "200" }
+		{ "256" }
 	}
 
 	"category7"
