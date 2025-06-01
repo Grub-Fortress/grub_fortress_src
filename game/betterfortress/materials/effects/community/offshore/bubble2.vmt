@@ -1,9 +1,0 @@
-"SpriteCard"
-{
-	"$basetexture" 	"effects/community/offshore/bubble2"
-	"$additive"	1
-	"$vertexcolor"	1
-	"$vertexalpha"	1
-	"$depthblend"	0
-	"$overbrightfactor"	5
-}
