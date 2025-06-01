@@ -122,6 +122,7 @@ ConVar tf_invuln_time( "tf_invuln_time", "1.0", FCVAR_DEVELOPMENTONLY | FCVAR_RE
 extern ConVar tf_player_movement_restart_freeze;
 extern ConVar mp_tournament_readymode_countdown;
 extern ConVar tf_max_charge_speed;
+static ConVar tf_mvm_footstep_sounds("tf_mvm_footstep_sounds","1",FCVAR_NONE,"Replaces the Giants footsteps with Unique unused ones");
 
 ConVar tf_always_loser( "tf_always_loser", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Force loserstate to true." );
 
@@ -5152,7 +5153,7 @@ void CTFPlayerShared::OnRemoveFireImmune( void )
 void CTFPlayerShared::OnAddMVMBotRadiowave( void )
 {
 #ifdef CLIENT_DLL
-	if ( !m_pOuter->IsABot() )
+	if(!(m_pOuter->GetTeamNumber() == TF_TEAM_PVE_INVADERS))
 		return;
 
 	if ( !m_pOuter->m_pMVMBotRadiowave )
@@ -5160,7 +5161,7 @@ void CTFPlayerShared::OnAddMVMBotRadiowave( void )
 		m_pOuter->m_pMVMBotRadiowave = m_pOuter->ParticleProp()->Create( "bot_radio_waves", PATTACH_POINT_FOLLOW, "head" );
 	}
 #else
-	if ( !m_pOuter->IsBot() )
+	if(!(m_pOuter->GetTeamNumber() == TF_TEAM_PVE_INVADERS))
 		return;
 
 	StunPlayer( GetConditionDuration( TF_COND_MVM_BOT_STUN_RADIOWAVE ), 1.0, TF_STUN_BOTH | TF_STUN_NO_EFFECTS );
@@ -5173,7 +5174,7 @@ void CTFPlayerShared::OnAddMVMBotRadiowave( void )
 void CTFPlayerShared::OnRemoveMVMBotRadiowave( void )
 {
 #ifdef CLIENT_DLL
-	if ( !m_pOuter->IsABot() )
+	if ( !( m_pOuter->GetTeamNumber() == TF_TEAM_PVE_INVADERS ) )
 		return;
 
 	if ( m_pOuter->m_pMVMBotRadiowave )
@@ -11950,7 +11951,7 @@ const char *CTFPlayer::GetOverrideStepSound( const char *pszBaseStepSoundName )
 
 	Assert( pszBaseStepSoundName );
 
-	struct override_sound_entry_t { int iOverrideIndex; const char *pszBaseSoundName; const char *pszNewSoundName; };
+	struct override_sound_entry_t { int iOverrideIndex; char *pszBaseSoundName; char *pszNewSoundName; };
 
 	enum
 	{
@@ -11969,10 +11970,11 @@ const char *CTFPlayer::GetOverrideStepSound( const char *pszBaseStepSoundName )
 
 	int iOverrideFootstepSoundSet = kFootstepSoundSet_Default;
 	CALL_ATTRIB_HOOK_INT( iOverrideFootstepSoundSet, override_footstep_sound_set );
+	bool MVMUnusedFootsteps = tf_mvm_footstep_sounds.GetBool();
 
 	if ( iOverrideFootstepSoundSet != kFootstepSoundSet_Default )
 	{
-		static const override_sound_entry_t s_ReplacementSounds[] =
+		override_sound_entry_t s_ReplacementSounds[] =
 		{
 			{ kFootstepSoundSet_SoccerCleats,	"Default.StepLeft",		"cleats_conc.StepLeft" },
 			{ kFootstepSoundSet_SoccerCleats,	"Default.StepRight",	"cleats_conc.StepRight" },
@@ -11990,19 +11992,19 @@ const char *CTFPlayer::GetOverrideStepSound( const char *pszBaseStepSoundName )
 			{ kFootstepSoundSet_Octopus,	"Concrete.StepRight",	"Octopus.StepCommon" },
 
 			//
-			{ kFootstepSoundSet_HeavyGiant,		"",		"MVM.GiantHeavyStep" },
+			{ kFootstepSoundSet_HeavyGiant,		"",  MVMUnusedFootsteps  ? "MVM.GiantHeavyStep" : "MVM.BotGiantStep"  },
 
 			//
-			{ kFootstepSoundSet_SoldierGiant,	"",		"MVM.GiantSoldierStep" },
+			{ kFootstepSoundSet_SoldierGiant,	"", MVMUnusedFootsteps  ? "MVM.GiantSoldierStep" : "MVM.BotGiantStep" },
 
 			//
-			{ kFootstepSoundSet_DemoGiant,		"",		"MVM.GiantDemomanStep" },
+			{ kFootstepSoundSet_DemoGiant,		"", MVMUnusedFootsteps  ? "MVM.GiantDemomanStep" : "MVM.BotGiantStep" },
 
 			//
-			{ kFootstepSoundSet_ScoutGiant,		"",		"MVM.GiantScoutStep" },
+			{ kFootstepSoundSet_ScoutGiant,		"", MVMUnusedFootsteps ? "MVM.GiantScoutStep" : "MVM.BotGiantStep" },
 
 			//
-			{ kFootstepSoundSet_PyroGiant,		"",		"MVM.GiantPyroStep" },
+			{ kFootstepSoundSet_PyroGiant,		"",  MVMUnusedFootsteps ? "MVM.GiantPyroStep" : "MVM.BotGiantStep" },
 
 			//
 			{ kFootstepSoundSet_SentryBuster,	"",		"MVM.SentryBusterStep" },

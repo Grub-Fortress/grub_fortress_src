@@ -68,12 +68,13 @@ ConVar tf_mvm_disconnect_on_victory( "tf_mvm_disconnect_on_victory", "0", FCVAR_
 ConVar tf_mvm_victory_reset_time( "tf_mvm_victory_reset_time", "60.0", FCVAR_REPLICATED, "Seconds to wait after MvM victory before cycling to the next mission.  (Only used if tf_mvm_disconnect_on_victory is false.)" );
 ConVar tf_mvm_victory_disconnect_time( "tf_mvm_victory_disconnect_time", "180.0", FCVAR_REPLICATED, "Seconds to wait after MvM victory before kicking players.  (Only used if tf_mvm_disconnect_on_victory is true.)" );
 
-ConVar tf_mvm_endless_force_on( "tf_mvm_endless_force_on", "0", FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Force MvM Endless mode on" );
-ConVar tf_mvm_endless_wait_time( "tf_mvm_endless_wait_time", "5.0f", FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY);
-ConVar tf_mvm_endless_bomb_reset( "tf_mvm_endless_bomb_reset", "5", FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Number of Waves to Complete before bomb reset" );
-ConVar tf_mvm_endless_bot_cash( "tf_mvm_endless_bot_cash", "120", FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "In Endless, number of credits bots get per wave" );
-ConVar tf_mvm_endless_tank_boost( "tf_mvm_endless_tank_boost", "0.2", FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "In Endless, amount of extra health for the tank per wave" );
-
+ConVar tf_mvm_endless_force_on( "tf_mvm_endless_force_on", "0", FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT , "Force MvM Endless mode on" );
+ConVar tf_mvm_endless_wait_time( "tf_mvm_endless_wait_time", "5.0f", FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar tf_mvm_endless_bomb_reset( "tf_mvm_endless_bomb_reset", "5", FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT , "Number of Waves to Complete before bomb reset" );
+ConVar tf_mvm_endless_bot_cash( "tf_mvm_endless_bot_cash", "120", FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT , "In Endless, number of credits bots get per wave" );
+ConVar tf_mvm_endless_tank_boost( "tf_mvm_endless_tank_boost", "0.2", FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT , "In Endless, amount of extra health for the tank per wave" );
+ConVar tf_mvm_endless_scale_rate( "tf_mvm_endless_scale_rate","1",FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT ,"In Endless, scale rate");
+ConVar tf_mvm_endless_damage_boost_rate("tf_mvm_endless_damage_boost_rate","1",FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT ,"In Endless, damage scale increase per wave");
 
 ConVar tf_populator_health_multiplier( "tf_populator_health_multiplier", "1.0", FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar tf_populator_damage_multiplier( "tf_populator_damage_multiplier", "1.0", FCVAR_DONTRECORD | FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -1761,13 +1762,13 @@ float CPopulationManager::GetHealthMultiplier ( bool bIsTank /*= false*/ )
 //-------------------------------------------------------------------------
 float CPopulationManager::GetDamageMultiplier ()
 {
-	//if ( !IsInEndlessWaves() )
+	if ( !IsInEndlessWaves() )
 		return tf_populator_damage_multiplier.GetFloat();
 
 	// Find out how many times over t
 	// Floor of the result, ie 9 / 7 returns 1, 15 / 7 returns 2;
-	//int nRepeatCount = m_iCurrentWaveIndex / tf_mvm_endless_scale_rate.GetInt();	
-	//return tf_populator_damage_multiplier.GetFloat() + tf_mvm_endless_damage_boost_rate.GetFloat() * nRepeatCount;
+	int nRepeatCount = m_iCurrentWaveIndex / tf_mvm_endless_scale_rate.GetInt();	
+	return tf_populator_damage_multiplier.GetFloat() + tf_mvm_endless_damage_boost_rate.GetFloat() * nRepeatCount;
 }
 
 //-------------------------------------------------------------------------
@@ -1912,6 +1913,7 @@ void CPopulationManager::EndlessRollEscalation( void )
 		}
 	}
 
+	//Endless wave warning
 	char msg[255];
 	V_strcpy_safe( msg, "***  Bot Upgrades\n" );
 	FOR_EACH_VEC( m_EndlessActiveBotUpgrades, iUpgrade )
@@ -1920,7 +1922,7 @@ void CPopulationManager::EndlessRollEscalation( void )
 		V_sprintf_safe( line, "-%s %.1f\n", m_EndlessActiveBotUpgrades[iUpgrade].szAttrib, m_EndlessActiveBotUpgrades[iUpgrade].flValue );
 		V_strcat_safe( msg, line );
 	}
-	
+	TFGameRules()->BroadcastSound(255,"MVM.Endless_BotsUpgraded");
 	UTIL_CenterPrintAll( msg );
 	UTIL_ClientPrintAll( HUD_PRINTCONSOLE, msg );
 }

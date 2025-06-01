@@ -224,6 +224,7 @@ ConVar tf_boss_battle_respawn_on_friends( "tf_boss_battle_respawn_on_friends", "
 ConVar tf_mvm_death_penalty( "tf_mvm_death_penalty", "0", FCVAR_NOTIFY | FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "How much currency players lose when dying" );
 extern ConVar tf_populator_damage_multiplier;
 extern ConVar tf_mvm_skill;
+ConVar tf_mvm_maxcurrency ("tf_mvm_maxcurrency","30000",FCVAR_CHEAT);
 
 ConVar tf_highfive_separation_forward( "tf_highfive_separation_forward", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Forward distance between high five partners" );
 ConVar tf_highfive_separation_right( "tf_highfive_separation_right", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Right distance between high five partners" );
@@ -1869,9 +1870,161 @@ void CTFPlayer::TFPlayerThink()
 */
 
 	SetContextThink( &CTFPlayer::TFPlayerThink, gpGlobals->curtime, "TFPlayerThink" );
+	if( TFGameRules()->IsMannVsMachineMode() && tf_mvm_forceversus.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsBot() && !TFGameRules()->InSetup() )
+	{
+		SetContextThink( &CTFPlayer::MvMDeployBombThink, gpGlobals->curtime, "MvMDeployBombThink" );
+	}
 	m_flLastThinkTime = gpGlobals->curtime;
 }
 
+void CTFPlayer::MvMDeployBombThink()
+{
+
+	if( GetDeployingBombState() != TF_BOMB_DEPLOYING_NONE )
+	{
+		CCaptureZone *pAreaTrigger = NULL;
+
+		if ( GetDeployingBombState() != TF_BOMB_DEPLOYING_COMPLETE )
+		{
+			pAreaTrigger = GetClosestCaptureZone();
+			if ( !pAreaTrigger )
+			{
+				return MvMDeployBombEnd(); //Done( "No capture zone!" );
+			}
+			// if we've been moved, give up and go back to normal behavior
+			const float movedRange = 20.0f;
+			Vector to = m_deployAnchorPos - GetAbsOrigin();
+			if( to.IsLengthGreaterThan( movedRange ) )
+			{
+				m_Shared.RemoveCond( TF_COND_FREEZE_INPUT );
+				SetForcedTauntCam( 0 );
+				// Look for players that pushed me away and send an event
+				CUtlVector<CTFPlayer *> playerVector;
+				CollectPlayers( &playerVector, TF_TEAM_PVE_DEFENDERS );
+				FOR_EACH_VEC( playerVector, i )
+				{
+					CTFPlayer *pPlayer = playerVector[i];
+					if ( !pPlayer )
+						continue;
+
+					if ( m_AchievementData.IsPusherInHistory( pPlayer, 2.f ) )
+					{
+						IGameEvent *event = gameeventmanager->CreateEvent( "mvm_bomb_deploy_reset_by_player" );
+						if ( event )
+						{
+							event->SetInt( "player", pPlayer->entindex() );
+							gameeventmanager->FireEvent( event );
+						}
+					}
+				}
+
+				return MvMDeployBombEnd(); //Done( "I've been pushed" );
+			}
+
+			// slam facing towards bomb hole
+			to = pAreaTrigger->WorldSpaceCenter() - WorldSpaceCenter();
+			to.NormalizeInPlace();
+
+			QAngle desiredAngles;
+			VectorAngles( to, desiredAngles );
+
+			SnapEyeAngles( desiredAngles );
+		}
+
+		switch ( GetDeployingBombState() )
+		{
+		case TF_BOMB_DEPLOYING_DELAY:
+			if ( m_deployBombTimer.IsElapsed() )
+			{
+				m_Shared.AddCond( TF_COND_FREEZE_INPUT );
+				SetForcedTauntCam( 1 );
+				PlaySpecificSequence( "primary_deploybomb" );
+				m_deployBombTimer.Start( tf_deploying_bomb_time.GetFloat() );
+				SetDeployingBombState( TF_BOMB_DEPLOYING_ANIMATING );
+
+				const char *pszSoundName = IsMiniBoss() ? "MVM.DeployBombGiant" : "MVM.DeployBombSmall";
+				EmitSound( pszSoundName );
+
+				TFGameRules()->PlayThrottledAlert( 255, "Announcer.MVM_Bomb_Alert_Deploying", 5.0f );
+			}
+			break;
+
+		case TF_BOMB_DEPLOYING_ANIMATING:
+			if ( m_deployBombTimer.IsElapsed() )
+			{
+				if ( pAreaTrigger )
+				{
+					pAreaTrigger->Capture( this );
+				}
+
+				m_deployBombTimer.Start( 2.0f );
+				TFGameRules()->BroadcastSound( 255, "Announcer.MVM_Robots_Planted" );
+				SetDeployingBombState( TF_BOMB_DEPLOYING_COMPLETE );
+				m_takedamage = DAMAGE_NO;
+				AddEffects( EF_NODRAW );
+				RemoveAllWeapons();
+			}
+			break;
+
+		case TF_BOMB_DEPLOYING_COMPLETE:
+			if ( m_deployBombTimer.IsElapsed() )
+			{
+				m_takedamage = DAMAGE_YES;
+				TakeDamage( CTakeDamageInfo( this, this, 99999.9f, DMG_CRUSH ) );
+				return MvMDeployBombEnd(); //Done( "I've deployed successfully" );
+			}
+			break;
+		}
+	}
+	else
+	{
+		CCaptureFlag *pCaptureFlag = dynamic_cast<CCaptureFlag *>( GetItem() );
+		if ( pCaptureFlag )
+		{
+			FOR_EACH_VEC( ICaptureZoneAutoList::AutoList(), i )
+			{
+				CCaptureZone  *pTriggerCapture = static_cast< CCaptureZone * >( ICaptureZoneAutoList::AutoList()[i] );
+				if ( pTriggerCapture->IsTouching( this ) )
+				{
+					SetDeployingBombState( TF_BOMB_DEPLOYING_DELAY );
+					m_deployBombTimer.Start( tf_deploying_bomb_delay_time.GetFloat() );
+
+					// remember where we start deploying
+					m_deployAnchorPos = GetAbsOrigin();
+					SetAbsVelocity( Vector( 0.0f, 0.0f, 0.0f ) );
+
+					break;
+				}
+			}
+		}
+	}
+}
+
+void CTFPlayer::MvMDeployBombEnd()
+{
+	if ( GetDeployingBombState() == TF_BOMB_DEPLOYING_ANIMATING )
+	{
+		// reset the in-progress deploy animation
+		DoAnimationEvent( PLAYERANIMEVENT_SPAWN );
+	}
+
+	if ( IsMiniBoss() )
+	{
+		static CSchemaAttributeDefHandle pAttrDef_AirblastVerticalVulnerability( "airblast vertical vulnerability multiplier" );
+
+		// Minibosses can be pushed again
+		if ( !pAttrDef_AirblastVerticalVulnerability )
+		{
+			Warning( "TFBotSpawner: Invalid attribute 'airblast vertical vulnerability multiplier'\n" );
+		}
+		else
+		{
+			GetAttributeList()->RemoveAttribute( pAttrDef_AirblastVerticalVulnerability );
+		}
+	}
+
+	SetDeployingBombState( TF_BOMB_DEPLOYING_NONE );
+}
 //-----------------------------------------------------------------------------
 // Purpose: Returns a portion of health every think.
 //-----------------------------------------------------------------------------
@@ -2885,6 +3038,7 @@ void CTFPlayer::PrecacheMvM()
 
 	PrecacheScriptSound( "MVM.FallDamageBots");
 	PrecacheScriptSound( "MVM.BotStep" );
+	PrecacheScriptSound( "MVM.BotGiantStep" );
 	PrecacheScriptSound( "MVM.GiantHeavyStep" );
 	PrecacheScriptSound( "MVM.GiantSoldierStep" );
 	PrecacheScriptSound( "MVM.GiantDemomanStep" );
@@ -3215,6 +3369,7 @@ void CTFPlayer::PrecacheTFPlayer()
 	PrecacheModel( "models/effects/resist_shield/resist_shield.mdl" );
 
 	PrecacheModel( "models/props_mvm/mvm_revive_tombstone.mdl" );
+	PrecacheModel( "models/vgui/UI_class01_mvm.mdl" );
 
 	PrecacheScriptSound( "General.banana_slip" ); // Used for SodaPopper Hype Jumps
 
@@ -3772,12 +3927,33 @@ void CTFPlayer::Spawn()
 			TFGameRules()->ShowRoundInfoPanel( this );
 			m_bSeenRoundInfo = true;
 		}
+
+		m_bIsMiniBoss = false;
+		m_bUseBossHealthBar = false;
+
+		// make sure we clear custom attributes that we added
+		RemoveAllCustomAttributes();
+
 		//MVM Versus
 		int nRobotClassIndex = (GetPlayerClass() ? GetPlayerClass()->GetClassIndex() : TF_CLASS_UNDEFINED);
 		if( TFGameRules()->IsMannVsMachineMode() && !IsFakeClient() )
 		{
 			if(GetTeamNumber() == TF_TEAM_PVE_INVADERS)
 			{
+				//We Reset your tags if you were for example a Gatebot
+				ClearTags();
+				//Spawn the player as Gatebot | 50% chance
+				if(random->RandomInt(0,1) == 1)
+				{
+					MVM_SetGatebot();
+				}
+				//Spawn the player as Miniboss | 50% chance
+				if ( random->RandomInt(0,1) == 1)
+				{
+					SetIsMiniBoss(true);
+					MVM_SetMinibossType();
+					MVM_StartIdleSound();
+				}
 				if(nRobotClassIndex >= TF_CLASS_SCOUT && nRobotClassIndex <= TF_CLASS_ENGINEER)
 				{
 					if((GetModelScale() >= tf_mvm_miniboss_scale.GetFloat() || IsMiniBoss()) && g_pFullFileSystem->FileExists(g_szBotBossModels[nRobotClassIndex]))
@@ -3935,9 +4111,6 @@ void CTFPlayer::Spawn()
 
 	m_playerMovementStuckTimer.Invalidate();
 
-	m_bIsMiniBoss = false;
-	m_bUseBossHealthBar = false;
-
 	m_hGrapplingHookTarget = NULL;
 	m_nHookAttachedPlayers = 0;
 	m_bUsingActionSlot = false;
@@ -4028,9 +4201,6 @@ void CTFPlayer::Spawn()
 		UTIL_Remove( m_hReviveMarker );
 		m_hReviveMarker = NULL;
 	}
-
-	// make sure we clear custom attributes that we added
-	RemoveAllCustomAttributes();
 
 
 	CTFPlayerResource *pResource = dynamic_cast<CTFPlayerResource *>( g_pPlayerResource );
@@ -6467,7 +6637,7 @@ void CTFPlayer::HandleCommand_JoinTeam( const char *pTeamName )
 		}
 
 		DuelMiniGame_NotifyPlayerChangedTeam( this, iTeam, true );
-		ChangeTeam( iTeam, true );
+		ChangeTeam( iTeam, true, false );
 
 		return;
 	}
@@ -7076,6 +7246,8 @@ void CTFPlayer::HandleCommand_JoinClass( const char *pClassName, bool bAllowSpaw
 
 		gameeventmanager->FireEvent( event );
 	}
+	//MvM Versus
+	MVM_StartIdleSound();
 
 	// are they TF_CLASS_RANDOM and trying to select the class they're currently playing as (so they can stay this class)?
 	if ( iClass == GetPlayerClass()->GetClassIndex() )
@@ -7902,7 +8074,7 @@ bool CTFPlayer::ClientCommand( const CCommand &args )
 			else if ( TFGameRules()->IsBossBattleMode() )
 			{
 				int iTeam = GetAutoTeam();
-				ChangeTeam( iTeam, true );
+				ChangeTeam( iTeam, true, false );
 				ShowViewPortPanel( ( iTeam == TF_TEAM_RED ) ? PANEL_CLASS_RED : PANEL_CLASS_BLUE );
 			}
 #endif
@@ -20725,7 +20897,7 @@ void CTFPlayer::SaveLastWeaponSlot( void )
 	}
 }
 //-----------------------------------------------------------------------------
-// MVM Port
+// MVM Versus
 // ----------------------------------------------------------------------------
 void CTFPlayer::MVM_StartIdleSound(void)
 {
@@ -20787,6 +20959,127 @@ void CTFPlayer::MVM_StopIdleSound(void)
 	}
 }
 
+//-----------------------------------------------------------------------------
+// MVM Versus - Placeholder boss list
+// ----------------------------------------------------------------------------
+
+void CTFPlayer::ClearTags(void)
+{
+	m_tags.RemoveAll();
+}
+
+
+//---------------------------------------------------------------------------------------------
+void CTFPlayer::AddTag(const char* tag)
+{
+	if(!HasTag(tag))
+	{
+		m_tags.AddToTail(CFmtStr("%s",tag));
+	}
+}
+
+
+//---------------------------------------------------------------------------------------------
+void CTFPlayer::RemoveTag(const char* tag)
+{
+	for(int i = 0; i < m_tags.Count(); ++i)
+	{
+		if(FStrEq(tag,m_tags[i]))
+		{
+			m_tags.Remove(i);
+			return;
+		}
+	}
+}
+
+
+//---------------------------------------------------------------------------------------------
+// TODO: Make this an efficient lookup/match
+bool CTFPlayer::HasTag(const char* tag)
+{
+	for(int i = 0; i < m_tags.Count(); ++i)
+	{
+		if(FStrEq(tag,m_tags[i]))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+//-----------------------------------------------------------------------------
+// MVM Versus - Placeholder boss list
+// ----------------------------------------------------------------------------
+void CTFPlayer::MVM_SetGatebot(void)
+{
+	AddTag("bot_gatebot");
+}
+
+//-----------------------------------------------------------------------------
+// MVM Versus - Placeholder boss list
+// ----------------------------------------------------------------------------
+void CTFPlayer::MVM_SetMinibossType(void)
+{
+	if(IsMiniBoss())
+	{
+		AddTag("bot_giant");
+		int iClass = GetPlayerClass()->GetClassIndex();
+		switch(iClass)
+		{
+			case TF_CLASS_HEAVYWEAPONS:
+			{
+				SetHealth(5000);
+				AddCustomAttribute("override footstep sound set",2,-1);
+				AddCustomAttribute("move speed bonus",0.5,-1);
+				AddCustomAttribute("max health additive bonus",4700,-1);
+				AddCustomAttribute("damage force reduction",0.3,-1);
+				AddCustomAttribute("airblast vulnerability multiplier",0.3,-1);
+				break;
+			}
+			case TF_CLASS_SOLDIER:
+			{
+				SetHealth(3800);
+				AddCustomAttribute("override footstep sound set",3,-1);
+				AddCustomAttribute("move speed bonus",0.5,-1);
+				AddCustomAttribute("max health additive bonus",3600,-1);
+				AddCustomAttribute("damage force reduction",0.4,-1);
+				AddCustomAttribute("airblast vulnerability multiplier",0.4,-1);
+				break;
+			}
+			case TF_CLASS_DEMOMAN:
+			{
+				SetHealth(3000);
+				AddCustomAttribute("override footstep sound set",4,-1);
+				AddCustomAttribute("move speed bonus",0.5,-1);
+				AddCustomAttribute("max health additive bonus",2825,-1);
+				AddCustomAttribute("damage force reduction",0.5,-1);
+				AddCustomAttribute("airblast vulnerability multiplier",0.5,-1);
+				break;
+			}
+			case TF_CLASS_SCOUT:
+			{
+				SetHealth(1600);
+				AddCustomAttribute("override footstep sound set",5,-1);
+				AddCustomAttribute("move speed bonus",2,-1);
+				AddCustomAttribute("max health additive bonus",1475,-1);
+				AddCustomAttribute("damage force reduction",0.7,-1);
+				AddCustomAttribute("airblast vulnerability multiplier",0.7,-1);
+				break;
+			}
+			case TF_CLASS_PYRO:
+			{
+				SetHealth(3000);
+				AddCustomAttribute("override footstep sound set",6,-1);
+				AddCustomAttribute("move speed bonus",0.4,-1);
+				AddCustomAttribute("max health additive bonus",2825,-1);
+				AddCustomAttribute("damage force reduction",0.6,-1);
+				AddCustomAttribute("airblast vulnerability multiplier",0.6,-1);
+				break;
+			}
+		}
+		SetModelScale(1.9,0);
+	}
+}
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

@@ -214,15 +214,16 @@ public:
 	inline bool PassesFilterImpl( CBaseEntity *pCaller, CBaseEntity *pEntity )
 	{
 		CTFBot *pBot = ToTFBot( pEntity );
+		CTFPlayer *pPlayer = ToTFPlayer( pEntity );
 
-		if ( !pBot )
+		if ( !pPlayer ) // There is always a player if there is a bot.
 			return false;
 
 		bool bPasses = false;
 		for ( int i=0; i<m_tags.Count(); ++i )
 		{
 			const char* pszTag = m_tags[i];
-			if ( pBot->HasTag( pszTag ) )
+			if ( ( pBot && pBot->HasTag( pszTag ) ) || pPlayer->HasTag( pszTag ) )
 			{
 				bPasses = true;
 				if ( !m_bRequireAllTags )

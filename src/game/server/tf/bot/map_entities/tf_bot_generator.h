@@ -3,6 +3,9 @@
 // Entity to spawn a collection of TFBots
 // Michael Booth, September 2009
 
+// TF2 Reborn Patch
+class CTFBot;
+
 #ifndef TF_BOT_GENERATOR_H
 #define TF_BOT_GENERATOR_H
 

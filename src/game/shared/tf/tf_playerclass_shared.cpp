@@ -157,6 +157,7 @@ const char	*CTFPlayerClassShared::GetModelName( void ) const
 // Purpose: Initialize the player class.
 //-----------------------------------------------------------------------------
 const char *g_HACK_GunslingerEngineerArmsOverride = "models\\weapons\\c_models\\c_engineer_gunslinger.mdl";
+const char *HACK_RobotGunsLinger = "models\\mvm\\weapons\\c_models\\c_engineer_bot_gunslinger.mdl";
 
 const char *CTFPlayerClassShared::GetHandModelName( int iHandIndex = 0 ) const
 {

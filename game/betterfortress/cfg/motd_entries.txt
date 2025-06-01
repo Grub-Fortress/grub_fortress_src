@@ -1,0 +1,15 @@
+"motd_entries"
+{
+	"last_request_time"		"2025-05-31 03:05:18"
+	"last_request_language"		"english"
+	"119"
+	{
+		"post_time"		"2025-05-31 03:05:18"
+		"title_english"		"Welcome to Better Fortress 2!"
+		"text_english"		"MVM Versus: Coming soon!"
+		"url"		"https://github.com/ALIEN31ITA/Better-Fortress-2"
+		"image"		"../logo/new_tf2_logo"
+		"header_type"		"0"
+		"header_english"		"#TF_SteamWorkshop_Tag_CommunityFix"
+	}
+}

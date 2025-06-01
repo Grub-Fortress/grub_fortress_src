@@ -74,10 +74,13 @@ void CPointPopulatorInterface::InputChangeBotAttributes( inputdata_t &inputdata 
 	{
 		CUtlVector< CTFBot* > botVector;
 		CollectPlayers( &botVector, TF_TEAM_PVE_INVADERS, COLLECT_ONLY_LIVING_PLAYERS );
-
+		// MVM Versus - Mannhattan crash patch
 		for ( int i=0; i<botVector.Count(); ++i )
 		{
-			const CTFBot::EventChangeAttributes_t* pEvent = botVector[i]->GetEventChangeAttributes( pszEventName );
+			CTFBot* pBot = ToTFBot(botVector[i]);
+			if( !pBot )
+				continue;
+			const CTFBot::EventChangeAttributes_t* pEvent = pBot->GetEventChangeAttributes( pszEventName );
 			if ( pEvent )
 			{
 				botVector[i]->OnEventChangeAttributes( pEvent );

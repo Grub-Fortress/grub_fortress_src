@@ -1,0 +1,7 @@
+"music.gangnam_loop"
+{
+	 "channel" 			"CHAN_STATIC"
+	 "soundlevel" 			"SNDLVL_75dB"
+	 "volume"		    "1.0"
+	 "wave" 			  ")*music/betterfortress/taunt/taunt_gangnam.wav"
+}

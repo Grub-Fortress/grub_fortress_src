@@ -22,6 +22,8 @@
 #include "in_buttons.h"
 #endif
 
+ConVar tf_infinite_knockback("tf_infinite_knockback","0",FCVAR_REPLICATED | FCVAR_NOTIFY,"Allways Knockback, like force-a-nature");
+
 //=============================================================================
 //
 // Weapon Shotgun tables.
@@ -330,7 +332,8 @@ void CTFScatterGun::FireBullet( CTFPlayer *pPlayer )
 		// Knock the firer back!
 		if ( !(pOwner->GetFlags() & FL_ONGROUND) && !pPlayer->m_Shared.m_bScattergunJump )
 		{
-			pPlayer->m_Shared.m_bScattergunJump = true;
+			if (!tf_infinite_knockback.GetBool())
+				pPlayer->m_Shared.m_bScattergunJump = true;
 
 			pOwner->m_Shared.StunPlayer( 0.3f, 1.f, TF_STUN_MOVEMENT | TF_STUN_MOVEMENT_FORWARD_ONLY );
 

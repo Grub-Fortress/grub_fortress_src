@@ -2074,6 +2074,10 @@ void CHudMainMenuOverride::OnCommand( const char *command )
 		ETFMatchGroup eMatchGroup = (ETFMatchGroup)atoi( command + 16 );
 		tf_mainmenu_match_panel_type.SetValue( eMatchGroup );
 	}
+	else if(!Q_stricmp(command,"openmodcredits"))
+	{
+		GetClientModeTFNormal()->GameUI()->SendMainMenuCommand("engine openmodcredits");
+	}
 	else
 	{
 		// Pass it on to GameUI main menu

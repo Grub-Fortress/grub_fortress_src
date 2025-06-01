@@ -1,0 +1,62 @@
+//CREDITS TO BETAM!! PLAY HIS MOD RIGHT NOW!
+VERSION 1.0
+DESCRIPTION INFO_OPTIONS
+{
+	"category1"
+	{
+		"Better Fortress"
+		{ CATEGORY }
+	}
+	"credit1_1"
+	{
+		"by Alien31, main_thing
+		NOTICE :If we forgot someone to credit in our mod, reach us in the discord please :("
+		{ BOOL }
+		{ "1" }
+	}	
+	"category2"
+	{
+		"Community Help/Contributions"
+		{ CATEGORY }
+	}	
+	"credit2_1"
+	{
+		"BetaM - Custom Items, Credits menu, misc. fixes"
+		"https://www.youtube.com/BetaM"
+		{ BOOL }
+		{ "1" }
+	}	
+	"credit2_2"
+	{
+		"CTrigger_Hurt - MVM Versus Viewmodels"
+		"https://steamcommunity.com/profiles/76561198036209556"
+		{ BOOL }
+		{ "1" }
+	}	
+	"credit2_3"
+	{
+		"Gidi30 - 3D Custom model portrait"
+		"https://steamcommunity.com/profiles/76561198363234129"
+		{ BOOL }
+		{ "1" }
+	}	
+	"category3"
+	{
+		"UPDATE: OFFSHORE"
+		{ CATEGORY }
+	}	
+	"credit3_1"
+	{
+		"Haau - The Hell Beneath Stickybomb launcher
+		Altranade - The Holy Merlin"
+		{ BOOL }
+		{ "1" }
+	}
+	"credit3_2"
+	{
+		"TheHypedScoot - Scout Sandkick taunt
+		Dansky - Crate and key models"
+		{ BOOL }
+		{ "1" }
+	}
+}

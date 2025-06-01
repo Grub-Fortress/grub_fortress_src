@@ -81,6 +81,8 @@ CTFWeaponPDA::CTFWeaponPDA()
 
 void CTFWeaponPDA::Spawn()
 {
+	PrecacheModel("models/mvm/weapons/v_models/v_pda_spy_bot.mdl");
+
 	BaseClass::Spawn();
 }
 
@@ -292,6 +294,16 @@ void CTFWeaponPDA_Spy::ProcessDisguiseImpulse( void )
 		return;
 
 	pPlayer->m_Shared.ProcessDisguiseImpulse( pPlayer );
+}
+
+//MVM Versus - Replaces it with a fancier robot arm :)
+const char* CTFWeaponPDA_Spy::GetViewModel(int iViewModel) const
+{
+	const char* pszViewModel = GetTFWpnData().szViewModel;
+	if(TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS)
+		return pszViewModel = "models/mvm/weapons/v_models/v_pda_spy_bot.mdl";
+
+	return pszViewModel;
 }
 
 void CTFWeaponPDA_Spy::CheckDisguiseTimer( void )

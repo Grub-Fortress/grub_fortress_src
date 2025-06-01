@@ -1,0 +1,20 @@
+"chapters"
+{
+	1	"background_2fort"
+	2	"background_gravelpit"
+	3	"background_upward"
+	4	"background_mvm"
+	5	"background_crates"
+	6	"title_invasion"
+	7 	"title_team_tough_break"
+}
+"BackgroundMaps"
+{
+	1	"background_2fort"
+	2	"background_gravelpit"
+	3	"background_upward"
+	4	"background_mvm"
+	5	"background_crates"
+	6	"title_invasion"
+	7	"title_team_tough_break"
+}

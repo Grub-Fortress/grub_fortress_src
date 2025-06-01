@@ -560,7 +560,8 @@ void CTFClassMenu::ApplySchemeSettings( IScheme *pScheme )
 		SetMouseInputEnabled( true );
 	}
 
-	m_pTFPlayerModelPanel = dynamic_cast<CTFPlayerModelPanel*>( FindChildByName("TFPlayerModel") );
+	m_pTFPlayerModelPanel = dynamic_cast<CTFPlayerModelPanel*>(FindChildByName("TFPlayerModel"));
+	m_ResMenuBackground =  dynamic_cast<CModelPanel*>(FindChildByName("MenuBG"));
 	m_pSelectAClassLabel = dynamic_cast<CExLabel*>( FindChildByName( "ClassMenuSelect" ) );
 	m_pEditLoadoutButton = dynamic_cast<CExButton*>( FindChildByName( "EditLoadoutButton" ) );
 
@@ -790,10 +791,12 @@ void CTFClassMenu::SelectClass( int iClass )
 
 		m_pTFPlayerModelPanel->SetToPlayerClass( iClass, bClassWasRandom );
 
+		//MVM Versus - Carrier style
 		if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS )
 		{
 			MDLHandle_t hModel = mdlcache->FindMDL( g_szBotModels[iClass] );
 			m_pTFPlayerModelPanel->SetMDL( hModel );
+			m_ResMenuBackground->SwapModel("models/vgui/UI_class01_mvm.mdl", NULL);
 		}
 
 		m_pEditLoadoutButton->SetVisible( true );

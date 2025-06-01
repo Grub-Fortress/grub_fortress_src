@@ -132,6 +132,8 @@ public:
 	virtual bool Deploy( void );
 #endif
 
+	// View model.
+	virtual const char*     GetViewModel(int iViewModel = 0) const;
 	virtual bool			CanBeSelected( void ) OVERRIDE;
 	virtual bool			VisibleInWeaponSelection( void ) OVERRIDE;
 

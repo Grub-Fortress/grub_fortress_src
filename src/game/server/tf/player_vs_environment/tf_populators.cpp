@@ -307,7 +307,7 @@ CTFNavArea *CSpawnLocation::SelectSpawnArea( void ) const
 	{
 		return NULL;
 	}
-
+/*
 #ifdef TF_RAID_MODE
 	CTFPlayer *farRaider = g_pRaidLogic->GetFarthestAlongRaider();
 
@@ -316,6 +316,7 @@ CTFNavArea *CSpawnLocation::SelectSpawnArea( void ) const
 		return NULL;
 	}
 #endif // TF_RAID_MODE
+*/
 
 	//
 	// Collect all areas surrounding the invading team and

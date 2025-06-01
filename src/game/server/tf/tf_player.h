@@ -640,10 +640,18 @@ public:
 		}
 		return m_Inventory.GetInventoryItemByItemID(m_EquippedLoadoutItemIndices[iLoadoutSlot]);
 	}
-
+	//MVM Versus - Ported bot exclusive stuff
 	void MVM_StartIdleSound(void);
+	void MVM_SetMinibossType(void);
+	void MVM_SetGatebot(void);
 	void MVM_StopIdleSound(void);
 	CSoundPatch* m_pGiantIdleSound;
+
+	void ClearTags(void);
+	void AddTag(const char* tag);
+	void RemoveTag(const char* tag);
+	bool HasTag(const char* tag);
+	CUtlVector< CFmtStr > m_tags;
 
 	CBaseEntity *GetEntityForLoadoutSlot( int iLoadoutSlot, bool bForceCheckWearable = false );			//Gets whatever entity is associated with the loadout slot (wearable or weapon)
 	CTFWearable *GetEquippedWearableForLoadoutSlot( int iLoadoutSlot );
@@ -1147,6 +1155,8 @@ protected:
 	void				RuneRegenThink();
 	void				RegenAmmoInternal( int iAmmo, float flRegen );
 	void				ResetPlayerClass( void );
+	void				MvMDeployBombThink();
+	void				MvMDeployBombEnd();
 
 	virtual void		Internal_HandleMapEvent( inputdata_t &inputdata ) OVERRIDE;
 
@@ -1386,6 +1396,9 @@ private:
 	CountdownTimer		m_placedSapperTimer;
 
 	CountdownTimer		m_inCombatThrottleTimer;
+
+	CountdownTimer		m_deployBombTimer;
+	Vector				m_deployAnchorPos;
 
 	mutable char		m_bIsCalculatingMaximumSpeed;
 

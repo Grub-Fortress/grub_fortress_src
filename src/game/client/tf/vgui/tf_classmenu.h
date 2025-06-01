@@ -110,6 +110,7 @@ protected:
 
 	CTFClassTipsPanel		*m_pClassTipsPanel;
 	CTFPlayerModelPanel		*m_pTFPlayerModelPanel;
+	CModelPanel				*m_ResMenuBackground;
 	CExButton				*m_pEditLoadoutButton;
 	CExLabel				*m_pSelectAClassLabel;
 	CExplanationPopup		*m_pClassHighlightPanel;

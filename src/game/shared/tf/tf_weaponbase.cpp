@@ -525,6 +525,9 @@ void CTFWeaponBase::Precache()
 	}
 
 	PrecacheModel( "models/weapons/c_models/stattrack.mdl" );
+
+	//MVM Versus - Legacy viewmodels
+	PrecacheModel("models/mvm/weapons/c_models/c_engineer_bot_gunslinger.mdl");
 }
 
 // -----------------------------------------------------------------------------
@@ -654,34 +657,48 @@ const char *CTFWeaponBase::GetViewModel( int iViewModel ) const
 	CTFPlayer *pPlayer = ToTFPlayer( GetOwner() );
 
 	int iHandModelIndex = 0;
+	int iGunSlinger = 0;
+	char* HACK_RobotGunsLinger = "models/mvm/weapons/c_models/c_engineer_bot_gunslinger.mdl";
 	if ( pPlayer )
 	{
 		CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pPlayer, iHandModelIndex, override_hand_model_index );		// this is a cleaner way of doing it, but...
-		CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pPlayer, iHandModelIndex, wrench_builds_minisentry );			// ...the gunslinger is the only thing that uses this attribute for now
+		CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pPlayer, iGunSlinger, wrench_builds_minisentry );			// ...the gunslinger is the only thing that uses this attribute for now
 	}
 
 	const CEconItemView *pItem = GetAttributeContainer()->GetItem();
 	if ( pPlayer && pItem->IsValid() && pItem->GetStaticData()->ShouldAttachToHands() )
 	{
 		// Should always be valid, because players without classes shouldn't be carrying items
-		const char *pszHandModel = pPlayer->GetPlayerClass()->GetHandModelName( iHandModelIndex );
+		const char *pszHandModel = pPlayer->GetPlayerClass()->GetHandModelName( iGunSlinger ? iGunSlinger : iHandModelIndex );
 
 		//MVM Versus
 		if(TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS)
 		{
 			int nBotViewmodelIndex = (pPlayer->GetPlayerClass() ? pPlayer->GetPlayerClass()->GetClassIndex() : TF_CLASS_UNDEFINED);
-			if(nBotViewmodelIndex >= TF_CLASS_SCOUT && nBotViewmodelIndex <= TF_CLASS_ENGINEER)
-			{ 
-				Assert( pPlayer->IsMiniBoss() ? g_szBotBossViewmodels[nBotViewmodelIndex] : g_szBotViewmodels[nBotViewmodelIndex]);
-				return pPlayer->IsMiniBoss() ? g_szBotBossViewmodels[nBotViewmodelIndex] : g_szBotViewmodels[nBotViewmodelIndex];
+			if( !iGunSlinger )
+			{
+				if(nBotViewmodelIndex >= TF_CLASS_SCOUT && nBotViewmodelIndex <= TF_CLASS_ENGINEER)
+				{
+					Assert(pPlayer->IsMiniBoss() ? g_szBotBossViewmodels[nBotViewmodelIndex] : g_szBotViewmodels[nBotViewmodelIndex]);
+					return pPlayer->IsMiniBoss() ? g_szBotBossViewmodels[nBotViewmodelIndex] : g_szBotViewmodels[nBotViewmodelIndex];
+				}
 			}
+			else
+			{
+				Assert( HACK_RobotGunsLinger );
+				return HACK_RobotGunsLinger;
+			}
+			
 		}
 		Assert( pszHandModel );
 
 		return pszHandModel;
 	}
 
-	return GetTFWpnData().szViewModel;
+
+
+	const char* pszViewModel = GetTFWpnData().szViewModel;
+	return pszViewModel;
 }
 
 //-----------------------------------------------------------------------------

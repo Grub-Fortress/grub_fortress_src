@@ -1,0 +1,82 @@
+"VertexlitGeneric"
+{
+"$baseTexture" "models/workshop/weapons/c_models/c_baleful_beacon/candle"
+"$basemapalphaphongmask" "1"
+"$selfillum""1"
+"$phong""1"
+"$phongexponent""10"
+"$phongboost""4"	
+"$lightwarptexture""models/player/pyro/pyro_lightwarp"
+"$phongfresnelranges""[.2 1 4]"
+"$selfillumtintmult""0"
+"$selfillumtint""[1 1 1]"
+"$selfillumtintbase""[1.35 .9 .0325]"
+"$glowcolor""1"
+"$rimlight""1"
+"$rimboost""8"
+"$cloakPassEnabled""1"
+"$sheenPassEnabled""1"
+"$sheenmap" "cubemaps/cubemap_sheen001"
+"$sheenmapmask" "Effects/AnimatedSheen/animatedsheen0"
+"$sheenmaptint" "[ 1 1 1 ]"
+"$sheenmapmaskframe" "0"
+"$sheenindex" "0"
+"$yellow""0"
+"Proxies"
+{
+"AnimatedWeaponSheen"
+{
+"animatedtexturevar" "$sheenmapmask"
+"animatedtextureframenumvar" "$sheenmapmaskframe"
+"animatedtextureframerate" "40"
+}
+"UniformNoise"
+{
+"minVal"".95"
+"maxVal""1.05"
+"resultVar""$selfillumtintmult"
+}
+"Clamp"
+{
+"srcVar1""$selfillumtint"
+"min"".9"
+"max""1.1"
+"resultVar""$selfillumtint"
+}
+"Multiply"
+{
+"srcVar1""$selfillumtintmult"
+"srcVar2""$selfillumtint"
+"resultVar""$selfillumtint"
+}
+"Multiply"
+{
+"srcVar1""$selfillumtintbase"
+"srcVar2""$selfillumtint"
+"resultVar""$selfillumtint"
+}
+
+"invis"
+{
+}
+"ModelGlowColor"
+{
+"resultVar""$glowcolor"
+}
+"Equals"
+{
+"srcVar1" "$glowcolor"
+"resultVar""$color2"
+}
+"YellowLevel"
+{
+"resultVar""$yellow"
+}
+"Multiply"
+{
+"srcVar1""$color2"
+"srcVar2""$yellow"
+"resultVar""$color2"
+}
+}
+}

@@ -152,30 +152,30 @@ const char g_szBotViewmodels[][MAX_PATH] =
 {
 	"", //TF_CLASS_UNDEFINED
 
-	"models/weapons/c_models/mvm/c_scout_arms.mdl",
-	"models/weapons/c_models/mvm/c_sniper_arms.mdl",
-	"models/weapons/c_models/mvm/c_soldier_arms.mdl",
-	"models/weapons/c_models/mvm/c_demo_arms.mdl",
-	"models/weapons/c_models/mvm/c_medic_arms.mdl",
-	"models/weapons/c_models/mvm/c_heavy_arms.mdl",
-	"models/weapons/c_models/mvm/c_pyro_arms.mdl",
-	"models/weapons/c_models/mvm/c_spy_arms.mdl",
-	"models/weapons/c_models/mvm/c_engineer_arms.mdl",
+	"models/mvm/weapons/c_models/c_scout_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_sniper_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_soldier_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_demo_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_medic_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_heavy_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_pyro_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_spy_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_engineer_bot_arms.mdl",
 };
 
 const char g_szBotBossViewmodels[][MAX_PATH] =
 {
 	"", //TF_CLASS_UNDEFINED
 
-	"models/weapons/c_models/mvm/c_scout_arms.mdl",
-	"models/weapons/c_models/mvm/c_sniper_arms.mdl",
-	"models/weapons/c_models/mvm/c_soldier_arms.mdl",
-	"models/weapons/c_models/mvm/c_demo_arms.mdl",
-	"models/weapons/c_models/mvm/c_medic_arms.mdl",
-	"models/weapons/c_models/mvm/c_heavy_arms.mdl",
-	"models/weapons/c_models/mvm/c_pyro_arms.mdl",
-	"models/weapons/c_models/mvm/c_spy_arms.mdl",
-	"models/weapons/c_models/mvm/c_engineer_arms.mdl",
+	"models/mvm/weapons/c_models/c_scout_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_sniper_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_soldier_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_demo_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_medic_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_heavy_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_pyro_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_spy_bot_arms.mdl",
+	"models/mvm/weapons/c_models/c_engineer_bot_arms.mdl",
 };
 
 const char g_szBotBossSentryBusterModel[ MAX_PATH ] = "models/bots/demo/bot_sentry_buster.mdl";

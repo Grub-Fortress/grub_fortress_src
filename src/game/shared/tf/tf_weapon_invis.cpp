@@ -45,6 +45,13 @@ PRECACHE_WEAPON_REGISTER( tf_weapon_invis );
 //-----------------------------------------------------------------------------
 void CTFWeaponInvis::Spawn( void )
 {
+	// MVM Versus
+	PrecacheModel("models/mvm/weapons/v_models/v_watch_pocket_spy_bot.mdl");
+	PrecacheModel("models/mvm/weapons/v_models/v_watch_leather_spy_bot.mdl");
+	PrecacheModel("models/mvm/weapons/v_models/v_ttg_watch_spy_bot.mdl");
+	PrecacheModel("models/mvm/workshop_partner/weapons/v_models/v_hm_watch/v_hm_watch_bot.mdl");
+	PrecacheModel("models/mvm/weapons/v_models/v_watch_spy_bot.mdl");
+
 	BaseClass::Spawn();
 
 	SetViewModelIndex( 1 );
@@ -89,9 +96,35 @@ const char *CTFWeaponInvis::GetViewModel( int viewmodelindex  ) const
 			iClass = pTFPlayer->GetPlayerClass()->GetClassIndex();
 			iTeam = pTFPlayer->GetTeamNumber();
 		}
-
+		//MVM Versus
+		if(TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS)
+		{
+			if ( pItem->GetItemDefIndex() == 59) //Dead Ringer
+			{
+				return "models/mvm/weapons/v_models/v_watch_pocket_spy_bot.mdl";
+			}
+			else if(pItem->GetItemDefIndex() == 60) //Cloak and Dagger
+			{
+				return "models/mvm/weapons/v_models/v_watch_leather_spy_bot.mdl";
+			}
+			else if(pItem->GetItemDefIndex() == 297) //Poker Night Watch
+			{
+				return "models/mvm/weapons/v_models/v_ttg_watch_spy_bot.mdl";
+			}
+			else if(pItem->GetItemDefIndex() == 947) //Hitman's Watch
+			{
+				return "models/mvm/workshop_partner/weapons/v_models/v_hm_watch/v_hm_watch_bot.mdl";
+			}
+			else //Default or Strange Watch
+			{
+				return "models/mvm/weapons/v_models/v_watch_spy_bot.mdl";
+			}
+		}
+			
 		return pItem->GetPlayerDisplayModel( iClass, iTeam );
 	}
+
+
 
 	return BaseClass::GetViewModel( viewmodelindex );
 }
