@@ -40,4 +40,10 @@
 			}
 		}
 	}
+	"software"
+	{
+		"Better Fortress 2"
+		{
+		}
+	}
 }	
