@@ -2724,7 +2724,7 @@
 	{
 		"ControlName"	"CExImageButton"
 		"fieldName"		"ModCreditsButton"
-		"xpos"			"c-400"
+		"xpos"			"c-144"
 		"ypos"			"rs1-18"
 		"wide"			"110"
 		"tall"			"25"
@@ -2733,7 +2733,7 @@
 		"visible"		"1"
 		"enabled"		"1"
 		"tabPosition"	"0"
-		"labelText"		"#TF_ModCredits_Title"
+		"labelText"		"#Gameui_Gamemenu_Credits"
 		"font"			"HudFontSmallBold"
 		"textAlignment"	"center"
 		"textinsetx"	"5"

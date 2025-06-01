@@ -209,11 +209,6 @@ $Project "Client (Grub Fortress)"
 		
 		$Folder "Grub Fortress"
 		{
-			$Folder "VGUI"
-			{
-				$File "gf\vgui\gf_advcreditspanel.cpp"
-				$File "gf\vgui\gf_advcreditspanel.h"
-			}
 		}
 
 		$Folder	"TF"

@@ -4,13 +4,13 @@ DESCRIPTION INFO_OPTIONS
 {
 	"category1"
 	{
-		"Better Fortress"
+		"Grub Fortress"
 		{ CATEGORY }
 	}
 	"credit1_1"
 	{
-		"by Alien31, main_thing
-		NOTICE :If we forgot someone to credit in our mod, reach us in the discord please :("
+		"by Grub
+		NOTICE :If I Forgot to credit someone in here, reach out to me"
 		{ BOOL }
 		{ "1" }
 	}	
@@ -28,34 +28,22 @@ DESCRIPTION INFO_OPTIONS
 	}	
 	"credit2_2"
 	{
-		"CTrigger_Hurt - MVM Versus Viewmodels"
-		"https://steamcommunity.com/profiles/76561198036209556"
+		"Better Fortress 2 - The mod Grub Fortress is a fork of"
+		"https://github.com/ALIEN31ITA/Better-Fortress-2"
 		{ BOOL }
 		{ "1" }
 	}	
 	"credit2_3"
 	{
-		"Gidi30 - 3D Custom model portrait"
-		"https://steamcommunity.com/profiles/76561198363234129"
+		"Team Fortress 2 Classic - Rocket Gravity Attribute"
+		"https://www.tf2classic.com"
 		{ BOOL }
 		{ "1" }
 	}	
-	"category3"
+	"credit2_4"
 	{
-		"UPDATE: OFFSHORE"
-		{ CATEGORY }
-	}	
-	"credit3_1"
-	{
-		"Haau - The Hell Beneath Stickybomb launcher
-		Altranade - The Holy Merlin"
-		{ BOOL }
-		{ "1" }
-	}
-	"credit3_2"
-	{
-		"TheHypedScoot - Scout Sandkick taunt
-		Dansky - Crate and key models"
+		"Team Fortress 2 Goldrush - Removed MYM Hud, And V_Model Support"
+		"https://www.tf2goldrush.com/"
 		{ BOOL }
 		{ "1" }
 	}
