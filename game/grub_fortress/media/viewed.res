@@ -10,7 +10,7 @@
 	}
 	"itemtest"
 	{
-		"viewed"		"73"
+		"viewed"		"74"
 	}
 	"pl_goldrush"
 	{
