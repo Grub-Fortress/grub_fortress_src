@@ -185,11 +185,6 @@
 	{
 		scene "scenes/player/heavy/low/taunt07_halloween.vcd"
 	}
-	//BETTER FORTRESS CUSTOM
-	response "HeavyTauntYetiHeavy"
-	{
-		scene "scenes/player/heavy/low/betterfortress/taunt_yetiroar.vcd"
-	}
 
 	rule HeavyTauntPlayerPrimary
 	{
@@ -263,12 +258,6 @@
 	{
 		criteria ConceptPlayerTaunt IsHeavy IsFrankenHeavy
 		response HeavyTauntFrankenHeavy
-	}
-	//BETTER FORTRESS CUSTOM
-	rule HeavyTauntYetiHeavy
-	{
-		criteria ConceptPlayerTaunt IsHeavy IsYetiHeavy
-		response HeavyTauntYetiHeavy
 	}
 			
 	Response PlayerExpressionIdleHeavy
@@ -937,6 +926,11 @@
 	rule ScoutTauntPlayerSecondary
 	{
 		criteria ConceptPlayerTaunt IsScout WeaponIsPistolScout
+		response ScoutTauntSecondary
+	}
+	rule ScoutTauntPlayerSecondary
+	{
+		criteria ConceptPlayerTaunt IsScout WeaponIsNailgun
 		response ScoutTauntSecondary
 	}
 	rule ScoutTauntPlayerMelee

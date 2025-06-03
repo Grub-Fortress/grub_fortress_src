@@ -198,4 +198,11 @@
 			"tall"		"628"
 		}
 	}
+	"BuildModeDialog"
+	{
+		"xpos"		"810"
+		"ypos"		"330"
+		"wide"		"300"
+		"tall"		"420"
+	}
 }

@@ -10,7 +10,7 @@
 	}
 	"itemtest"
 	{
-		"viewed"		"74"
+		"viewed"		"76"
 	}
 	"pl_goldrush"
 	{
@@ -30,6 +30,14 @@
 	}
 	"ctf_grufort"
 	{
-		"viewed"		"5"
+		"viewed"		"6"
+	}
+	"cp_grubowl"
+	{
+		"viewed"		"3"
+	}
+	"raid_goldrush"
+	{
+		"viewed"		"6"
 	}
 }

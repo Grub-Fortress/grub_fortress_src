@@ -85,6 +85,18 @@ not sure if it should be used as a weapon"
 	}
 	"attributes"
 	{
+		// RESTORED ONES 
+		"483"
+		{
+			"name"	"medigun heals buildings"
+			"attribute_class"	"medic_machinery_beam"
+			"description_string"	"#Attrib_Heal_EngiBuildings"
+			"description_format"	"value_is_additive"
+			"hidden"	"1"
+			"effect_type"	"negative"
+			"stored_as_integer"	"0"
+		}
+		// CUSTOM ONES 
 		"4000"
 		{
 			"name"	"override voice sound set"
@@ -115,15 +127,6 @@ not sure if it should be used as a weapon"
 		}
 		"4003"
 		{
-			"name"	"medigun heals buildings"
-			"attribute_class"	"medic_machinery_beam"
-			"description_format"	"value_is_additive"
-			"hidden"	"1"
-			"effect_type"	"negative"
-			"stored_as_integer"	"0"
-		}
-		"4004"
-		{
 			"name"	"mod pda builds minidispenser"
 			"attribute_class"	"pda_builds_minidispenser"
 			"description_string"	"#Attrib_WrenchBuildsMiniDispenser"
@@ -132,7 +135,7 @@ not sure if it should be used as a weapon"
 			"effect_type"	"negative"
 			"stored_as_integer"	"0"
 		}
-		"4005"
+		"4004"
 		{
 			"name"	"custom sticky trail"
 			"attribute_class"	"custom_sticky_trail"
@@ -141,7 +144,17 @@ not sure if it should be used as a weapon"
 			"effect_type"	"positive"
 			"stored_as_integer" "0"
 		}
-		"4006"
+		"4005"
+		{
+			"name"	"override hand model index"
+			"attribute_class"	"override_hand_model_index"
+			"description_format"	"value_is_additive"
+			"hidden"	"1"
+			"effect_type"	"positive"
+			"stored_as_integer"	"0"
+		}
+		// GRUB FORTRESS ATTRIBUTES
+		"5000"
 		{
 			"name"	"rocket gravity"
 			"attribute_class"	"mod_rocket_gravity"
@@ -346,6 +359,21 @@ not sure if it should be used as a weapon"
 			}
 			"attributes"
 			{
+				"damage bonus" 
+				{
+					"attribute_class"	"mult_dmg"
+					"value"				"1.5"
+				}
+				"fire rate penalty"
+				{
+					"attribute_class"	"mod_firerate"
+					"value"				"1.5"
+				}
+				"crit mod disabled"
+				{
+					"attribute_class"	"mod_crit_chance"
+					"value"				"0"
+				}
 			}
 			"visuals"
 			{

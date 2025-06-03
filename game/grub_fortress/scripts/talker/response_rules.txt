@@ -160,7 +160,6 @@ criterion "ConceptPlayerNo" "Concept" "TLK_PLAYER_NO" required
 criterion "ConceptPlayerIncoming" "Concept" "TLK_PLAYER_INCOMING" required
 criterion "ConceptPlayerCloakedSpy" "Concept" "TLK_PLAYER_CLOAKEDSPY" required
 criterion "ConceptPlayerSentryAhead" "Concept" "TLK_PLAYER_SENTRYAHEAD" required
-criterion "ConceptPlayerSniperCallout" "Concept" "TLK_PLAYER_SNIPERAHEAD" required 
 criterion "ConceptPlayerTeleporterHere" "Concept" "TLK_PLAYER_TELEPORTERHERE" required
 criterion "ConceptPlayerDispenserHere" "Concept" "TLK_PLAYER_DISPENSERHERE" required
 criterion "ConceptPlayerSentryHere" "Concept" "TLK_PLAYER_SENTRYHERE" required
@@ -373,6 +372,7 @@ criterion "WeaponIsHeal" "playerweapon" "tf_weapon_medigun" "required"
 criterion "WeaponIsBonesaw" "playerweapon" "tf_weapon_bonesaw" "required"
 criterion "WeaponIsShotgunPrimary" "playerweapon" "tf_weapon_shotgun_primary" "required"
 criterion "WeaponIsPistol" "playerweapon" "tf_weapon_pistol" "required"
+criterion "WeaponIsNailgun" "playerweapon" "tf_weapon_nailgun" "required"
 criterion "WeaponIsBuild" "playerweapon" "tf_weapon_builder" "required"
 criterion "WeaponIsWrench" "playerweapon" "tf_weapon_wrench" "required"
 criterion "WeaponIsScattergun" "playerweapon" "tf_weapon_scattergun" "required"
@@ -561,7 +561,6 @@ criterion "IsRobotCostume" "IsRobotCostume" "1" "required" weight 100
 criterion "IsFairyHeavy" "IsFairyHeavy" "1" "required" weight 100
 criterion "IsDemowolf" "IsDemowolf" "1" "required" weight 100
 criterion "IsFrankenHeavy" "IsFrankenHeavy" "1" "required" weight 100
-criteria  "IsYetiHeavy"	"IsYetiHeavy" "1" "required" weight 100
 
 criterion "IsMedicDoubleFace" "IsMedicDoubleFace" "1" "required" weight 100
 criterion "IsMedicBirdHead" "IsMedicBirdHead" "1" "required" weight 100
