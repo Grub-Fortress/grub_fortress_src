@@ -1,0 +1,32 @@
+//-----------------------------------------------------------------------------
+//	DISCORD_RPC.VPC
+//
+//	Project Base Script
+//-----------------------------------------------------------------------------
+$Macro THIRDPARTY_DIR "$SRCDIR\thirdparty"
+
+$Configuration
+{
+	$Compiler
+	{
+        $PreprocessorDefinitions		"$BASE;USE_DISCORD_RPC"
+		$AdditionalIncludeDirectories	"$BASE;$THIRDPARTY_DIR\discord-rpc\include"
+	}
+}
+
+$Project
+{
+    $Folder "Link Libraries"
+	{
+		$ImpLib	"$THIRDPARTY_DIR\discord-rpc\lib\discord-rpc"
+	}
+	
+	$Folder "Source Files"
+	{
+		$Folder "Discord RPC"
+		{
+			$File "tf\tf_discord_rpc.cpp"
+			$File "tf\tf_discord_rpc.h"
+		}
+	}
+}

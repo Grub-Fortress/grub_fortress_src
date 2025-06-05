@@ -29,6 +29,7 @@ IMPLEMENT_SERVERCLASS_ST( CTFObjectiveResource, DT_TFObjectiveResource )
 	SendPropStringT ( SENDINFO( m_iszMvMPopfileName ) ),
 	SendPropInt( SENDINFO(m_iChallengeIndex), 16 ),
 	SendPropInt( SENDINFO(m_nMvMEventPopfileType), 4, SPROP_UNSIGNED ),
+	SendPropBool( SENDINFO( m_bEndlessOn ) ),
 
 	SendPropArray3( SENDINFO_ARRAY3( m_nMannVsMachineWaveClassCounts ), SendPropInt( SENDINFO_ARRAY( m_nMannVsMachineWaveClassCounts ), 16 ) ),
 	SendPropArray( SendPropString( SENDINFO_ARRAY( m_iszMannVsMachineWaveClassNames ), 0, SendProxy_StringT_To_String ), m_iszMannVsMachineWaveClassNames ),
@@ -83,6 +84,7 @@ CTFObjectiveResource::CTFObjectiveResource()
 	m_iChallengeIndex = -1;
 	SetMvMPopfileName( MAKE_STRING( "" ) );
 	m_nMvMEventPopfileType.Set( MVM_EVENT_POPFILE_NONE );
+	m_bEndlessOn = false;
 
 	int i = 0;
 	for ( i = 0 ; i < m_nMannVsMachineWaveClassCounts.Count() ; ++i )

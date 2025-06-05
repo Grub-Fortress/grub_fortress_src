@@ -1362,7 +1362,7 @@ int CTFGameMovement::CheckStuck( void )
 		TracePlayerBBox( originalPos, originalPos, PlayerSolidMask(), COLLISION_GROUP_PLAYER_MOVEMENT, traceresult );
 
 #ifdef GAME_DLL
-		if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && m_pTFPlayer && m_pTFPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+		if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && m_pTFPlayer && m_pTFPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS && m_pTFPlayer->IsBot() )
 		{
 			if ( traceresult.startsolid )
 			{

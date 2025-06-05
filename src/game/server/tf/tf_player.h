@@ -580,6 +580,7 @@ public:
 	void BleedPlayerEx( float flBleedingTime, int nBleedDmg, bool bPermenantBleeding, int nDmgType );
 	void RollRareSpell();
 	void GiveItem(int inputdata);
+	void GiveItemString( const char* pszItemName );
 	void ClearSpells();
 
 	void InputIgnitePlayer( inputdata_t &inputdata );
@@ -620,6 +621,7 @@ public:
 	bool IsYetiHeavy(void) const;
 	bool IsFairyHeavy( void ) const;
 	bool IsZombieCostumeEquipped( void ) const;
+	bool IsMVMRobot ( void ) const;
 	bool HasWearablesEquipped( const CSchemaItemDefHandle *ppItemDefs, int nWearables ) const;
 
 	//BetaM - Fixes custom taunts/action items to be "valid" for loadouts
@@ -643,7 +645,6 @@ public:
 	//MVM Versus - Ported bot exclusive stuff
 	void MVM_StartIdleSound(void);
 	void MVM_SetMinibossType(void);
-	void MVM_SetGatebot(void);
 	void MVM_StopIdleSound(void);
 	CSoundPatch* m_pGiantIdleSound;
 
@@ -1155,6 +1156,7 @@ protected:
 	void				RuneRegenThink();
 	void				RegenAmmoInternal( int iAmmo, float flRegen );
 	void				ResetPlayerClass( void );
+	bool				MvMDeployUpgradeOverTime();
 	void				MvMDeployBombThink();
 	void				MvMDeployBombEnd();
 
@@ -1375,7 +1377,11 @@ public:
 	// Marking for death.
 	CHandle<CTFPlayer>	m_pMarkedForDeathTarget;
 
-	CountdownTimer m_playerMovementStuckTimer;			// for destroying stuck bots in MvM
+	CountdownTimer		m_playerMovementStuckTimer;			// for destroying stuck bots in MvM
+
+	CountdownTimer		m_upgradeTimer;
+
+	int					m_upgradeLevel;
 
 	QAngle				m_qPreviousChargeEyeAngle;		// Previous EyeAngles to compute deltas for legal mouse movement
 private:
@@ -1397,6 +1403,7 @@ private:
 
 	CountdownTimer		m_inCombatThrottleTimer;
 
+	CountdownTimer		m_buffPulseTimer;
 	CountdownTimer		m_deployBombTimer;
 	Vector				m_deployAnchorPos;
 

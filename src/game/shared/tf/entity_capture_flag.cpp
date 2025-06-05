@@ -44,6 +44,7 @@ extern ConVar tf_rd_flag_ui_mode;
 extern ConVar tf_flag_caps_per_round;
 extern ConVar tf_mvm_endless_bomb_reset;
 extern ConVar tf_rd_min_points_to_steal;
+extern ConVar tf_mvm_bot_flag_carrier_interval_to_1st_upgrade;
 
 ConVar cl_flag_return_height( "cl_flag_return_height", "82", FCVAR_CHEAT );
 ConVar tf_rd_return_min_time( "tf_rd_return_min_time", "30" );
@@ -1180,14 +1181,44 @@ void CCaptureFlag::PickUp( CTFPlayer *pPlayer, bool bInvisible )
 		}
 	}
 
-	if ( TFGameRules()->IsMannVsMachineMode() && pPlayer->IsBot() )
+	if ( TFGameRules()->IsMannVsMachineMode() )
 	{
-		CTFBot *pBot = assert_cast< CTFBot* >( pPlayer );
+		if( pPlayer->IsBot() )
+		{
+			CTFBot *pBot = assert_cast< CTFBot* >( pPlayer );
 
-		if ( pBot->HasAttribute( CTFBot::IGNORE_FLAG ) )
-			return;
+			if ( pBot->HasAttribute( CTFBot::IGNORE_FLAG ) )
+				return;
 
-		pBot->SetFlagTarget( this );
+			pBot->SetFlagTarget( this );
+		}
+		else
+		{
+			if(  pPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+			{
+				if ( pPlayer->IsMiniBoss() )
+				{
+					pPlayer->m_upgradeLevel = -1; // DONT_UPGRADE
+					if ( TFObjectiveResource() )
+					{
+						// Set threat level to max
+						TFObjectiveResource()->SetFlagCarrierUpgradeLevel( 4 );
+						TFObjectiveResource()->SetBaseMvMBombUpgradeTime( -1 );
+						TFObjectiveResource()->SetNextMvMBombUpgradeTime( -1 );
+					}
+				}
+				else
+				{
+					pPlayer->m_upgradeLevel = 0;
+					pPlayer->m_upgradeTimer.Start( tf_mvm_bot_flag_carrier_interval_to_1st_upgrade.GetFloat() );
+					if ( TFObjectiveResource() )
+					{
+						TFObjectiveResource()->SetBaseMvMBombUpgradeTime( gpGlobals->curtime );
+						TFObjectiveResource()->SetNextMvMBombUpgradeTime( gpGlobals->curtime + pPlayer->m_upgradeTimer.GetRemainingTime() );
+					}
+				}
+			}
+		}
 	}
 
 	if ( m_nType == TF_FLAGTYPE_ROBOT_DESTRUCTION )

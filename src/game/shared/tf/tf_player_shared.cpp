@@ -33,6 +33,7 @@
 #include "tf_weapon_passtime_gun.h"
 #include "tf_weapon_rocketpack.h"
 #include <functional>
+#include "tf_weapon_pda.h"
 
 // Client specific.
 #ifdef CLIENT_DLL
@@ -5148,7 +5149,7 @@ void CTFPlayerShared::OnRemoveFireImmune( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose: MVM Versus Compatible now
 //-----------------------------------------------------------------------------
 void CTFPlayerShared::OnAddMVMBotRadiowave( void )
 {
@@ -5169,7 +5170,7 @@ void CTFPlayerShared::OnAddMVMBotRadiowave( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose: MVM Versus Compatible now
 //-----------------------------------------------------------------------------
 void CTFPlayerShared::OnRemoveMVMBotRadiowave( void )
 {
@@ -11439,6 +11440,13 @@ int CTFPlayerShared::CalculateObjectCost( CTFPlayer* pBuilder, int iObjectType )
 	{
 		nCost -= 30;
 	}
+
+	// Mini Dispensers are 30 metal cheaper - Vvis :3 
+	CTFWeaponPDA* pPDA = dynamic_cast<CTFWeaponPDA*>( pBuilder->Weapon_OwnsThisID ( TF_WEAPON_PDA_ENGINEER_BUILD ) );
+	if(pPDA && pPDA->IsMiniPDA() && (iObjectType == OBJ_DISPENSER))
+	{
+		nCost -= 25;
+	}
 	
 
 	if ( iObjectType == OBJ_TELEPORTER )
@@ -11951,7 +11959,7 @@ const char *CTFPlayer::GetOverrideStepSound( const char *pszBaseStepSoundName )
 
 	Assert( pszBaseStepSoundName );
 
-	struct override_sound_entry_t { int iOverrideIndex; char *pszBaseSoundName; char *pszNewSoundName; };
+	struct override_sound_entry_t { int iOverrideIndex; const char *pszBaseSoundName; const char *pszNewSoundName; };
 
 	enum
 	{
@@ -11974,7 +11982,7 @@ const char *CTFPlayer::GetOverrideStepSound( const char *pszBaseStepSoundName )
 
 	if ( iOverrideFootstepSoundSet != kFootstepSoundSet_Default )
 	{
-		override_sound_entry_t s_ReplacementSounds[] =
+		static const override_sound_entry_t s_ReplacementSounds[] =
 		{
 			{ kFootstepSoundSet_SoccerCleats,	"Default.StepLeft",		"cleats_conc.StepLeft" },
 			{ kFootstepSoundSet_SoccerCleats,	"Default.StepRight",	"cleats_conc.StepRight" },

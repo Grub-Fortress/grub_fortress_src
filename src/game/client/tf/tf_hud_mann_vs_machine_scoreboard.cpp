@@ -650,6 +650,7 @@ void CTFHudMannVsMachineScoreboard::UpdatePopFile( void )
 			char szTempName[MAX_PATH];
 			V_FileBase( m_popfile, szTempName, sizeof( szTempName ) );
 			int iChallengeIndex = GetItemSchema()->FindMvmMissionByName( szTempName );
+			int iEndlessMode = TFObjectiveResource()->IsInEndlessWaves();
 
 			if ( GetItemSchema()->GetMvmMissions().IsValidIndex( iChallengeIndex ) )
 			{
@@ -661,7 +662,8 @@ void CTFHudMannVsMachineScoreboard::UpdatePopFile( void )
 				SetDialogVariable( "popfile", wszChallengeName );
 				
 				m_pDifficultyContainer->SetVisible( true );
-				m_pDifficultyContainer->SetDialogVariable( "difficultyvalue", g_pVGuiLocalize->Find( GetMvMChallengeDifficultyLocName( mission.m_eDifficulty ) ) );
+				m_pDifficultyContainer->SetDialogVariable( "difficultyvalue", g_pVGuiLocalize-> Find( iEndlessMode ? "#TF_MvM_EndlessWave" : GetMvMChallengeDifficultyLocName( mission.m_eDifficulty ) )  );
+		
 			}
 			else 
 			{

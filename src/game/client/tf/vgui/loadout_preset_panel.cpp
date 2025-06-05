@@ -236,7 +236,14 @@ void CLoadoutPresetPanel::UpdatePresetButtonStates()
 {
 	equipped_preset_t unEquippedPresetID = GetSelectedPresetID();
 
+	// @PracticeMedicine:
+	// mightve fixed the crash by using the direct accessor to SteamUser().
+	// this happens when quitting the game causing a ungraceful shutdown
+#if 1
+	CSteamID localSteamID = SteamUser()->GetSteamID();
+#else
 	CSteamID localSteamID = steamapicontext->SteamUser()->GetSteamID();
+#endif
 	CTFPlayerInventory *pInv = TFInventoryManager()->GetInventoryForPlayer(localSteamID);
 	if (pInv) {
 		unEquippedPresetID = pInv->GetActiveLocalPreset(m_iClass);

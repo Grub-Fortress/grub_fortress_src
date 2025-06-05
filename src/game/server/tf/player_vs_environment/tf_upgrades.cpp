@@ -23,6 +23,7 @@
 
 extern ConVar tf_mvm_skill;
 extern ConVar *sv_cheats;
+extern ConVar tf_mvm_versus_robot_stations;
 
 CHandle<CUpgrades>	g_hUpgradeEntity;
 
@@ -121,6 +122,9 @@ void CUpgrades::UpgradeTouch( CBaseEntity *pOther )
 			if ( pOther->IsPlayer() )
 			{
 				CTFPlayer *pTFPlayer = ToTFPlayer( pOther );
+				// MVM Versus - Robots dont use stations, unless decided
+				if ( pTFPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS && TFGameRules()->IsMannVsMachineMode() && tf_mvm_versus_robot_stations.GetBool() )
+					return
 				pTFPlayer->m_Shared.SetInUpgradeZone( true );
 			}
 		}
@@ -137,6 +141,9 @@ void CUpgrades::EndTouch( CBaseEntity *pOther )
 		if ( pOther->IsPlayer() )
 		{
 			CTFPlayer *pTFPlayer = ToTFPlayer( pOther );
+			// MVM Versus - Robots dont use stations, unless decided
+			if ( pTFPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS && TFGameRules()->IsMannVsMachineMode() && tf_mvm_versus_robot_stations.GetBool() )
+				return
 			pTFPlayer->m_Shared.SetInUpgradeZone( false );
 		}
 	}

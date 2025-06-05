@@ -38,6 +38,7 @@ public:
 
 	float			GetMannVsMachineNextWaveTime( void ) { return m_flMannVsMachineNextWaveTime; }
 	bool			GetMannVsMachineIsBetweenWaves( void ) { return m_bMannVsMachineBetweenWaves; }
+	bool			IsInEndlessWaves( void ) { return m_bEndlessOn; }
 
 	int				GetMannVsMachineWaveClassCount( int nIndex );
 	const char		*GetMannVsMachineWaveClassName( int nIndex );
@@ -77,6 +78,7 @@ private:
 	unsigned int m_nMannVsMachineWaveClassFlags2[ MVM_CLASS_TYPES_PER_WAVE_MAX ];
 	bool		m_bMannVsMachineWaveClassActive[ MVM_CLASS_TYPES_PER_WAVE_MAX ];
 	bool		m_bMannVsMachineWaveClassActive2[ MVM_CLASS_TYPES_PER_WAVE_MAX ];
+	bool		m_bEndlessOn;
 };
 
 inline C_TFObjectiveResource *TFObjectiveResource()

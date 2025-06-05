@@ -51,7 +51,7 @@ enum stepsoundtimes_t
 	STEPSOUNDTIME_WATER_FOOT,
 };
 
-void CopySoundNameWithModifierToken( char *pchDest, const char *pchSource, int nMaxLenInChars, const char *pchToken );
+void CopySoundNameWithModifierToken( char *pchDest, const char *pchSource, int nMaxLenInChars, const char *pchToken, bool bUseEngineerFix = false );
 
 // Shared header file for players
 #if defined( CLIENT_DLL )

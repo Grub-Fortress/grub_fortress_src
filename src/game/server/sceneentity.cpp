@@ -38,6 +38,9 @@
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
 #endif // HL2_EPISODIC
+#ifdef TF_DLL
+#include "tf_player.h"
+#endif // TF_DLL
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1703,14 +1706,20 @@ bool CSceneEntity::GetSoundNameForPlayer( CChoreoEvent *event, CBasePlayer *play
 	}
 
 	const char* pchToken = "";
+	bool bIsEngineer = false;
 
 	if ( pActor && pActor->IsPlayer() )
 	{
 		pchToken = dynamic_cast< CBasePlayer* >( pActor )->GetSceneSoundToken();
+#ifdef TF_DLL
+		CTFPlayer *pPlayer = ToTFPlayer( pActor );
+		bIsEngineer = pPlayer->GetPlayerClass()->GetClassIndex() == TF_CLASS_ENGINEER && !V_strnicmp( event->GetParameters(), "engineer_", 9 );
+#endif
 	}
 
 	// Copy the sound name
-	CopySoundNameWithModifierToken( buf, event->GetParameters(), buflen, pchToken );
+	// MVM Versus: Fix Engineer bot "special" lines
+	CopySoundNameWithModifierToken( buf, event->GetParameters(), buflen, pchToken, bIsEngineer );
 
 	// If there was a modifier token, don't change the sound based on CC
 	if ( pchToken[0] != 0 )

@@ -1398,6 +1398,23 @@ static const char *g_sClassImagesRed[] = {
 	"class_sel_sm_scout_red",
 };
 
+static const char *g_sClassImagesBot_Blue[] = {
+	"",
+	"class_sel_sm_bot_scout_blu",
+	"class_sel_sm_bot_soldier_blu",
+	"class_sel_sm_bot_pyro_blu",
+
+	"class_sel_sm_bot_demo_blu",
+	"class_sel_sm_bot_heavy_blu",
+	"class_sel_sm_bot_engineer_blu",
+
+	"class_sel_sm_bot_medic_blu",
+	"class_sel_sm_bot_sniper_blu",
+	"class_sel_sm_bot_spy_blu",
+
+	"class_sel_sm_bot_scout_blu",
+};
+
 int g_ClassDefinesRemap[] = {
 	0,
 	TF_CLASS_SCOUT,	
@@ -1498,6 +1515,8 @@ void CTFClassMenu::UpdateNumClassLabels( int iTeam )
 		{
 			SetDialogVariable( g_sDialogVariables[i], "" );
 		}
+		
+		bool MvMClasses = TFGameRules()->IsMannVsMachineMode();
 
 		if ( g_ClassDefinesRemap[i] == iLocalPlayerClass )
 		{
@@ -1517,7 +1536,10 @@ void CTFClassMenu::UpdateNumClassLabels( int iTeam )
 				if ( m_iLocalPlayerClass != iLocalPlayerClass )
 				{
 					m_iLocalPlayerClass = iLocalPlayerClass;
-					m_pLocalPlayerImage->SetImage( iTeam == TF_TEAM_BLUE ? g_sClassImagesBlue[i] : g_sClassImagesRed[i] );
+					if ( MvMClasses )
+						m_pLocalPlayerImage->SetImage( iTeam == TF_TEAM_BLUE ? g_sClassImagesBot_Blue[i] : g_sClassImagesRed[i] );
+					else
+						m_pLocalPlayerImage->SetImage( iTeam == TF_TEAM_BLUE ? g_sClassImagesBlue[i] : g_sClassImagesRed[i] );
 				}
 			}
 
@@ -1535,7 +1557,10 @@ void CTFClassMenu::UpdateNumClassLabels( int iTeam )
 				if ( pImage )
 				{
 					pImage->SetVisible( true );
-					pImage->SetImage( iTeam == TF_TEAM_BLUE ? g_sClassImagesBlue[i] : g_sClassImagesRed[i] );
+					if ( MvMClasses )
+						pImage->SetImage( iTeam == TF_TEAM_BLUE ? g_sClassImagesBot_Blue[i] : g_sClassImagesRed[i] );
+					else
+						pImage->SetImage( iTeam == TF_TEAM_BLUE ? g_sClassImagesBlue[i] : g_sClassImagesRed[i] );
 				}
 
 				nTotalCount++;

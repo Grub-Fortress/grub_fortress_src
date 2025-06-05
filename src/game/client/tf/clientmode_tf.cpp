@@ -729,8 +729,13 @@ void ClientModeTFNormal::FireGameEvent( IGameEvent *event )
 	}
 	else if ( FStrEq( "player_buyback", eventname ) )
 	{
+		C_TFPlayer *pLocalPlayer = C_TFPlayer::GetLocalTFPlayer();
 		int idxPlayer = event->GetInt( "player" );
 		KeyValuesAD pKeyValues( "data" );
+
+		if ( TFGameRules()->IsMannVsMachineMode() && pLocalPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+			return;
+
 		if ( g_TF_PR )
 		{
 			const char *pszString = tf_mvm_buybacks_method.GetBool() ? "#TF_PVE_Player_BuyBack_Fixed" : "#TF_PVE_Player_BuyBack";
@@ -739,7 +744,6 @@ void ClientModeTFNormal::FireGameEvent( IGameEvent *event )
 			pKeyValues->SetInt( "credits", event->GetInt( "cost", 0 ) );
 			PrintTextToChatPlayer( idxPlayer, pszString, pKeyValues );
 
-			C_TFPlayer *pLocalPlayer = C_TFPlayer::GetLocalTFPlayer();
 			if ( pLocalPlayer )
 			{
 				pLocalPlayer->EmitSound( "MVM.PlayerBoughtIn" );

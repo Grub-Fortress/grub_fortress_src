@@ -108,20 +108,22 @@ bool UseHWMorphModels()
 	return false;
 }
 
-void CopySoundNameWithModifierToken( char *pchDest, const char *pchSource, int nMaxLenInChars, const char *pchToken )
+void CopySoundNameWithModifierToken( char *pchDest, const char *pchSource, int nMaxLenInChars, const char *pchToken, bool bUseEngineerFix )
 {
 	// Copy the sound name
 	int nSource = 0;
 	int nDest = 0;
 	bool bFoundPeriod = false;
 
+	// MVM Versus - Patch for robo engineer having Engineer_ instead of the dot
 	while ( pchSource[ nSource ] != '\0' && nDest < nMaxLenInChars - 2 )
 	{
 		pchDest[ nDest ] = pchSource[ nSource ];
 		nDest++;
 		nSource++;
 
-		if ( !bFoundPeriod && pchSource[ nSource - 1 ] == '.' )
+		char ch = bUseEngineerFix ? '_' : '.';
+		if ( !bFoundPeriod && pchSource[ nSource - 1 ] == ch)
 		{
 			// Insert special token after the period
 			bFoundPeriod = true;

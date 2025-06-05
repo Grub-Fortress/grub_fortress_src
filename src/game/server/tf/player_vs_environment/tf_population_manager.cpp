@@ -768,13 +768,15 @@ void CPopulationManager::UpdateObjectiveResource( void )
 
 	TFObjectiveResource()->SetMannVsMachineEventPopfileType( m_nMvMEventPopfileType );
 	
-	if ( IsInEndlessWaves() )
+	if ( IsInEndlessWaves() ) // Couldn't we just use ternary for this instead? - main_thing
 	{
 		TFObjectiveResource()->SetMannVsMachineMaxWaveCount( 0 );
+		TFObjectiveResource()->SetEndlessEnabled( false ); 
 	}
 	else
 	{
 		TFObjectiveResource()->SetMannVsMachineMaxWaveCount( m_waveVector.Count() );
+		TFObjectiveResource()->SetEndlessEnabled( true ); 
 	}
 
 	TFObjectiveResource()->SetMannVsMachineWaveCount( m_iCurrentWaveIndex + 1 );

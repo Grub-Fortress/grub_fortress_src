@@ -243,6 +243,10 @@ ConVar tf_powerup_max_charge_time( "tf_powerup_max_charge_time", "30", FCVAR_CHE
 extern ConVar tf_powerup_mode;
 extern ConVar tf_mvm_buybacks_method;
 extern ConVar tf_mvm_buybacks_per_wave;
+extern ConVar tf_mvm_bot_flag_carrier_interval_to_1st_upgrade;
+extern ConVar tf_mvm_bot_flag_carrier_interval_to_2nd_upgrade;
+extern ConVar tf_mvm_bot_flag_carrier_interval_to_3rd_upgrade;
+extern ConVar tf_mvm_bot_flag_carrier_health_regen;
 
 #define TF_CANNONBALL_FORCE_SCALE	80.f
 #define TF_CANNONBALL_FORCE_UPWARD	300.f
@@ -1870,6 +1874,20 @@ void CTFPlayer::TFPlayerThink()
 */
 
 	SetContextThink( &CTFPlayer::TFPlayerThink, gpGlobals->curtime, "TFPlayerThink" );
+	//MVM Versus - Spawn Protection 
+	// TODO: why does this function get called effectively twice? (one here and in MvMDeployBombThink) - main_thing
+	if( TFGameRules()->IsMannVsMachineMode() && tf_mvm_forceversus.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsBot() )
+	{
+		bool bInRespawnRoom = PointInRespawnRoom(this, WorldSpaceCenter(), true);
+		if( bInRespawnRoom )
+		{
+			m_Shared.AddCond( TF_COND_INVULNERABLE, 0.5f );
+			m_Shared.AddCond( TF_COND_INVULNERABLE_HIDE_UNLESS_DAMAGED, 0.5f );
+			m_Shared.AddCond( TF_COND_INVULNERABLE_WEARINGOFF, 0.5f );
+			m_Shared.AddCond( TF_COND_IMMUNE_TO_PUSHBACK, 1.0f );
+			AddCustomAttribute( "no_attack", 1, 1.0f );
+		}
+	}
 	if( TFGameRules()->IsMannVsMachineMode() && tf_mvm_forceversus.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsBot() && !TFGameRules()->InSetup() )
 	{
 		SetContextThink( &CTFPlayer::MvMDeployBombThink, gpGlobals->curtime, "MvMDeployBombThink" );
@@ -1877,8 +1895,158 @@ void CTFPlayer::TFPlayerThink()
 	m_flLastThinkTime = gpGlobals->curtime;
 }
 
+bool CTFPlayer::MvMDeployUpgradeOverTime()
+{
+	CCaptureFlag *pCaptureFlag = dynamic_cast<CCaptureFlag *>( GetItem() );
+	if ( TFGameRules()->IsMannVsMachineMode() )
+	{ 
+		if ( pCaptureFlag )
+		{ 
+			if ( IsMiniBoss() )
+			{
+				m_upgradeLevel = -1;
+				if ( TFObjectiveResource() )
+				{
+					// Set threat level to max
+					TFObjectiveResource()->SetFlagCarrierUpgradeLevel( 4 );
+					TFObjectiveResource()->SetBaseMvMBombUpgradeTime( -1 );
+					TFObjectiveResource()->SetNextMvMBombUpgradeTime( -1 );
+				}
+			}
+			else if ( m_upgradeLevel != -1 )
+			{ 
+				if ( PointInRespawnRoom( this, WorldSpaceCenter(), true ) )
+				{
+					// don't start counting down until we leave the spawn
+					m_upgradeTimer.Start( tf_mvm_bot_flag_carrier_interval_to_1st_upgrade.GetFloat() );
+					TFObjectiveResource()->SetBaseMvMBombUpgradeTime( gpGlobals->curtime );
+					TFObjectiveResource()->SetNextMvMBombUpgradeTime( gpGlobals->curtime + m_upgradeTimer.GetRemainingTime() );
+				}
+				// do defensive buff effect ourselves (since we're not a soldier)
+				if ( m_upgradeLevel > 0 && m_buffPulseTimer.IsElapsed() )
+				{
+					m_buffPulseTimer.Start( 1.0f );
+
+					CUtlVector< CTFPlayer * > playerVector;
+					CollectPlayers( &playerVector, GetTeamNumber(), COLLECT_ONLY_LIVING_PLAYERS );
+
+					const float buffRadius = 450.0f;
+
+					for( int i=0; i<playerVector.Count(); ++i )
+					{
+						Vector to = playerVector[i]->GetAbsOrigin() - GetAbsOrigin();
+						if( to.IsLengthLessThan( buffRadius ) )
+						{
+							playerVector[i]->m_Shared.AddCond( TF_COND_DEFENSEBUFF_NO_CRIT_BLOCK, 1.2f );
+						}
+					}
+				}
+
+				// the flag carrier gets stronger the longer he holds the flag
+				if ( m_upgradeTimer.IsElapsed() )
+				{
+					const int maxLevel = 3;
+
+					if ( m_upgradeLevel < maxLevel )
+					{
+						++m_upgradeLevel;
+
+						TFGameRules()->BroadcastSound( 255, "MVM.Warning" );
+
+						switch( m_upgradeLevel )
+						{
+							//---------------------------------------
+						case 1:
+							m_upgradeTimer.Start( tf_mvm_bot_flag_carrier_interval_to_2nd_upgrade.GetFloat() );
+
+							// permanent buff banner effect (handled above)
+
+							// update the objective resource so clients have the information
+							if ( TFObjectiveResource() )
+							{
+								TFObjectiveResource()->SetFlagCarrierUpgradeLevel( 1 );
+								TFObjectiveResource()->SetBaseMvMBombUpgradeTime( gpGlobals->curtime );
+								TFObjectiveResource()->SetNextMvMBombUpgradeTime( gpGlobals->curtime + m_upgradeTimer.GetRemainingTime() );
+								TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed( MP_CONCEPT_MVM_BOMB_CARRIER_UPGRADE1, TF_TEAM_PVE_DEFENDERS );
+								DispatchParticleEffect( "mvm_levelup1", PATTACH_POINT_FOLLOW, this, "head" );
+							}
+							return true;
+
+							//---------------------------------------
+						case 2:
+							{
+							static CSchemaAttributeDefHandle pAttrDef_HealthRegen( "health regen" );
+
+							m_upgradeTimer.Start( tf_mvm_bot_flag_carrier_interval_to_3rd_upgrade.GetFloat() );
+
+							if ( !pAttrDef_HealthRegen )
+							{
+								Warning( "TFBotSpawner: Invalid attribute 'health regen'\n" );
+							}
+							else
+							{
+								CAttributeList *pAttrList = GetAttributeList();
+								if ( pAttrList )
+								{
+									pAttrList->SetRuntimeAttributeValue( pAttrDef_HealthRegen, tf_mvm_bot_flag_carrier_health_regen.GetFloat() );
+								}
+							}
+
+							// update the objective resource so clients have the information
+							if ( TFObjectiveResource() )
+							{
+								TFObjectiveResource()->SetFlagCarrierUpgradeLevel( 2 );
+								TFObjectiveResource()->SetBaseMvMBombUpgradeTime( gpGlobals->curtime );
+								TFObjectiveResource()->SetNextMvMBombUpgradeTime( gpGlobals->curtime + m_upgradeTimer.GetRemainingTime() );
+								TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed( MP_CONCEPT_MVM_BOMB_CARRIER_UPGRADE2, TF_TEAM_PVE_DEFENDERS );
+								DispatchParticleEffect( "mvm_levelup2", PATTACH_POINT_FOLLOW, this, "head" );
+							}
+							return true;
+						}
+
+							//---------------------------------------
+						case 3:
+							// add critz
+							m_Shared.AddCond( TF_COND_CRITBOOSTED );
+
+							// update the objective resource so clients have the information
+							if ( TFObjectiveResource() )
+							{
+								TFObjectiveResource()->SetFlagCarrierUpgradeLevel( 3 );
+								TFObjectiveResource()->SetBaseMvMBombUpgradeTime( -1 );
+								TFObjectiveResource()->SetNextMvMBombUpgradeTime( -1 );
+								TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed( MP_CONCEPT_MVM_BOMB_CARRIER_UPGRADE3, TF_TEAM_PVE_DEFENDERS );
+								DispatchParticleEffect( "mvm_levelup3", PATTACH_POINT_FOLLOW, this, "head" );
+							}
+							return true;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+// MVM Versus - Robot Deploy code
 void CTFPlayer::MvMDeployBombThink()
 {
+
+	bool bInRespawnRoom = PointInRespawnRoom( this, WorldSpaceCenter(), true );
+	if( bInRespawnRoom )
+	{
+		m_Shared.AddCond( TF_COND_INVULNERABLE, 0.5f );
+		m_Shared.AddCond( TF_COND_INVULNERABLE_HIDE_UNLESS_DAMAGED, 0.5f );
+		m_Shared.AddCond( TF_COND_INVULNERABLE_WEARINGOFF, 0.5f );
+		m_Shared.AddCond( TF_COND_IMMUNE_TO_PUSHBACK, 1.0f );
+		AddCustomAttribute( "no_attack", 1, 1.0f );
+	}
+
+	if ( MvMDeployUpgradeOverTime() )
+	{
+		Taunt( TAUNT_BASE_WEAPON );
+	}
 
 	if( GetDeployingBombState() != TF_BOMB_DEPLOYING_NONE )
 	{
@@ -3936,37 +4104,51 @@ void CTFPlayer::Spawn()
 
 		//MVM Versus
 		int nRobotClassIndex = (GetPlayerClass() ? GetPlayerClass()->GetClassIndex() : TF_CLASS_UNDEFINED);
-		if( TFGameRules()->IsMannVsMachineMode() && !IsFakeClient() )
+		if(TFGameRules()->IsMannVsMachineMode() && !IsFakeClient())
 		{
+			//We Reset your tags if you were for example a Gatebot
+			ClearTags();
 			if(GetTeamNumber() == TF_TEAM_PVE_INVADERS)
 			{
-				//We Reset your tags if you were for example a Gatebot
-				ClearTags();
+
 				//Spawn the player as Gatebot | 50% chance
 				if(random->RandomInt(0,1) == 1)
 				{
-					MVM_SetGatebot();
+					AddTag("bot_gatebot");
+					const char *name = g_aRawPlayerClassNamesShort[nRobotClassIndex];
+					GiveItemString( CFmtStr( "MvM GateBot Light %s",name) );
 				}
 				//Spawn the player as Miniboss | 50% chance
-				if ( random->RandomInt(0,1) == 1)
+				if(random->RandomInt(0,1) == 1)
 				{
 					SetIsMiniBoss(true);
 					MVM_SetMinibossType();
 					MVM_StartIdleSound();
+					TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed(MP_CONCEPT_MVM_GIANT_CALLOUT,TF_TEAM_PVE_DEFENDERS);
 				}
-				if(nRobotClassIndex >= TF_CLASS_SCOUT && nRobotClassIndex <= TF_CLASS_ENGINEER)
+				if( g_pPopulationManager->IsPopFileEventType(MVM_EVENT_POPFILE_HALLOWEEN) )
 				{
-					if((GetModelScale() >= tf_mvm_miniboss_scale.GetFloat() || IsMiniBoss()) && g_pFullFileSystem->FileExists(g_szBotBossModels[nRobotClassIndex]))
+					// zombies use the original player models
+					m_nSkin = 4;
+					const char *name = g_aRawPlayerClassNamesShort[nRobotClassIndex];
+					GiveItemString( CFmtStr( "Zombie %s",name) );
+				}
+				else
+				{
+					if(nRobotClassIndex >= TF_CLASS_SCOUT && nRobotClassIndex <= TF_CLASS_ENGINEER)
 					{
-						GetPlayerClass()->SetCustomModel(g_szBotBossModels[nRobotClassIndex],USE_CLASS_ANIMATIONS);
-						UpdateModel();
-						SetBloodColor(DONT_BLEED);
-					}
-					else if(g_pFullFileSystem->FileExists(g_szBotModels[nRobotClassIndex]))
-					{
-						GetPlayerClass()->SetCustomModel(g_szBotModels[nRobotClassIndex],USE_CLASS_ANIMATIONS);
-						UpdateModel();
-						SetBloodColor(DONT_BLEED);
+						if((GetModelScale() >= tf_mvm_miniboss_scale.GetFloat() || IsMiniBoss()) && g_pFullFileSystem->FileExists(g_szBotBossModels[nRobotClassIndex]))
+						{
+							GetPlayerClass()->SetCustomModel(g_szBotBossModels[nRobotClassIndex],USE_CLASS_ANIMATIONS);
+							UpdateModel();
+							SetBloodColor(DONT_BLEED);
+						}
+						else if(g_pFullFileSystem->FileExists(g_szBotModels[nRobotClassIndex]))
+						{
+							GetPlayerClass()->SetCustomModel(g_szBotModels[nRobotClassIndex],USE_CLASS_ANIMATIONS);
+							UpdateModel();
+							SetBloodColor(DONT_BLEED);
+						}
 					}
 				}
 			}
@@ -7246,8 +7428,8 @@ void CTFPlayer::HandleCommand_JoinClass( const char *pClassName, bool bAllowSpaw
 
 		gameeventmanager->FireEvent( event );
 	}
-	//MvM Versus
-	MVM_StartIdleSound();
+	//MvM Versus - Classswitch fix
+	MVM_StopIdleSound();
 
 	// are they TF_CLASS_RANDOM and trying to select the class they're currently playing as (so they can stay this class)?
 	if ( iClass == GetPlayerClass()->GetClassIndex() )
@@ -15641,7 +15823,8 @@ const char* CTFPlayer::GetSceneSoundToken( void )
 
 	if (iOverrideVoiceSoundSet == kVoiceSoundSet_Default)
 	{
-		if (TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS)
+		//Engineer bot has some "special" voice clips that VALVe ruined
+		if (TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS || IsMVMRobot() )
 		{
 			if (IsMiniBoss())
 			{
@@ -17652,6 +17835,16 @@ bool CTFPlayer::IsZombieCostumeEquipped( void ) const
 	int iZombie = 0;
 	CALL_ATTRIB_HOOK_INT( iZombie, zombiezombiezombiezombie );
 	return iZombie != 0;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CTFPlayer::IsMVMRobot( void ) const
+{
+	int iRobot = 0;
+	CALL_ATTRIB_HOOK_INT( iRobot, robotrobotrobotrobot );
+	return iRobot != 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -20912,31 +21105,39 @@ void CTFPlayer::MVM_StartIdleSound(void)
 		int iClass = GetPlayerClass()->GetClassIndex();
 		switch (iClass)
 		{
-		case TF_CLASS_HEAVYWEAPONS:
-		{
-			pszSoundName = "MVM.GiantHeavyLoop";
-			break;
-		}
-		case TF_CLASS_SOLDIER:
-		{
-			pszSoundName = "MVM.GiantSoldierLoop";
-			break;
-		}
-		case TF_CLASS_DEMOMAN:
-		{
-			pszSoundName = "MVM.GiantDemomanLoop";
-			break;
-		}
-		case TF_CLASS_SCOUT:
-		{
-			pszSoundName = "MVM.GiantScoutLoop";
-			break;
-		}
-		case TF_CLASS_PYRO:
-		{
-			pszSoundName = "MVM.GiantPyroLoop";
-			break;
-		}
+			case TF_CLASS_HEAVYWEAPONS:
+			{
+				pszSoundName = "MVM.GiantHeavyLoop";
+				break;
+			}
+			case TF_CLASS_SOLDIER:
+			{
+				pszSoundName = "MVM.GiantSoldierLoop";
+				break;
+			}
+			case TF_CLASS_DEMOMAN:
+			{
+				pszSoundName = "MVM.GiantDemomanLoop";
+				break;
+			}
+			case TF_CLASS_SCOUT:
+			{
+				pszSoundName = "MVM.GiantScoutLoop";
+				break;
+			}
+			case TF_CLASS_PYRO:
+			{
+				pszSoundName = "MVM.GiantPyroLoop";
+				break;
+			}
+			case TF_CLASS_MEDIC:
+			case TF_CLASS_ENGINEER:
+			case TF_CLASS_SNIPER:
+			case TF_CLASS_SPY:
+			{
+				return;
+				break;
+			}
 		}
 
 		if (pszSoundName)
@@ -21007,13 +21208,6 @@ bool CTFPlayer::HasTag(const char* tag)
 
 	return false;
 }
-//-----------------------------------------------------------------------------
-// MVM Versus - Placeholder boss list
-// ----------------------------------------------------------------------------
-void CTFPlayer::MVM_SetGatebot(void)
-{
-	AddTag("bot_gatebot");
-}
 
 //-----------------------------------------------------------------------------
 // MVM Versus - Placeholder boss list
@@ -21074,6 +21268,14 @@ void CTFPlayer::MVM_SetMinibossType(void)
 				AddCustomAttribute("max health additive bonus",2825,-1);
 				AddCustomAttribute("damage force reduction",0.6,-1);
 				AddCustomAttribute("airblast vulnerability multiplier",0.6,-1);
+				break;
+			}
+			case TF_CLASS_MEDIC:
+			case TF_CLASS_ENGINEER:
+			case TF_CLASS_SNIPER:
+			case TF_CLASS_SPY:
+			{
+				return;
 				break;
 			}
 		}
@@ -21342,6 +21544,76 @@ void CTFPlayer::GiveItem(int inputdata)
 		if (pBuilder)
 		{
 			pBuilder->SetSubType(pData->m_aBuildable[0]);
+		}
+	}
+}
+
+void CTFPlayer::GiveItemString( const char* pszItemName )
+{
+	CItemSelectionCriteria criteria;
+	criteria.SetQuality( AE_USE_SCRIPT_VALUE );
+	criteria.BAddCondition( "name", k_EOperator_String_EQ, pszItemName, true );
+
+	CBaseEntity *pItem = ItemGeneration()->GenerateRandomItem( &criteria, WorldSpaceCenter(), vec3_angle );
+	if ( pItem )
+	{
+		CEconItemView *pScriptItem = static_cast< CBaseCombatWeapon * >( pItem )->GetAttributeContainer()->GetItem();
+
+		// If we already have an item in that slot, remove it
+		int iClass = GetPlayerClass()->GetClassIndex();
+		int iSlot = pScriptItem->GetStaticData()->GetLoadoutSlot( iClass );
+		equip_region_mask_t unNewItemRegionMask = pScriptItem->GetItemDefinition() ? pScriptItem->GetItemDefinition()->GetEquipRegionConflictMask() : 0;
+
+		if ( IsWearableSlot( iSlot ) )
+		{
+			// Remove any wearable that has a conflicting equip_region
+			for ( int wbl = 0; wbl < GetNumWearables(); wbl++ )
+			{
+				CEconWearable *pWearable = GetWearable( wbl );
+				if ( !pWearable )
+					continue;
+
+				equip_region_mask_t unWearableRegionMask = 0;
+				if ( pWearable->GetAttributeContainer()->GetItem() )
+				{
+					unWearableRegionMask = pWearable->GetAttributeContainer()->GetItem()->GetItemDefinition()->GetEquipRegionConflictMask();
+				}
+
+				if ( unWearableRegionMask & unNewItemRegionMask )
+				{
+					RemoveWearable( pWearable );
+				}
+			}
+		}
+		else
+		{
+			CBaseEntity	*pEntity = GetEntityForLoadoutSlot( iSlot );
+			if ( pEntity )
+			{
+				CBaseCombatWeapon *pWpn = dynamic_cast< CBaseCombatWeapon * >( pEntity );
+				Weapon_Detach( pWpn );
+				UTIL_Remove( pEntity );
+			}
+		}
+
+		// Fake global id
+		pScriptItem->SetItemID( 1 );
+
+		DispatchSpawn( pItem );
+
+		CEconEntity *pNewItem = assert_cast<CEconEntity*>( pItem );
+		if ( pNewItem )
+		{
+			pNewItem->GiveTo( this );
+		}
+
+		PostInventoryApplication();
+	}
+	else
+	{
+		if ( pszItemName && pszItemName[0] )
+		{
+			DevMsg( "CTFBotSpawner::AddItemToBot: Invalid item %s.\n", pszItemName );
 		}
 	}
 }

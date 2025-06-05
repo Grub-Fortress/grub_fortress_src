@@ -913,8 +913,14 @@ void CHudTournament::UpdatePlayerPanels( void )
 	if ( !TFGameRules() )
 		return;
 
+
+	// Try and always put the local player's team on team1, if he's in a team
+	int iTeam1 = TF_TEAM_BLUE;
+	int iTeam2 = TF_TEAM_RED;
+	int iLocalTeam = g_TF_PR->GetTeam( pPlayer->entindex() );
+
 	// Hide panels for players when they're no longer able to stop the countdown
-	if ( TFGameRules()->GetRoundRestartTime() >= 0.f && TFGameRules()->GetRoundRestartTime() - gpGlobals->curtime <= TOURNAMENT_NOCANCEL_TIME )
+	if ( ( TFGameRules()->GetRoundRestartTime() >= 0.f && TFGameRules()->GetRoundRestartTime() - gpGlobals->curtime <= TOURNAMENT_NOCANCEL_TIME ) || ( TFGameRules()->IsMannVsMachineMode() && iLocalTeam == TF_TEAM_PVE_INVADERS ) )
 	{
 		SetPlayerPanelsVisible( false );
 		m_pModeImage->SetVisible( false );
@@ -934,10 +940,6 @@ void CHudTournament::UpdatePlayerPanels( void )
 	if ( !bNeedsPlayerLayout || !TFGameRules() )
 		return;
 
-	// Try and always put the local player's team on team1, if he's in a team
-	int iTeam1 = TF_TEAM_BLUE;
-	int iTeam2 = TF_TEAM_RED;
-	int iLocalTeam = g_TF_PR->GetTeam( pPlayer->entindex() );
 	if ( ( iLocalTeam == TF_TEAM_RED || iLocalTeam == TF_TEAM_BLUE ) && !TFGameRules()->IsCompetitiveMode() )	// Blue always on left in comp
 	{
 		iTeam1 = iLocalTeam;

@@ -878,6 +878,7 @@ ConVar tf_raid_allow_overtime( "tf_raid_allow_overtime", "0"/*, FCVAR_CHEAT*/ );
 
 ConVar tf_mvm_defenders_team_size( "tf_mvm_defenders_team_size", "6", FCVAR_REPLICATED | FCVAR_NOTIFY, "Maximum number of defenders in MvM" );
 ConVar tf_mvm_forceversus( "tf_mvm_forceversus", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Enable versus in MvM");
+ConVar tf_mvm_versus_robot_stations( "tf_mvm_versus_robot_stations", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "Allow Robots to use upgrade stations");
 ConVar tf_mvm_max_connected_players( "tf_mvm_max_connected_players", "10", FCVAR_GAMEDLL, "Maximum number of connected real players in MvM" );
 ConVar tf_mvm_max_invaders( "tf_mvm_max_invaders", "24", FCVAR_GAMEDLL, "Maximum number of invaders in MvM" );
 
@@ -7848,6 +7849,10 @@ bool CTFGameRules::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 
 		if ( FStrEq( pcmd, "tournament_player_readystate" ) )
 		{
+			// MvM Versus - Robots don't ready up
+			if ( IsMannVsMachineMode() && pPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+				return true;
+
 			if ( State_Get() != GR_STATE_BETWEEN_RNDS )
 				return true;
 
