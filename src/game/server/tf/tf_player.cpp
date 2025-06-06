@@ -4902,6 +4902,10 @@ bool CTFPlayer::ItemIsAllowed( CEconItemView *pItem )
 	int iClass = GetPlayerClass()->GetClassIndex();
 	int iSlot = pItem->GetStaticData()->GetLoadoutSlot(iClass);
 
+	// Ban all cosmetics: head, misc, misc2
+	if ( iSlot == LOADOUT_POSITION_HEAD || iSlot == LOADOUT_POSITION_MISC || iSlot == LOADOUT_POSITION_MISC2 )
+		return false;
+
 	// Passtime hack to allow passtime gun
 	if ( V_stristr( pItem->GetItemDefinition()->GetDefinitionName(), "passtime" ) )
 	{

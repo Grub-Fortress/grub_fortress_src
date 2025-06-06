@@ -434,6 +434,7 @@ const char* CTFGrenadePipebombProjectile::GetPipebombClass( int iPipeBombType )
 		return "tf_projectile_pipe";
 	case TF_GL_MODE_REMOTE_DETONATE:
 	case TF_GL_MODE_REMOTE_DETONATE_PRACTICE:
+	case TF_GL_MODE_REMOTE_DETONATE_ROLLER:
 		return "tf_projectile_pipe_remote";
 	default:
 		return "tf_projectile_pipe";
@@ -462,6 +463,11 @@ CTFGrenadePipebombProjectile* CTFGrenadePipebombProjectile::Create( const Vector
 			iPipeBombDetonateType = TF_GL_MODE_REMOTE_DETONATE_PRACTICE;
 		}
 		break;
+	case TF_PROJECTILE_PIPEBOMB_ROLLER:
+		{
+			iPipeBombDetonateType = TF_GL_MODE_REMOTE_DETONATE_ROLLER;
+		}
+	break;
 	case TF_PROJECTILE_CANNONBALL:
 		{
 			iPipeBombDetonateType = TF_GL_MODE_CANNONBALL;
@@ -517,6 +523,14 @@ void CTFGrenadePipebombProjectile::Spawn()
 		else
 		{
 			SetModel( TF_WEAPON_PIPEBOMB_MODEL );
+		}
+		if (m_iType == TF_GL_MODE_REMOTE_DETONATE_ROLLER)
+		{
+			SetModel(TF_WEAPON_PIPEGRENADE_MODEL);
+		}
+		else
+		{
+			SetModel(TF_WEAPON_PIPEBOMB_MODEL);
 		}
 		SetDetonateTimerLength( FLT_MAX );
 		SetContextThink( &CTFGrenadePipebombProjectile::PreArmThink, gpGlobals->curtime + 0.001f, "PRE_ARM_THINK" ); // Next frame.
@@ -942,9 +956,18 @@ void CTFGrenadePipebombProjectile::VPhysicsCollision( int index, gamevcollisione
 	// Pipebombs stick to the world when they touch it
 	if ( pHitEntity && ( pHitEntity->IsWorld() || bIsDynamicProp ) && gpGlobals->curtime > m_flMinSleepTime )
 	{
+		int iNoStick = 0;
+		if (GetLauncher())
+		{
+			CALL_ATTRIB_HOOK_INT_ON_OTHER(GetLauncher(), iNoStick, grenade_no_stick);
+		}
+
 		m_bTouched = true;
 
-		g_PostSimulationQueue.QueueCall( VPhysicsGetObject(), &IPhysicsObject::EnableMotion, false );
+		if (iNoStick == 0)
+		{
+			g_PostSimulationQueue.QueueCall(VPhysicsGetObject(), &IPhysicsObject::EnableMotion, false);
+		}
 
 		// Save impact data for explosions.
 		m_bUseImpactNormal = true;
