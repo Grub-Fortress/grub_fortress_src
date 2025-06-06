@@ -663,7 +663,6 @@ public:
 	bool			m_bArenaSpectator;
 
 	bool			m_bIsMiniBoss;
-	bool			m_bUsesGiantSounds;
 	bool			m_bIsABot;
 	int				m_nBotSkill;
 	int				m_nOldBotSkill;
@@ -937,6 +936,7 @@ public:
 	Vector GetOverheadEffectPosition();
 
 	int GetSkinOverride() const { return m_iPlayerSkinOverride; }
+	bool IsRobot() const { return m_bIsRobot; }
 
 	virtual void ClientAdjustStartSoundParams( EmitSound_t &params ) override;
 	virtual void ClientAdjustStartSoundParams( StartSoundParams_t& params ) override;
@@ -967,6 +967,7 @@ private:
 	float m_flTempForceDrawViewModelCycle  = 0.0f;
 
 	CNetworkVar( int, m_iPlayerSkinOverride );
+	CNetworkVar( bool, m_bIsRobot );
 };
 
 inline C_TFPlayer* ToTFPlayer( C_BaseEntity *pEntity )

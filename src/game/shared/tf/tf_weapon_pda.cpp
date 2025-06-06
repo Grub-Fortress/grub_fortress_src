@@ -300,7 +300,8 @@ void CTFWeaponPDA_Spy::ProcessDisguiseImpulse( void )
 const char* CTFWeaponPDA_Spy::GetViewModel(int iViewModel) const
 {
 	const char* pszViewModel = GetTFWpnData().szViewModel;
-	if(TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS)
+	CTFPlayer *pPlayer = ToTFPlayer( GetPlayerOwner() );
+	if(TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS || pPlayer && pPlayer->IsRobot() )
 		return pszViewModel = "models/mvm/weapons/v_models/v_pda_spy_bot.mdl";
 
 	return pszViewModel;

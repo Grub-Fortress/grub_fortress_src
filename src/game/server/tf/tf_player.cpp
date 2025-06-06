@@ -798,7 +798,6 @@ IMPLEMENT_SERVERCLASS_ST( CTFPlayer, DT_TFPlayer )
 
 	SendPropBool( SENDINFO( m_bSaveMeParity ) ),
 	SendPropBool( SENDINFO( m_bIsMiniBoss) ),
-	SendPropBool( SENDINFO( m_bUsesGiantSounds ) ),
 	SendPropBool( SENDINFO( m_bIsABot ) ),
 	SendPropInt( SENDINFO( m_nBotSkill ), 3, SPROP_UNSIGNED ),
 
@@ -855,6 +854,7 @@ IMPLEMENT_SERVERCLASS_ST( CTFPlayer, DT_TFPlayer )
 	SendPropFloat( SENDINFO( m_flHelpmeButtonPressTime ) ),
 	SendPropInt( SENDINFO( m_iCampaignMedals ) ),
 	SendPropInt( SENDINFO( m_iPlayerSkinOverride ) ),
+	SendPropBool( SENDINFO( m_bIsRobot ) ),
 	SendPropBool( SENDINFO( m_bViewingCYOAPDA ) ),
 	SendPropBool( SENDINFO( m_bRegenerating ) ),
 END_SEND_TABLE()
@@ -3180,13 +3180,9 @@ void CTFPlayer::PrecacheMvM()
 		COMPILE_TIME_ASSERT( ARRAYSIZE( g_szBotModels ) == TF_LAST_NORMAL_CLASS );
 		int iModelIndex = PrecacheModel( g_szBotModels[ i ] );
 		PrecacheGibsForModel( iModelIndex );
-		iModelIndex = PrecacheModel( g_szBotViewmodels[ i ] );
-		PrecacheGibsForModel( iModelIndex );
 
 		COMPILE_TIME_ASSERT( ARRAYSIZE( g_szBotBossModels ) == TF_LAST_NORMAL_CLASS );
 		iModelIndex = PrecacheModel( g_szBotBossModels[ i ] );
-		PrecacheGibsForModel( iModelIndex );
-		iModelIndex = PrecacheModel( g_szBotBossViewmodels[ i ] );
 		PrecacheGibsForModel( iModelIndex );
 	}
 
@@ -3199,13 +3195,9 @@ void CTFPlayer::PrecacheMvM()
 
 	PrecacheModel( "models/bots/tw2/boss_bot/twcarrier_addon.mdl" );
 
-	PrecacheParticleSystem( "bot_impact_light" );
-	PrecacheParticleSystem( "bot_impact_heavy" );
-	PrecacheParticleSystem( "bot_death" );
 	PrecacheParticleSystem( "bot_radio_waves" );
 
 	PrecacheScriptSound( "MVM.FallDamageBots");
-	PrecacheScriptSound( "MVM.BotStep" );
 	PrecacheScriptSound( "MVM.BotGiantStep" );
 	PrecacheScriptSound( "MVM.GiantHeavyStep" );
 	PrecacheScriptSound( "MVM.GiantSoldierStep" );
@@ -3297,6 +3289,17 @@ void CTFPlayer::PrecachePlayerModels( void )
 			}
 		}
 */
+	}
+
+	for ( int i = TF_FIRST_NORMAL_CLASS; i < TF_LAST_NORMAL_CLASS; ++i )
+	{
+		COMPILE_TIME_ASSERT( ARRAYSIZE( g_szBotViewmodels ) == TF_LAST_NORMAL_CLASS );
+		int iModelIndex = PrecacheModel( g_szBotViewmodels[ i ] );
+		PrecacheGibsForModel( iModelIndex );
+
+		COMPILE_TIME_ASSERT( ARRAYSIZE( g_szBotBossViewmodels ) == TF_LAST_NORMAL_CLASS );
+		iModelIndex = PrecacheModel( g_szBotBossViewmodels[ i ] );
+		PrecacheGibsForModel( iModelIndex );
 	}
 	
 	// Always precache the silly gibs.
@@ -3529,6 +3532,12 @@ void CTFPlayer::PrecacheTFPlayer()
 	PrecacheScriptSound( "Weapon_Pomson.DrainedVictim" );
 
 	PrecacheScriptSound( "BlastJump.Whistle" );
+
+	//MVM Verus - Wearable Robot
+	PrecacheScriptSound( "MVM.BotStep" );
+	PrecacheParticleSystem( "bot_impact_light" );
+	PrecacheParticleSystem( "bot_impact_heavy" );
+	PrecacheParticleSystem( "bot_death" );
 
 	PrecacheScriptSound( "Spy.TeaseVictim" );
 	PrecacheScriptSound( "Demoman.CritDeath" );
@@ -4102,8 +4111,23 @@ void CTFPlayer::Spawn()
 		// make sure we clear custom attributes that we added
 		RemoveAllCustomAttributes();
 
-		//MVM Versus
+
 		int nRobotClassIndex = (GetPlayerClass() ? GetPlayerClass()->GetClassIndex() : TF_CLASS_UNDEFINED);
+
+		//MVM Robo cosmetic
+		if( IsMVMRobot() )
+		{
+			if ( TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+				return;
+
+			if(g_pFullFileSystem->FileExists(g_szBotModels[nRobotClassIndex]))
+			{
+				GetPlayerClass()->SetCustomModel(g_szBotModels[nRobotClassIndex],USE_CLASS_ANIMATIONS);
+				UpdateModel();
+				SetBloodColor(DONT_BLEED);
+			}
+		}
+		//MVM Versus
 		if(TFGameRules()->IsMannVsMachineMode() && !IsFakeClient())
 		{
 			//We Reset your tags if you were for example a Gatebot
@@ -4121,7 +4145,6 @@ void CTFPlayer::Spawn()
 				//Spawn the player as Miniboss | 50% chance
 				if(random->RandomInt(0,1) == 1)
 				{
-					SetIsMiniBoss(true);
 					MVM_SetMinibossType();
 					MVM_StartIdleSound();
 					TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed(MP_CONCEPT_MVM_GIANT_CALLOUT,TF_TEAM_PVE_DEFENDERS);
@@ -5812,6 +5835,7 @@ void CTFPlayer::ValidateWearables( TFPlayerClassData_t *pData )
 void CTFPlayer::PostInventoryApplication( void )
 {
 	m_Shared.RecalculatePlayerBodygroups();
+	m_bIsRobot = IsMVMRobot();
 
 	if ( m_Shared.InCond( TF_COND_DISGUISED ) )
 	{
@@ -11309,7 +11333,7 @@ int CTFPlayer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			vDamagePos = WorldSpaceCenter();
 		}
 
-		if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+		if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS || IsMVMRobot() )
 		{
 			if ( ( IsMiniBoss() && static_cast< float >( GetHealth() ) / GetMaxHealth() > 0.3f ) || realDamage < 50 )
 			{
@@ -12749,7 +12773,7 @@ void CTFPlayer::Event_Killed( const CTakeDamageInfo &info )
 
 			// Electrical effect whenever a bot dies
 			CPVSFilter filter( WorldSpaceCenter() );
-			if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+			if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS || IsMVMRobot() )
 				TE_TFParticleEffect( filter, 0.f, "bot_death", GetAbsOrigin(), vec3_angle );
 		}
 		else
@@ -15646,12 +15670,9 @@ void CTFPlayer::PainSound( const CTakeDamageInfo &info )
 			if ( pData )
 			{
 				//Robots need to play their Robotic pain lines!
-				if(TFGameRules()->IsMannVsMachineMode())
+				if(TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS || IsMVMRobot() ) // MVM Versus - Wearable support)
 				{
-					if (GetTeamNumber() == TF_TEAM_PVE_INVADERS)
-						EmitSound( pData->GetDeathSound(IsMiniBoss() ? DEATH_SOUND_GENERIC_GIANT_MVM : DEATH_SOUND_GENERIC_MVM ));
-					else
-						EmitSound(pData->GetDeathSound(DEATH_SOUND_GENERIC));
+					EmitSound( pData->GetDeathSound(IsMiniBoss() ? DEATH_SOUND_GENERIC_GIANT_MVM : DEATH_SOUND_GENERIC_MVM ));
 				}
 				else
 					EmitSound(pData->GetDeathSound(DEATH_SOUND_GENERIC));
@@ -15756,7 +15777,7 @@ void CTFPlayer::DeathSound( const CTakeDamageInfo &info )
 
 	int nDeathSoundOffset = DEATH_SOUND_FIRST;
 
-	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS || IsMVMRobot() )
 	{
 		nDeathSoundOffset = IsMiniBoss() ? DEATH_SOUND_GIANT_MVM_FIRST : DEATH_SOUND_MVM_FIRST;
 	}
@@ -21218,6 +21239,7 @@ bool CTFPlayer::HasTag(const char* tag)
 // ----------------------------------------------------------------------------
 void CTFPlayer::MVM_SetMinibossType(void)
 {
+	SetIsMiniBoss(true);
 	if(IsMiniBoss())
 	{
 		AddTag("bot_giant");
@@ -21274,12 +21296,10 @@ void CTFPlayer::MVM_SetMinibossType(void)
 				AddCustomAttribute("airblast vulnerability multiplier",0.6,-1);
 				break;
 			}
-			case TF_CLASS_MEDIC:
-			case TF_CLASS_ENGINEER:
-			case TF_CLASS_SNIPER:
-			case TF_CLASS_SPY:
+			default:
 			{
 				return;
+				SetIsMiniBoss(false);
 				break;
 			}
 		}

@@ -3701,7 +3701,6 @@ IMPLEMENT_CLIENTCLASS_DT( C_TFPlayer, DT_TFPlayer, CTFPlayer )
 
 	RecvPropBool( RECVINFO( m_bSaveMeParity ) ),
 	RecvPropBool( RECVINFO( m_bIsMiniBoss ) ),
-	RecvPropBool( RECVINFO( m_bUsesGiantSounds ) ),
 	RecvPropBool( RECVINFO( m_bIsABot ) ),
 	RecvPropInt( RECVINFO( m_nBotSkill ) ),
 
@@ -3755,6 +3754,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_TFPlayer, DT_TFPlayer, CTFPlayer )
 	RecvPropFloat( RECVINFO( m_flHelpmeButtonPressTime ) ),
 	RecvPropInt( RECVINFO( m_iCampaignMedals ) ),
 	RecvPropInt( RECVINFO( m_iPlayerSkinOverride ) ),
+	RecvPropBool( RECVINFO( m_bIsRobot ) ),
 	RecvPropBool( RECVINFO( m_bViewingCYOAPDA ) ),
 	RecvPropBool( RECVINFO( m_bRegenerating ) ),
 END_RECV_TABLE()
@@ -3942,6 +3942,7 @@ C_TFPlayer::C_TFPlayer() :
 	m_pPasstimeAskForBallReticle = NULL;
 
 	m_iPlayerSkinOverride = 0;
+	m_bIsRobot = false;
 
 	ListenForGameEvent( "player_hurt" );
 	ListenForGameEvent( "hltv_changed_mode" );

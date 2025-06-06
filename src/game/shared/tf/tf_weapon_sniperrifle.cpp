@@ -47,6 +47,7 @@ void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
 
 #ifdef CLIENT_DLL
 ConVar tf_sniper_fullcharge_bell( "tf_sniper_fullcharge_bell", "0", FCVAR_ARCHIVE );
+ConVar tf_hide_aiming_laser( "tf_hide_aiming_laser", "0", FCVAR_ARCHIVE );
 #endif
 
 //=============================================================================
@@ -1668,7 +1669,7 @@ void CSniperDot::ClientThink( void )
 	// snipers have laser sights in PvE mode
 	if ( TFGameRules()->IsPVEModeActive() && GetTeamNumber() == TF_TEAM_PVE_INVADERS || bHasMvmLaser)
 	{
-		if ( pPlayer )
+		if ( pPlayer && !(pPlayer->IsLocalPlayer() && pPlayer->LocalPlayerInFirstPersonView() && tf_hide_aiming_laser.GetBool() ) )
 		{
 			if ( !m_laserBeamEffect )
 			{

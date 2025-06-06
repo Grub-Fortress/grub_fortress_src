@@ -1351,7 +1351,6 @@ private:
 	// In-game currency
 	CNetworkVar( int, m_nCurrency );
 	CNetworkVar( bool, m_bIsMiniBoss );
-	CNetworkVar( bool, m_bUsesGiantSounds );
 
 	// Bounty Mode
 	CNetworkVar( uint32, m_nExperienceLevel );
@@ -1557,6 +1556,7 @@ public:
 	float ScriptGetCustomAttribute( const char *pName, float flFallbackValue );
 
 	int GetSkinOverride() const { return m_iPlayerSkinOverride; }
+	bool IsRobot() const { return m_bIsRobot; }
 
 	bool ShouldGetBonusPointsForExtinguishEvent( int userID );
 
@@ -1598,6 +1598,7 @@ private:
 	CUtlMap< CUtlString, float > m_mapCustomAttributes;
 
 	CNetworkVar( int, m_iPlayerSkinOverride );
+	CNetworkVar( bool, m_bIsRobot );
 
 	CUtlMap<int, float> m_PlayersExtinguished;	// userID and most recent time they were extinguished for bonus points
 

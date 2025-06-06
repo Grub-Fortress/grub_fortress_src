@@ -97,7 +97,7 @@ const char *CTFWeaponInvis::GetViewModel( int viewmodelindex  ) const
 			iTeam = pTFPlayer->GetTeamNumber();
 		}
 		//MVM Versus
-		if(TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS)
+		if(TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS || pTFPlayer && pTFPlayer->IsRobot() )
 		{
 			if ( pItem->GetItemDefIndex() == 59) //Dead Ringer
 			{

@@ -672,7 +672,7 @@ const char *CTFWeaponBase::GetViewModel( int iViewModel ) const
 		const char *pszHandModel = pPlayer->GetPlayerClass()->GetHandModelName( iGunSlinger ? iGunSlinger : iHandModelIndex );
 
 		//MVM Versus
-		if(TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS)
+		if(TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS || pPlayer->IsRobot() )
 		{
 			int nBotViewmodelIndex = (pPlayer->GetPlayerClass() ? pPlayer->GetPlayerClass()->GetClassIndex() : TF_CLASS_UNDEFINED);
 			if( !iGunSlinger )

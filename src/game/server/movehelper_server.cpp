@@ -9,6 +9,7 @@
 #include <stdarg.h>
 #include "gamerules.h"
 #include "tf_gamerules.h"
+#include "tf_player.h"
 #include "player.h"
 #include "model_types.h"
 #include "movehelper_server.h"
@@ -364,7 +365,7 @@ bool CMoveHelperServer::PlayerFallingDamage( void )
 	if ( flFallDamage > 0 )
 	{
 		int iDamageTaken = m_pHostPlayer->TakeDamage( CTakeDamageInfo( GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), flFallDamage, DMG_FALL ) ); 
-		
+		// MVM Versus - Falldamage sound
 		if( TFGameRules()->IsMannVsMachineMode() )
 		{
 			if(iDamageTaken > 0)
