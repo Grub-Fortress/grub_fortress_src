@@ -2670,7 +2670,7 @@ void CTFFlameThrower::ClientEffectsThink( void )
 
 	float flRageInverse = 1.f;
 
-	if ( GetBuffType() > 0 )
+	if ( GetBuffType() > 0 && !pPlayer->IsInAVehicle() )
 	{
 		flRageInverse = 1.0f - ( pPlayer->m_Shared.GetRageMeter() / 100.0f );
 		if ( flRageInverse < 1.0f )

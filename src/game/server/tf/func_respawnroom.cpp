@@ -500,7 +500,7 @@ bool CFuncRespawnRoomVisualizer::ShouldCollide( int collisionGroup, int contents
 	if ( GetTeamNumber() == TEAM_UNASSIGNED )
 		return false;
 
-	if ( collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT )
+	if ( collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT || collisionGroup == COLLISION_GROUP_VEHICLE )
 	{
 		switch( GetTeamNumber() )
 		{

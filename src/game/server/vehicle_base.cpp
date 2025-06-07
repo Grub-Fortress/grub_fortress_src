@@ -380,7 +380,8 @@ CPropVehicleDriveable::CPropVehicleDriveable( void ) :
 	m_pServerVehicle( NULL ),
 	m_hKeepUpright( NULL ),
 	m_flTurnOffKeepUpright( 0 ),
-	m_flNoImpactDamageTime( 0 )
+	m_flNoImpactDamageTime(0),
+	m_bTouchedGround(false)
 {
 	m_vecEyeExitEndpoint.Init();
 	m_vecGunCrosshair.Init();
@@ -392,6 +393,17 @@ CPropVehicleDriveable::CPropVehicleDriveable( void ) :
 CPropVehicleDriveable::~CPropVehicleDriveable( void )
 {
 	DestroyServerVehicle();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: TF2 Roundfix
+//-----------------------------------------------------------------------------
+void CPropVehicleDriveable::UpdateOnRemove(void)
+{
+	CBasePlayer* pPlayer = dynamic_cast<CBasePlayer*>(GetDriver());
+	if (pPlayer)
+		pPlayer->LeaveVehicle();
+	BaseClass::UpdateOnRemove();
 }
 
 //-----------------------------------------------------------------------------
@@ -603,6 +615,8 @@ void CPropVehicleDriveable::EnterVehicle( CBaseCombatCharacter *pPassenger )
 
 		Vector vecViewOffset = m_pServerVehicle->GetSavedViewOffset();
 
+		ChangeTeam( pPlayer->GetTeamNumber() );
+
 		// Clear our state
 		m_pServerVehicle->InitViewSmoothing( pPlayer->GetAbsOrigin() + vecViewOffset, pPlayer->EyeAngles() );
 
@@ -637,6 +651,8 @@ void CPropVehicleDriveable::ExitVehicle( int nRole )
 	m_flThrottle = 0.0f;
 
 	StopEngine();
+
+	ChangeTeam(0);
 
 	m_VehiclePhysics.GetVehicle()->OnVehicleExit();
 
@@ -760,6 +776,25 @@ void CPropVehicleDriveable::Think()
 
 			UTIL_Remove( m_hKeepUpright );
 		}
+	}
+	if (m_hPlayer)
+	{
+		m_hPlayer->SetLocalVelocity(vec3_origin);
+	}
+	StudioFrameAdvance();
+	// If the enter or exit animation has finished, tell the server vehicle
+	if (IsSequenceFinished() && (m_bExitAnimOn || m_bEnterAnimOn))
+	{
+		if (m_bEnterAnimOn)
+		{
+				m_VehiclePhysics.ReleaseHandbrake();
+			StartEngine();
+
+
+		}
+
+		GetServerVehicle()->HandleEntryExitFinish(m_bExitAnimOn, false);
+
 	}
 }
 
@@ -898,14 +933,20 @@ void CPropVehicleDriveable::VPhysicsCollision( int index, gamevcollisionevent_t 
 #endif // HL2_EPISODIC
 //=============================================================================
 
+	int otherIndex = !index;
+	CBaseEntity* pHitEntity = pEvent->pEntities[otherIndex];
+
+	if (!pHitEntity->IsPlayer() && !m_bTouchedGround)
+	{
+		m_bTouchedGround = true;
+	}
+
 	// Don't care if we don't have a driver
 	CBaseCombatCharacter *pDriver = GetDriver() ? GetDriver()->MyCombatCharacterPointer() : NULL;
 	if ( !pDriver )
 		return;
 
 	// Make sure we don't keep hitting the same entity
-	int otherIndex = !index;
-	CBaseEntity *pHitEntity = pEvent->pEntities[otherIndex];
 	if ( pEvent->deltaCollisionTime < 0.5 && (pHitEntity == this) )
 		return;
 
@@ -1007,6 +1048,42 @@ void CPropVehicleDriveable::TraceAttack( const CTakeDamageInfo &info, const Vect
 	}
 
 	BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
+}
+
+int CPropVehicleDriveable::OnTakeDamage(const CTakeDamageInfo& inputInfo)
+{
+	//Do scaled up physics damage to the car
+	CTakeDamageInfo info = inputInfo;
+	info.ScaleDamage(25);
+
+	// HACKHACK: Scale up grenades until we get a better explosion/pressure damage system
+	if (inputInfo.GetDamageType() & ( DMG_BLAST | DMG_FALL ) )
+	{
+		info.SetDamageForce(inputInfo.GetDamageForce() * 10);
+	}
+
+	VPhysicsTakeDamage(info);
+
+	// reset the damage
+	info.SetDamage(inputInfo.GetDamage());
+
+
+	//Check to do damage to driver
+	if (GetDriver())
+	{
+		// Never take crush damage
+		if (info.GetDamageType() & DMG_CRUSH)
+			return 0;
+
+		// Scale the damage and mark that we're passing it in so the base player accepts the damage
+		info.ScaleDamage(0.5);
+		info.SetDamageType(info.GetDamageType() | DMG_VEHICLE);
+
+		// Deal the damage to the passenger
+		GetDriver()->TakeDamage(info);
+	}
+
+	return 0;
 }
 
 //=============================================================================

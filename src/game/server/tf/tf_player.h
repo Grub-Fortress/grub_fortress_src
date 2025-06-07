@@ -17,6 +17,7 @@
 #include "steam/steam_gameserver.h"
 #include "ihasattributes.h"
 #include "tf_item_inventory.h"
+#include "vehicle_base.h"
 
 class CTFPlayer;
 class CTFTeam;
@@ -227,6 +228,8 @@ public:
 	virtual void		Weapon_Equip( CBaseCombatWeapon *pWeapon ) OVERRIDE;			// Adds weapon to player
 
 	void				SaveMe( void );
+
+	virtual bool		GetInVehicle(IServerVehicle* pVehicle, int nRole) OVERRIDE;
 
 
 	void				FireBullet( CTFWeaponBase *pWpn, const FireBulletsInfo_t &info, bool bDoEffects, int nDamageType, int nCustomDamageType = TF_DMG_CUSTOM_NONE );
@@ -961,6 +964,8 @@ private:
 	int					m_iTauntRPSResult;
 	int					m_iPreTauntWeaponSlot;
 	int					m_iPreTauntFOV;
+
+	CHandle<CPropVehicleDriveable>		m_hOwnedVehicle;
 
 	float				m_flNextReflectZap;
 

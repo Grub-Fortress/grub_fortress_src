@@ -1,0 +1,120 @@
+// Choreo version 1
+event loop "loop"
+{
+  time 14.650000 -1.000000
+  param "4.100000"
+  loopcount "255"
+}
+actor "Engineer"
+{
+  channel "Engineer"
+  {
+    event sequence "taunt_fishing_introloop"
+    {
+      time 0.000000 14.666666
+      param "taunt_fishing_introloop"
+      fixedlength
+    }
+  }
+  channel "face"
+  {
+    event expression "happySmall"
+    {
+      time 0.000000 14.670634
+      param "player\engineer\emotion\emotion"
+      param2 "happySmall"
+      event_ramp
+      {
+        0.0000 0.0000
+        4.8750 0.0000
+        5.4582 1.0001
+        6.5417 1.0001
+        6.8749 0.0000
+        8.2956 0.0000
+        8.4622 1.0001
+        9.7123 1.0001
+        10.4622 0.0000
+        12.7539 0.0000
+        12.9622 1.0001
+        14.0873 1.0001
+        14.2538 0.0000
+        14.6706 0.0000
+      }
+    }
+    event expression "happyBig"
+    {
+      time 0.000000 14.659722
+      param "player\engineer\emotion\emotion"
+      param2 "happyBig"
+      event_ramp
+      {
+        0.0000 0.0000
+        0.0833 0.0000
+        0.4999 1.0001
+        4.8750 1.0001
+        5.4582 0.0000
+        6.5417 0.0000
+        6.8749 1.0001
+        8.2847 1.0001
+        8.4513 0.0000
+        9.7014 0.0000
+        10.4513 1.0001
+        12.7430 1.0001
+        12.9513 0.0000
+        14.6597 0.0000
+      }
+    }
+    event speak "engineer_taunt_bumpkins_banjo_"
+    {
+      time 8.325000 10.377540
+      param "engineer_taunt_bumpkins_banjo_yells"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "engineer_taunt_bumpkins_banjo_engineer_meleedare01"
+    {
+      time 0.149967 2.202507
+      param "engineer_taunt_bumpkins_banjo_intro"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "taunt_headbutt_sfx_hand_swoosh"
+    {
+      time 0.000001 0.572133
+      param "taunt_headbutt_sfx_hand_swoosh"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Carpet.Impact"
+    {
+      time 1.594203 2.040507
+      param "Carpet.Impact"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "engineer_taunt_bumpkins_banjo_"
+    {
+      time 13.258333 13.778378
+      param "engineer_taunt_bumpkins_banjo_yells"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "36"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "RampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

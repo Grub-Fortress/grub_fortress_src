@@ -1,0 +1,34 @@
+// Choreo version 1
+event loop "tauntrussian_rubdown_prop_loop"
+{
+  time 14.650000 -1.000000
+  param "4.110000"
+  loopcount "255"
+}
+actor "Engineer"
+{
+  channel "Engineer"
+  {
+    event sequence "intro"
+    {
+      time 0.000000 14.65
+      param "intro"
+      fixedlength
+    }
+  }
+  channel "face"
+  {
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "104"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "RampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

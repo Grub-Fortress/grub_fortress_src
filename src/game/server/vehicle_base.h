@@ -171,6 +171,7 @@ public:
 	~CPropVehicleDriveable( void );
 
 	virtual void	Precache( void );
+	virtual void	UpdateOnRemove(void);
 	virtual void	Spawn( void );
 	virtual int		Restore( IRestore &restore );
 	virtual void	OnRestore();
@@ -182,6 +183,7 @@ public:
 	virtual void	Think( void );
 	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
 	virtual void	Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info );
+	virtual int		OnTakeDamage(const CTakeDamageInfo& info);
 
 	// Vehicle handling
 	virtual void	VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
@@ -202,6 +204,9 @@ public:
 
 	virtual bool IsOverturned( void );
 	virtual bool IsVehicleBodyInWater( void ) { return false; }
+
+	bool	TouchedGroundSinceTeleport(void) { return m_bTouchedGround; }
+	bool m_bTouchedGround;
 		
 	// Engine handling
 	void	StartEngine( void );
@@ -286,6 +291,7 @@ public:
 	// NPC Passengers
 	// --------------------------------
 
+	bool IsRunningEnterExitAnim(void) { return m_bEnterAnimOn || m_bExitAnimOn; }
 	bool IsEnterAnimOn( void ) { return m_bEnterAnimOn; }
 	bool IsExitAnimOn( void ) { return m_bExitAnimOn; }
 	const Vector &GetEyeExitEndpoint( void ) { return m_vecEyeExitEndpoint; }

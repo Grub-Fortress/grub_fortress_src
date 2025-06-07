@@ -5571,6 +5571,7 @@ bool CBasePlayer::GetInVehicle( IServerVehicle *pVehicle, int nRole )
 		if ( pWeapon != NULL )
 		{
 			pWeapon->Holster( NULL );
+			HideViewModels();
 		}
 
 #ifndef HL2_DLL
@@ -5608,6 +5609,7 @@ bool CBasePlayer::GetInVehicle( IServerVehicle *pVehicle, int nRole )
 	// Parent to the vehicle
 	SetParent( pEnt );
 
+	SetLocalVelocity(vec3_origin);
 	SetCollisionGroup( COLLISION_GROUP_IN_VEHICLE );
 	
 	// We cannot be ducking -- do all this before SetPassenger because it
@@ -5626,6 +5628,7 @@ bool CBasePlayer::GetInVehicle( IServerVehicle *pVehicle, int nRole )
 		ToggleDuck();
 	}
 
+	SetGroundEntity(pEnt);
 	m_hVehicle = pEnt;
 
 	// Throw an event indicating that the player entered the vehicle.
@@ -6215,7 +6218,7 @@ static void CreateJeep( CBasePlayer *pPlayer )
 	// Cheat to create a jeep in front of the player
 	Vector vecForward;
 	AngleVectors( pPlayer->EyeAngles(), &vecForward );
-	CBaseEntity *pJeep = (CBaseEntity *)CreateEntityByName( "prop_vehicle_jeep" );
+	CBaseEntity *pJeep = (CBaseEntity *)CreateEntityByName( "prop_vehicle_driveable" );
 	if ( pJeep )
 	{
 		Vector vecOrigin = pPlayer->GetAbsOrigin() + vecForward * 256 + Vector(0,0,64);
@@ -6226,6 +6229,7 @@ static void CreateJeep( CBasePlayer *pPlayer )
 		pJeep->KeyValue( "solid", "6" );
 		pJeep->KeyValue( "targetname", "jeep" );
 		pJeep->KeyValue( "vehiclescript", "scripts/vehicles/jeep_test.txt" );
+		pJeep->KeyValue("spawnflags", "1");
 		DispatchSpawn( pJeep );
 		pJeep->Activate();
 		pJeep->Teleport( &vecOrigin, &vecAngles, NULL );

@@ -34,6 +34,7 @@
 #include "ai_behavior_lead.h"
 #include "gameinterface.h"
 #include "ilagcompensationmanager.h"
+#include "vehicle_base.h"
 
 #ifdef HL2_DLL
 #include "hl2_player.h"
@@ -380,6 +381,11 @@ void CBaseTrigger::InitTrigger( )
 //-----------------------------------------------------------------------------
 bool CBaseTrigger::PassesTriggerFilters(CBaseEntity *pOther)
 {
+	//if its a vehicle with a driver let them go through the filters insteadAdd commentMore actions
+	CPropVehicleDriveable* pVehicle = dynamic_cast<CPropVehicleDriveable*>(pOther);
+	if ( pVehicle && pVehicle->GetDriver() )
+		return PassesTriggerFilters( pVehicle->GetDriver() );
+
 	// First test spawn flag filters
 	if ( HasSpawnFlags(SF_TRIGGER_ALLOW_ALL) ||
 		(HasSpawnFlags(SF_TRIGGER_ALLOW_CLIENTS) && (pOther->GetFlags() & FL_CLIENT)) ||

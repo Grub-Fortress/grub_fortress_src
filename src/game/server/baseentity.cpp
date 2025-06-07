@@ -63,6 +63,7 @@
 #include "tier1/utlstring.h"
 #include "utlhashtable.h"
 #include "vscript_server.h"
+#include "vehicle_base.h"
 
 #if defined( TF_DLL )
 #include "tf_gamerules.h"
@@ -1703,6 +1704,15 @@ int CBaseEntity::TakeDamage( const CTakeDamageInfo &inputInfo )
 		info.ScaleDamage( GetReceivedDamageScale( info.GetAttacker() ) );
 
 		//Msg("%s took %.2f Damage, at %.2f\n", GetClassname(), info.GetDamage(), gpGlobals->curtime );
+		if (info.GetAttacker())
+		{
+			CPropVehicleDriveable* pVehicle = dynamic_cast<CPropVehicleDriveable*>(info.GetAttacker());
+			if (pVehicle && pVehicle->GetDriver())
+			{
+				info.SetAttacker(pVehicle->GetDriver());
+				info.ScaleDamage(3.f); //Gidi30 - Convar this i guess?
+			}
+		}
 
 		if ( ScriptHookEnabled( "OnTakeDamage" ) )
 		{

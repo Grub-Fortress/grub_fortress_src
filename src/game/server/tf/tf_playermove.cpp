@@ -11,6 +11,7 @@
 #include "in_buttons.h"
 #include "ipredictionsystem.h"
 #include "tf_player.h"
+#include "iservervehicle.h"
 
 
 static CMoveData g_MoveData;
@@ -109,6 +110,12 @@ void CTFPlayerMove::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 			pTFPlayer->m_qPreviousChargeEyeAngle = pTFPlayer->EyeAngles();
 		}
 	}
+	IServerVehicle* pVehicle = player->GetVehicle();
+
+	if (pVehicle)
+	{
+		pVehicle->SetupMove(player, ucmd, pHelper, move);
+	}
 
 	BaseClass::SetupMove( player, ucmd, pHelper, move );
 }
@@ -122,6 +129,11 @@ void CTFPlayerMove::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 //-----------------------------------------------------------------------------
 void CTFPlayerMove::FinishMove( CBasePlayer *player, CUserCmd *ucmd, CMoveData *move )
 {
+	IServerVehicle* pVehicle = player->GetVehicle();
+		if (pVehicle)
+		{
+			pVehicle->FinishMove(player, ucmd, move);
+		}
 	// Call the default FinishMove code.
 	BaseClass::FinishMove( player, ucmd, move );
 }

@@ -308,6 +308,9 @@ void CTFFlareGun::ClientEffectsThink( void )
 		SetContextThink( &CTFFlareGun::ClientEffectsThink, gpGlobals->curtime + 0.25f, "EFFECTS_THINK" );
 	}
 
+	if ( pPlayer->IsInAVehicle() )
+		return;
+
 	if ( GetFlareGunType() == FLAREGUN_GRORDBORT && m_flNextPrimaryAttack <= gpGlobals->curtime )
 	{
 		ParticleProp()->Init( this );

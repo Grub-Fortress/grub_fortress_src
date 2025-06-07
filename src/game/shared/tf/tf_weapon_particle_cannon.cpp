@@ -397,6 +397,9 @@ void CTFParticleCannon::ClientEffectsThink( void )
 
 	SetContextThink( &CTFParticleCannon::ClientEffectsThink, gpGlobals->curtime + 2 + rand() % 5, "PC_EFFECTS_THINK" );
 
+	if ( pPlayer->IsInAVehicle() )
+		return;
+
 	if ( pPlayer->m_Shared.InCond( TF_COND_TAUNTING ) )
 		return;
 

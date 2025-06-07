@@ -1,0 +1,28 @@
+// Choreo version 1
+actor "Engineer"
+{
+  channel "Engineer"
+  {
+    event sequence "end"
+    {
+      time 0.000000 1.800000
+      param "end"
+      fixedlength
+    }
+  }
+  channel "face"
+  {
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "RampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

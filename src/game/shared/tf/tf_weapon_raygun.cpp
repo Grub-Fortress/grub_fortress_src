@@ -197,6 +197,9 @@ void CTFRaygun::ClientEffectsThink( void )
 
 	SetContextThink( &CTFRaygun::ClientEffectsThink, gpGlobals->curtime + 2 + rand() % 5, "EFFECTS_THINK" );
 
+	if ( pPlayer->IsInAVehicle() )
+		return;
+
 	ParticleProp()->Init( this );
 	CNewParticleEffect* pEffect = ParticleProp()->Create( GetIdleParticleEffect(), PATTACH_POINT_FOLLOW, "muzzle" );
 	if ( pEffect )

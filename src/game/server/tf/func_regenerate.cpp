@@ -106,6 +106,9 @@ void CRegenerateZone::Touch( CBaseEntity *pOther )
 			if ( pPlayer->IsTaunting() )
 				return;
 
+			if ( pPlayer->IsInAVehicle() )
+				return;
+
 			int iTeam = GetTeamNumber();
 
 			if ( TFGameRules()->State_Get() != GR_STATE_TEAM_WIN )

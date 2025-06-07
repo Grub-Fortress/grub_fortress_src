@@ -22,11 +22,15 @@
 #include "c_tf_player.h"
 #include "c_func_capture_zone.h"
 #include "tf_gcmessages.h"
+#include "iclientvehicle.h"
+#include "c_prop_vehicle.h"
 
 #define CCaptureZone C_CaptureZone
 #else
 #include "tf_player.h"
 #include "func_capture_zone.h"
+#include "iservervehicle.h"
+#include "vehicle_base.h"
 #endif
 
 #define TF_RUN_SPEED			320.0f
@@ -227,8 +231,8 @@ Activity CTFPlayerAnimState::ActivityOverride( Activity baseAct, bool *pRequired
 
 	CTFPlayer *pPlayer = GetTFPlayer();
 
-	// Override if we're in a kart
-	if ( pPlayer->m_Shared.InCond( TF_COND_HALLOWEEN_KART ) )
+	// Override if we're in a kart - Gidi30 Nice touch, i may change it to unique ones
+	if ( pPlayer->m_Shared.InCond( TF_COND_HALLOWEEN_KART ) || pPlayer->IsInAVehicle() )
 	{
 		pTable = s_acttableKartState;
 		iActivityCount = ARRAYSIZE( s_acttableKartState );
@@ -385,6 +389,7 @@ void CTFPlayerAnimState::Update( float eyeYaw, float eyePitch )
 	Vector vPositionToFace = ( pTauntPartner ? pTauntPartner->GetAbsOrigin() : vec3_origin );
 	bool bInTaunt = pTFPlayer->m_Shared.InCond( TF_COND_TAUNTING );
 	bool bInKart = pTFPlayer->m_Shared.InCond( TF_COND_HALLOWEEN_KART );
+	bool bInVehicle = pTFPlayer->IsInAVehicle();
 	bool bIsImmobilized = bInTaunt || pTFPlayer->m_Shared.IsControlStunned();
 
 	if ( SetupPoseParameters( pStudioHdr ) )
@@ -484,13 +489,41 @@ void CTFPlayerAnimState::Update( float eyeYaw, float eyePitch )
 			}
 #endif
 		}
+		else if (bInVehicle)
+		{
+			m_bForceAimYaw = true;
+#ifdef GAME_DLL
+			IServerVehicle* pvehicle = pTFPlayer->GetVehicle();
+			CPropVehicleDriveable* pDriveableVehicle = dynamic_cast<CPropVehicleDriveable*>(pvehicle->GetVehicleEnt());
+#else // GAME_DLL
+			IClientVehicle* pvehicle = pTFPlayer->GetVehicle();
+			C_PropVehicleDriveable* pDriveableVehicle = dynamic_cast<C_PropVehicleDriveable*>(pvehicle->GetVehicleEnt());
+#endif
+
+			{
+				QAngle angVehicle = pDriveableVehicle->GetAbsAngles();
+				Vector vOldForward;
+				angVehicle[YAW] += 90.f;
+				AngleVectors(angVehicle, &vOldForward);
+				pDriveableVehicle->GetVectors(NULL, NULL, &m_vecSmoothedUp);
+				Vector vRight = vOldForward.Cross(m_vecSmoothedUp);
+				Vector vForward = m_vecSmoothedUp.Cross(vRight);
+				VectorAngles(vForward, m_vecSmoothedUp, m_angRender);
+				m_flEyeYaw = m_angRender[YAW];
+			}
+		}
 		else if ( TFGameRules()->PlayersAreOnMatchSummaryStage() )
 		{
 			m_bForceAimYaw = true;
 			m_flEyeYaw = pTFPlayer->GetTauntYaw();
 		}
+		else
+		{
+			m_angRender = pTFPlayer->GetAbsAngles();
+			m_angRender[PITCH] = 0;
+		}
 		
-		if ( !bIsImmobilized || bInTaunt || bInKart )
+		if ( !bIsImmobilized || bInTaunt || bInKart || bInVehicle )
 		{
 			// Pose parameter - Torso aiming (up/down).
 			ComputePoseParam_AimPitch( pStudioHdr );

@@ -147,7 +147,7 @@ public:
 public:
 	virtual CBaseEntity		*GetVehicleEnt( void ) { return m_pVehicle; }
 	virtual void			SetPassenger( int nRole, CBaseCombatCharacter *pPassenger );
-	virtual bool			IsPassengerVisible( int nRole = VEHICLE_ROLE_DRIVER ) { return false; }
+	virtual bool			IsPassengerVisible( int nRole = VEHICLE_ROLE_DRIVER ) { return true; }
 	virtual bool			IsPassengerDamagable( int nRole  = VEHICLE_ROLE_DRIVER ) { return true; }
 	virtual bool			PassengerShouldReceiveDamage( CTakeDamageInfo &info );
 
