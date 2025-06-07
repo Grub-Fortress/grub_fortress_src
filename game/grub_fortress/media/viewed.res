@@ -10,7 +10,7 @@
 	}
 	"itemtest"
 	{
-		"viewed"		"90"
+		"viewed"		"93"
 	}
 	"pl_goldrush"
 	{
@@ -22,7 +22,7 @@
 	}
 	"koth_harvest_final"
 	{
-		"viewed"		"4"
+		"viewed"		"5"
 	}
 	"pl_upward"
 	{
@@ -30,7 +30,7 @@
 	}
 	"ctf_grufort"
 	{
-		"viewed"		"6"
+		"viewed"		"7"
 	}
 	"cp_grubowl"
 	{
@@ -39,5 +39,9 @@
 	"raid_goldrush"
 	{
 		"viewed"		"6"
+	}
+	"devtest_ladder"
+	{
+		"viewed"		"9"
 	}
 }

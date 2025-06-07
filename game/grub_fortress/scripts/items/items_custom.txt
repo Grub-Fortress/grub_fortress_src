@@ -464,12 +464,12 @@ not sure if it should be used as a weapon"
 			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
 			"drop_sound"		"ui/item_metal_weapon_drop.wav"
 		}
-		// Sticky bomb launcher 1 
+		// Not So Sticky Bomb Launcher 
 		"32004"
 		{
 			"name"						"TF_WEAPON_STICKLESS"
 			"item_quality"				"unique"
-			"item_name"					"Not So StickyBomb Launcher"
+			"item_name"					"Not So Sticky Bomb Launcher"
 			"prefab"					"weapon_stickybomb_launcher"
 			"moditem"					"1"
 			"attributes"
@@ -483,6 +483,63 @@ not sure if it should be used as a weapon"
 				{
 					"attribute_class"	"override_projectile_type"
 					"value"				"31"
+				}
+			}
+		}
+		// Not So Sticky Jumper 
+		"32005"
+		{
+			"name"						"TF_WEAPON_STICKLESS_PRACTICE"
+			"item_quality"				"unique"
+			"item_name"					"Not So Sticky Jumper"
+			"prefab"					"weapon_stickybomb_launcher"
+			"image_inventory"			"backpack/weapons/c_models/c_sticky_jumper/c_sticky_jumper"
+			"image_inventory_size_w"	"128"
+			"image_inventory_size_h"	"82"
+			"inspect_panel_dist"		"50"
+			"model_player"				"models/weapons/c_models/c_sticky_jumper/c_sticky_jumper.mdl"
+			"moditem"					"1"
+			"attributes"
+			{
+				"grenade no stick"
+				{
+					"attribute_class"	"grenade_no_stick"
+					"value"				"1"
+				}
+				"override projectile type"
+				{
+					"attribute_class"	"override_projectile_type"
+					"value"				"31"
+				}
+				"damage penalty"
+				{
+					"attribute_class"	"mult_dmg"
+					"value"				"0.002"
+				}
+				"crit mod disabled"
+				{
+					"attribute_class"	"mult_crit_chance"
+					"value"				"0"
+				}
+				"no self blast dmg"
+				{
+					"attribute_class"	"no_self_blast_dmg"
+					"value"				"2"
+				}
+				"maxammo secondary increased"
+				{
+					"attribute_class"	"mult_maxammo_secondary"
+					"value"				"3.0"
+				}
+				"max pipebombs decreased"
+				{
+					"attribute_class"	"add_max_pipebombs"
+					"value"				"-6"
+				}
+				"cannot pick up intelligence"
+				{
+					"attribute_class"	"cannot_pick_up_intelligence"
+					"value"				"1"
 				}
 			}
 		}

@@ -2930,7 +2930,7 @@ void CTFGameMovement::StepMove( Vector &vecDestination, trace_t &trace )
 //-----------------------------------------------------------------------------
 bool CTFGameMovement::GameHasLadders() const
 {
-	return false;
+	return true;
 }
 
 //-----------------------------------------------------------------------------
