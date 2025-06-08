@@ -1,6 +1,6 @@
 //Ty BetaM!
 //econ_item_schema.cpp - line 4421
-#base items_game.txt
+#base items_rebalance.txt
 
 "items_game"
 {
@@ -186,196 +186,14 @@ not sure if it should be used as a weapon"
 	}
 	"items"
 	{
-		// Rebalances 
-		"133"
-		{
-			"name"			"The Gunboats"
-			"prefab"	"valve weapon_gunboats"
-			"first_sale_date"	"2010/09/29"
-			"item_class"		"tf_wearable"
-			"craft_class"	"weapon"
-			"craft_material_type"	"weapon"
-			"loadondemand" "1"
-			"capabilities"
-			{
-				"nameable"		"1"
-			}
-			"show_in_armory"	"1"
-			"item_type_name" 	"#TF_Wearable_Boots"
-			"item_name"		"#TF_Unique_Blast_Boots"
-			"item_slot"		"secondary"
-			"equip_region"	"feet"
-			"anim_slot"		"FORCE_NOT_USED"
-			"item_quality"		"unique"
-			"propername"	"1"
-			"min_ilevel"		"10"
-			"max_ilevel"		"10"
-			"image_inventory"	"backpack/weapons/c_models/c_rocketboots_soldier"
-			"image_inventory_size_w"		"128"
-			"image_inventory_size_h"		"82"
-			"model_player"		"models/weapons/c_models/c_rocketboots_soldier.mdl"
-			"act_as_wearable" "1"
-			"used_by_classes"
-			{
-				"soldier"	"secondary"
-				"demoman"	"primary"
-			}
-			"attributes"
-			{
-				"rocket jump damage reduction"
-				{
-					"attribute_class"	"rocket_jump_dmg_reduction"
-					"value" "0.4"
-				}
-				"allowed in medieval mode"
-				{
-					"attribute_class"	"allowed_in_medieval_mode"
-					"value"	"1"
-				}
-			}
-			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
-			"drop_sound"		"ui/item_metal_weapon_drop.wav"
-		}
-		"772"
-		{
-			"name"	"Baby Face's Blaster"
-			"prefab"		"weapon_scattergun"
-			"first_sale_date"	"2012/06/27"
-			"item_class"	"tf_weapon_pep_brawler_blaster"
-			"capabilities"
-			{
-				"can_craft_count"	"1"
-			}
-			"tags"
-			{
-				"can_deal_damage"			"1"
-				"can_deal_critical_damage"	"1"
-				"can_deal_mvm_penetration_damage"	"1"
-				"can_deal_long_distance_damage"	"1"
-			}
-			"show_in_armory"	"1"
-			"item_type_name"	"#TF_Weapon_Scattergun"
-			"item_name"	"#TF_Weapon_PEP_Scattergun"
-			"item_description"	"#TF_Weapon_PEP_Scattergun_Desc"
-			"item_logname"	"pep_brawlerblaster"
-			"item_iconname"	"pep_brawlerblaster"
-			"item_quality"	"unique"
-			"baseitem" "0"
-			"min_ilevel"	"10"
-			"max_ilevel"	"10"
-			"inspect_panel_dist" "38"
-			"image_inventory"	"backpack/workshop/weapons/c_models/c_pep_scattergun/c_pep_scattergun"
-			"model_player"	"models/workshop/weapons/c_models/c_pep_scattergun/c_pep_scattergun.mdl"
-			"attach_to_hands" "1"
-			"static_attrs"
-			{
-				"min_viewmodel_offset"					"10 0 -12"
-			}
-			"attributes"
-			{
-				"move speed penalty"
-				{
-					"attribute_class"	"mult_player_movespeed"
-					"value"	"0.90"
-				}
-				"boost on damage"
-				{
-					"attribute_class"	"boost_on_damage"
-					"value"	"1"
-				}
-				"hype resets on jump"
-				{
-					"attribute_class"	"hype_resets_on_jump"
-					"value"	"25"
-				}
-				"clip size penalty"
-				{
-					"attribute_class"	"mult_clipsize"
-					"value"				"0.66"
-				}
-			}
-			"visuals"
-			{
-				"sound_single_shot"	"Weapon_Brawler_Blaster.Single"
-				"sound_burst"		"Weapon_Brawler_Blaster.SingleCrit"
-			}
-		}
-
 		// New Weapons
-
-		//PDA TEST 
-//		"32000"
-// 		{
-// 			"name"	"TF_WEAPON_PDA_BUILD_MINIDISPENSER"
-// 			"capabilities"
-// 			{
-// 				"nameable"		"1"
-// 			}
-// 			"first_sale_date"	"2010/09/29"
-// 			"item_class"	"tf_weapon_pda_engineer_build"
-// 			"craft_class"	"weapon"
-// 			"craft_material_type"	"weapon"
-// 			"item_name"	"#TFCW_HandyPartner"
-// 			"item_type_name"	"#TF_Weapon_PDA_Engineer"
-// 			"item_slot"	"pda"
-// 			"item_quality"	"unique"
-// 			"moditem" "1"
-// 			"min_ilevel"	"1"
-// 			"max_ilevel"	"1"
-// 			"attach_to_hands" "1"
-// 			"image_inventory"	"backpack/weapons/custommade/c_pda_minidisp"
-// 			"image_inventory_size_w"		"128"
-// 			"image_inventory_size_h"		"82"
-// 			"model_player"	"models/weapons/c_models/c_minibuilder/c_minibuilder.mdl"
-// 			"used_by_classes"
-// 			{
-// 				"engineer"	"1"
-// 			}
-// 			"static_attrs"
-// 			{
-// 				"min_viewmodel_offset"					"10 0 -10"				
-// 			}
-// 			"attributes"
-// 			{
-// 				"mod pda builds minidispenser"
-// 				{
-// 					"attribute_class"	"pda_builds_minidispenser"
-// 					"value"	"1"
-// 				}
-// 				"kill eater score type"
-// 				{
-// 					"attribute_class"	"kill_eater_score_type"
-// 					"value" 	"3" 
-// 				}
-// 				"kill eater score type 2"
-// 				{
-// 					"attribute_class"	"kill_eater_score_type_2"
-// 					"value" 	"59" 
-// 				}
-// 				"kill eater score type 3"
-// 				{
-// 					"attribute_class"	"kill_eater_score_type_3"
-// 					"value" 	"60" 
-// 				}
-// 			}
-// 			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
-// 			"drop_sound"		"ui/item_metal_weapon_drop.wav"
-// 			"visuals"
-// 			{
-// 				"animation_replacement"
-// 				{
-// 					"ACT_VM_IDLE"	"ACT_ENGINEER_PDA2_VM_IDLE"
-// 					"ACT_VM_DRAW"	"ACT_ENGINEER_PDA2_VM_DRAW"
-// 				}
-// 			}
-// 		}
 		// Nailgun 
 		"32001"
 		{
 			"name"						"TF_WEAPON_NAILGUN"
 			"prefab"					"weapon_nailgun"
 		}
-		// Rocket Launcher 1 
+		// RPG 
 		"32002"
 		{
 			"name"						"TF_WEAPON_RPG"
@@ -403,6 +221,7 @@ not sure if it should be used as a weapon"
 				}
 			}
 		}
+		// Leadpipe 
 		"32003"
 		{
 			"name"	"Leadpipe"

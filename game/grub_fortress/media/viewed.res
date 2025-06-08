@@ -6,11 +6,11 @@
 	}
 	"ctf_2fort"
 	{
-		"viewed"		"11"
+		"viewed"		"12"
 	}
 	"itemtest"
 	{
-		"viewed"		"93"
+		"viewed"		"95"
 	}
 	"pl_goldrush"
 	{
@@ -42,6 +42,10 @@
 	}
 	"devtest_ladder"
 	{
-		"viewed"		"9"
+		"viewed"		"10"
+	}
+	"cp_orange_x3_d"
+	{
+		"viewed"		"1"
 	}
 }
