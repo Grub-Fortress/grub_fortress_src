@@ -405,6 +405,7 @@ int CTFGrenadePipebombProjectile::DrawModel( int flags )
 // TF Pipebomb Grenade Projectile functions (Server specific).
 //
 #define TF_WEAPON_PIPEGRENADE_MODEL		"models/weapons/w_models/w_grenade_grenadelauncher.mdl"
+#define TF_WEAPON_PIPE_REMOTE_MODEL		"models/weapons/w_models/w_grenade_grenadelauncher_remote.mdl"
 #define TF_WEAPON_CANNONBALL_MODEL		"models/weapons/w_models/w_cannonball.mdl"
 #define TF_WEAPON_PIPEBOMB_MODEL		"models/weapons/w_models/w_stickybomb.mdl"
 #define TF_WEAPON_PIPEBOMB2_MODEL		"models/weapons/w_models/w_stickybomb2.mdl"
@@ -526,7 +527,7 @@ void CTFGrenadePipebombProjectile::Spawn()
 		}
 		if (m_iType == TF_GL_MODE_REMOTE_DETONATE_ROLLER)
 		{
-			SetModel(TF_WEAPON_PIPEGRENADE_MODEL);
+			SetModel(TF_WEAPON_PIPE_REMOTE_MODEL);
 		}
 		else
 		{
@@ -580,6 +581,9 @@ void CTFGrenadePipebombProjectile::Precache()
 
 	iModel = PrecacheModel( TF_WEAPON_PIPEGRENADE_MODEL );
 	PrecacheGibsForModel( iModel );
+
+	iModel = PrecacheModel(TF_WEAPON_PIPE_REMOTE_MODEL);
+	PrecacheGibsForModel(iModel);
 
 	iModel = PrecacheModel( TF_WEAPON_CANNONBALL_MODEL );
 	PrecacheGibsForModel( iModel );

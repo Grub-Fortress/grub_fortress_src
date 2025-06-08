@@ -183,6 +183,26 @@ not sure if it should be used as a weapon"
 			"effect_type"	"neutral"
 			"stored_as_integer"	"0"
 		}
+		"5002"
+		{
+			"name"	"override engineer object type"
+			"attribute_class"	"override_engineer_object_type"
+			"description_string"	"override engineer object type"
+			"description_format"	"value_is_additive_percentage"
+			"hidden"	"0"
+			"effect_type"	"neutral"
+			"stored_as_integer"	"0"
+		}
+		"5003"
+		{
+			"name"	"override engineer object type 2"
+			"attribute_class"	"override_engineer_object_type_2"
+			"description_string"	"override engineer object type 2"
+			"description_format"	"value_is_additive_percentage"
+			"hidden"	"0"
+			"effect_type"	"neutral"
+			"stored_as_integer"	"0"
+		}
 	}
 	"items"
 	{
@@ -301,7 +321,7 @@ not sure if it should be used as a weapon"
 				"override projectile type"
 				{
 					"attribute_class"	"override_projectile_type"
-					"value"				"31"
+					"value"				"31" // w_grenade_grenadelauncher_remote
 				}
 			}
 		}
@@ -359,6 +379,52 @@ not sure if it should be used as a weapon"
 				{
 					"attribute_class"	"cannot_pick_up_intelligence"
 					"value"				"1"
+				}
+			}
+		}
+		"32006"
+		{
+			"name"	"TF_WEAPON_PDA_ENGINEER_CATAPULT"
+			"item_class"	"tf_weapon_pda_engineer_build"
+			"item_name"	"Catapult PDA"
+			"item_type_name"	"#TF_Weapon_PDA_Engineer"
+			"item_slot"	"pda"
+			"item_quality"	"normal"
+			"moditem" "1"
+			"attach_to_hands" "1"
+			"image_inventory"	"backpack/weapons/w_models/w_builder"
+			"image_inventory_size_w"		"128"
+			"image_inventory_size_h"		"82"
+			"model_player"	"models/weapons/c_models/c_builder/c_builder.mdl"
+			"used_by_classes"
+			{
+				"engineer"	"1"
+			}
+			"static_attrs"
+			{
+				"min_viewmodel_offset"					"10 0 -10"				
+			}
+			"attributes"
+			{
+				"override engineer object type"
+				{
+					"attribute_class"	"override_engineer_object_type"
+					"value" 	"OBJ_CATAPULT" 
+				}
+				"override engineer object type 2"
+				{
+					"attribute_class"	"override_engineer_object_type_2"
+					"value" 	"OBJ_CATAPULT" 
+				}
+			}
+			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
+			"drop_sound"		"ui/item_metal_weapon_drop.wav"
+			"visuals"
+			{
+				"animation_replacement"
+				{
+					"ACT_VM_IDLE"	"ACT_ENGINEER_PDA2_VM_IDLE"
+					"ACT_VM_DRAW"	"ACT_ENGINEER_PDA2_VM_DRAW"
 				}
 			}
 		}
