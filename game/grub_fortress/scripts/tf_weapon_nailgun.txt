@@ -11,18 +11,18 @@ WeaponData
 	"Damage"		"12"
 	"Range"			"8192"
 	"BulletsPerShot"	"1"
-	"Spread"		"0.03"
+	"Spread"		"0.02"
 	"TimeFireDelay"		"0.1"
-	"TimeReload"		"1.15"
+	"TimeReload"		"1"
 	"UseRapidFireCrits"	"1"
-	"ProjectileType"	"projectile_syringe"
+	"ProjectileType"	"projectile_nail"
 
 	// Ammo & Clip.
 	"primary_ammo"		"tf_ammo_secondary"
 	"secondary_ammo"	"None"
 	"clip_size"		"40"
-	"default_clip"		"25"
-	"MaxAmmo"		"125"
+	"default_clip"		"40"
+	"MaxAmmo"		"200"
 
 	// Buckets.
 	"bucket"				"1"

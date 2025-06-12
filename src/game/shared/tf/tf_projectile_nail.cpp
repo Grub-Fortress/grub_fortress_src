@@ -26,16 +26,21 @@
 // TF Syringe Projectile functions (Server specific).
 //
 #define SYRINGE_MODEL				"models/weapons/w_models/w_syringe_proj.mdl"
+#define NAIL_MODEL					"models/weapons/w_models/w_nail.mdl"
 #define SYRINGE_DISPATCH_EFFECT		"ClientProjectile_Syringe"
 
 LINK_ENTITY_TO_CLASS( tf_projectile_syringe, CTFProjectile_Syringe );
 PRECACHE_REGISTER( tf_projectile_syringe );
 
+LINK_ENTITY_TO_CLASS(tf_projectile_nail, CTFProjectile_Nail);
+PRECACHE_REGISTER(tf_projectile_nail);
 
 short g_sModelIndexSyringe;
+short g_sModelIndexNail;
 void PrecacheSyringe(void *pUser)
 {
 	g_sModelIndexSyringe = modelinfo->GetModelIndex( SYRINGE_MODEL );
+	g_sModelIndexNail = modelinfo->GetModelIndex( NAIL_MODEL );
 }
 
 PRECACHE_REGISTER_FN(PrecacheSyringe);
@@ -72,6 +77,37 @@ float CTFProjectile_Syringe::GetGravity( void )
 	return SYRINGE_GRAVITY;
 }
 
+//-----------------------------------------------------------------------------
+// CTFProjectile_Nail
+//-----------------------------------------------------------------------------
+#define NAIL_GRAVITY		0.3f
+#define NAIL_VELOCITY	1000.0f
+// Purpose:
+//-----------------------------------------------------------------------------
+CTFBaseProjectile* CTFProjectile_Nail::Create(
+	const Vector& vecOrigin,
+	const QAngle& vecAngles,
+	CTFWeaponBaseGun* pLauncher /*= NULL*/,
+	CBaseEntity* pOwner /*= NULL*/,
+	CBaseEntity* pScorer /*= NULL*/,
+	bool bCritical /*= false */
+) {
+	return CTFBaseProjectile::Create("tf_projectile_nail", vecOrigin, vecAngles, pOwner, NAIL_VELOCITY, g_sModelIndexNail, SYRINGE_DISPATCH_EFFECT, pScorer, bCritical);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+unsigned int CTFProjectile_Nail::PhysicsSolidMaskForEntity(void) const
+{
+	return BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_REDTEAM | CONTENTS_BLUETEAM;
+}
+
+//-----------------------------------------------------------------------------
+float CTFProjectile_Nail::GetGravity(void)
+{
+	return NAIL_GRAVITY;
+}
 
 #ifdef CLIENT_DLL
 

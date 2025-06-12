@@ -787,7 +787,7 @@ void CHudMenuEngyBuild::ReplaceBuildings( EngyConstructBuilding_t (&targetBuildi
 	CUtlVector< const EngyBuildingReplacement_t* > vecReplacements;
 
 	int iOverrideType = -1;
-	CALL_ATTRIB_HOOK_INT_ON_OTHER(pLocalPlayer, iOverrideType, override_engineer_object_type);
+	CALL_ATTRIB_HOOK_INT_ON_OTHER(pLocalPlayer, iOverrideType, override_engineer_object_type );
 	if (iOverrideType >= 0 && iOverrideType < ARRAYSIZE(s_alternateEngineerBuildings))
 	{
 		vecReplacements.AddToTail(&s_alternateEngineerBuildings[iOverrideType]);

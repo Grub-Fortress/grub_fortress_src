@@ -181,5 +181,56 @@
 				"sound_burst"		"Weapon_Brawler_Blaster.SingleCrit"
 			}
 		}
+		"33000"
+		{
+			"name"	"Fake Duel MiniGame"
+			"prefab"	"valve"
+			"first_sale_date"	"2010/09/29"
+			"item_class"	"tf_wearable"
+			"tool"
+			{
+				"type"	"duel_minigame"
+			}
+			"capabilities"
+			{
+				"usable_gc"		"1"
+			}
+			"show_in_armory"	"1"
+			"item_type_name"	"#TF_UsableItem"
+			"item_name"	"Fake Dueling Mini-Game"
+			"item_description"	"#TF_Usable_Duel_Desc"
+			"item_slot"	"action"
+			"image_inventory"	"backpack/player/items/crafting/icon_dueling"
+			"image_inventory_size_w"	"128"
+			"image_inventory_size_h"	"96"
+			"item_quality"		"unique"
+			"moditem"					"1"
+			"model_player"	""
+			"min_ilevel"	"5"
+			"max_ilevel"	"5"
+			"armory_desc" "action duel"
+			"used_by_classes"
+			{
+				"scout"	"1"
+				"sniper"	"1"
+				"soldier"	"1"
+				"demoman"	"1"
+				"medic"	"1"
+				"heavy"	"1"
+				"spy" "1"
+				"engineer" "1"
+				"pyro" "1"
+			}
+			"attributes"
+			{
+				"always tradable"
+				{
+					"attribute_class"	"always_tradable"
+					"value"				"1"
+				}
+			}
+			"mouse_pressed_sound"	"ui/item_dueling_pistols_pickup.wav"
+			"drop_sound"		"ui/item_light_gun_drop.wav"
+		}
 	}
 }
