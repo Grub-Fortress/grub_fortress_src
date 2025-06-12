@@ -10,7 +10,7 @@
 	}
 	"itemtest"
 	{
-		"viewed"		"118"
+		"viewed"		"119"
 	}
 	"pl_goldrush"
 	{
@@ -45,6 +45,14 @@
 		"viewed"		"10"
 	}
 	"cp_orange_x3_d"
+	{
+		"viewed"		"1"
+	}
+	"pl_cactuscanyon"
+	{
+		"viewed"		"1"
+	}
+	"koth_badlands"
 	{
 		"viewed"		"1"
 	}

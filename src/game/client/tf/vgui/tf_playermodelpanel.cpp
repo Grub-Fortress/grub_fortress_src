@@ -907,26 +907,33 @@ void CTFPlayerModelPanel::EquipAllWearables( CEconItemView *pHeldItem )
 	UpdateWeaponBodygroups( false );
 
 	// Now equip each of our wearables
-	FOR_EACH_VEC( m_ItemsToCarry, i )
+	FOR_EACH_VEC(m_ItemsToCarry, i)
 	{
-		CEconItemView *pItem = m_ItemsToCarry[i];
+		CEconItemView* pItem = m_ItemsToCarry[i];
+		int iSlot = pItem->GetStaticData()->GetLoadoutSlot(m_iCurrentClassIndex);
+
+		// Skip items in HEAD, MISC, and MISC2 slots
+		if (iSlot == LOADOUT_POSITION_HEAD || iSlot == LOADOUT_POSITION_MISC || iSlot == LOADOUT_POSITION_MISC2)
+			continue;
+
 		// If it's a wearable item, we put it on.
-		if ( pItem->GetStaticData()->IsAWearable() )
+		if (pItem->GetStaticData()->IsAWearable())
 		{
-			EquipItem( pItem );
+			EquipItem(pItem);
 		}
 
 		// Then see if there's an extra wearable we need to attach for this item
-		const char *pszAttached = pItem->GetExtraWearableModel();
-		if ( pszAttached && pszAttached[ 0 ] )
+		const char* pszAttached = pItem->GetExtraWearableModel();
+		if (pszAttached && pszAttached[0])
 		{
-			const char *pszViewModelAttached = pItem->GetExtraWearableViewModel();
-			if ( pHeldItem == pItem || pszViewModelAttached == NULL || pszViewModelAttached[ 0 ] == '\0' || pszViewModelAttached[ 0 ] == '?' )
+			const char* pszViewModelAttached = pItem->GetExtraWearableViewModel();
+			if (m_pHeldItem == pItem || pszViewModelAttached == NULL || pszViewModelAttached[0] == '\0' || pszViewModelAttached[0] == '?')
 			{
-				LoadAndAttachAdditionalModel( pszAttached, pItem );
+				LoadAndAttachAdditionalModel(pszAttached, pItem);
 			}
 		}
 	}
+
 
 	UpdateWeaponBodygroups( true );
 
