@@ -85,7 +85,26 @@ not sure if it should be used as a weapon"
 	}
 	"attributes"
 	{
-		// RESTORED ONES 
+		//RESTORED ONES
+		"342"
+		{
+			"name"	"see cash through walls"
+			"attribute_class"	"see_cash_through_walls"
+			"description_string"	"#Attrib_CashXray"
+			"description_format"	"value_is_additive"
+			"hidden"	"0"
+			"effect_type"	"positive"
+		}
+		"480"
+		{
+			"name"	"radius stealth"
+			"attribute_class"	"radius_stealth"
+			"description_string"	"#Attrib_Radius_Stealth"
+			"description_format"	"value_is_percentage"
+			"hidden"	"0"
+			"effect_type"	"negative"
+			"stored_as_integer"	"0"
+		}
 		"483"
 		{
 			"name"	"medigun heals buildings"
@@ -95,6 +114,16 @@ not sure if it should be used as a weapon"
 			"hidden"	"1"
 			"effect_type"	"negative"
 			"stored_as_integer"	"0"
+		}
+		"523"
+		{
+			"name"	"arrow mastery"
+			"attribute_class"	"arrow_mastery"
+			"description_string"	"#Attrib_Arrow_Mastery"
+			"description_format"	"value_is_additive"
+			"hidden"	"1"
+			"effect_type"	"negative"
+			"stored_as_integer"	"0"		
 		}
 		// CUSTOM ONES 
 		"4000"
