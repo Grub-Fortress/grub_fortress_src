@@ -179,7 +179,7 @@ static bool LoadSteam( const char *pRootDir )
 
 	if ( !pfnSAPIInit() )
 	{
-		MessageBox( 0, "Failed to launch Better Fortress 2!\nSteam Client might not be running or Valve sucks at programming their Steam API functions.\nMaybe try to run it asshole.\nTL;DR: SteamAPI_Init() failed!", "Launcher Error", MB_OK );
+		MessageBox( 0, "Failed to launch Better Fortress 2!\nIf you keep encountering this error, just launch from VS2022\nValve Please fix SteamAPI\nTL;DR: SteamAPI_Init() failed!", "Launcher Error", MB_OK );
 		UnloadSteam();
 		return false;
 	}

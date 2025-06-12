@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "backpack/player/mvm/robot_demo_large"
+	$translucent 1
+	$vertexcolor 1
+}

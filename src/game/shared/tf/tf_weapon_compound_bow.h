@@ -97,6 +97,8 @@ private:
 	virtual void	StopBurningEffect( void );
 #else
 
+	void CreateExtraArrow(CTFProjectile_Arrow* pMainArrow, const QAngle& qSpreadAngles, float flSpeed);
+	float GetRandomSpreadOffset(int iArrowMasteryLevel);
 
 #endif
 

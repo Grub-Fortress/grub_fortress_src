@@ -368,16 +368,22 @@ bool CMoveHelperServer::PlayerFallingDamage( void )
 		// MVM Versus - Falldamage sound
 		if( TFGameRules()->IsMannVsMachineMode() )
 		{
+			CTFPlayer* pPlayer = ToTFPlayer(m_pHostPlayer);
 			if(iDamageTaken > 0)
 			{
-				StartSound(m_pHostPlayer->GetAbsOrigin(),m_pHostPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS ? "MVM.FallDamageBots" : "Player.FallDamage");
+				StartSound(pPlayer->GetAbsOrigin(),( pPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS || pPlayer->IsMVMRobot() ) ? "MVM.FallDamageBots" : "Player.FallDamage");
 			}
 		}
 		else
 		{
 			if(iDamageTaken > 0)
 			{
+#ifdef TF_DLL
+				CTFPlayer* pPlayer = ToTFPlayer(m_pHostPlayer);
+				StartSound(pPlayer->GetAbsOrigin(),pPlayer->IsMVMRobot() ? "MVM.FallDamageBots" : "Player.FallDamage");
+#else
 				StartSound(m_pHostPlayer->GetAbsOrigin(),"Player.FallDamage");
+#endif
 			}
 		}
 

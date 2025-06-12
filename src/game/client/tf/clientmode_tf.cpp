@@ -837,6 +837,7 @@ void ClientModeTFNormal::FireGameEvent( IGameEvent *event )
 			case POWERUP_BOTTLE_REFILL_AMMO: pText = "#TF_PVE_Player_UsedRefillAmmoBottle"; break;
 			case POWERUP_BOTTLE_BUILDINGS_INSTANT_UPGRADE: pText = "#TF_PVE_Player_UsedBuildingUpgrade"; break;
 			case POWERUP_BOTTLE_RADIUS_STEALTH: pText = "#TF_PVE_Player_UsedRadiusStealth"; break;
+			case POWERUP_BOTTLE_SEE_CASH_THROUGH_WALL: pText = "#TF_PVE_Player_SeeCashThroughWall"; break;
 			}
 			if ( pText != NULL )
 			{

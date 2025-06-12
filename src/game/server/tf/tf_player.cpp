@@ -3199,7 +3199,6 @@ void CTFPlayer::PrecacheMvM()
 
 	PrecacheParticleSystem( "bot_radio_waves" );
 
-	PrecacheScriptSound( "MVM.FallDamageBots");
 	PrecacheScriptSound( "MVM.BotGiantStep" );
 	PrecacheScriptSound( "MVM.GiantHeavyStep" );
 	PrecacheScriptSound( "MVM.GiantSoldierStep" );
@@ -3536,6 +3535,7 @@ void CTFPlayer::PrecacheTFPlayer()
 	PrecacheScriptSound( "BlastJump.Whistle" );
 
 	//MVM Verus - Wearable Robot
+	PrecacheScriptSound("MVM.FallDamageBots");
 	PrecacheScriptSound( "MVM.BotStep" );
 	PrecacheParticleSystem( "bot_impact_light" );
 	PrecacheParticleSystem( "bot_impact_heavy" );
@@ -4119,14 +4119,29 @@ void CTFPlayer::Spawn()
 		//MVM Robo cosmetic
 		if( IsMVMRobot() )
 		{
-			if ( TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS )
-				return;
+			bool bMVM = TFGameRules() && TFGameRules()->IsMannVsMachineMode();
 
-			if(g_pFullFileSystem->FileExists(g_szBotModels[nRobotClassIndex]))
+			//TODO: Turn this into a proper function at this point lol
+			if ( bMVM )
+			{ 
+				if ( GetTeamNumber() != TF_TEAM_PVE_INVADERS )
+				{
+					if (g_pFullFileSystem->FileExists(g_szBotModels[nRobotClassIndex]))
+					{
+						GetPlayerClass()->SetCustomModel(g_szBotModels[nRobotClassIndex], USE_CLASS_ANIMATIONS);
+						UpdateModel();
+						SetBloodColor(DONT_BLEED);
+					}
+				}
+			}
+			else
 			{
-				GetPlayerClass()->SetCustomModel(g_szBotModels[nRobotClassIndex],USE_CLASS_ANIMATIONS);
-				UpdateModel();
-				SetBloodColor(DONT_BLEED);
+				if (g_pFullFileSystem->FileExists(g_szBotModels[nRobotClassIndex]))
+				{
+					GetPlayerClass()->SetCustomModel(g_szBotModels[nRobotClassIndex], USE_CLASS_ANIMATIONS);
+					UpdateModel();
+					SetBloodColor(DONT_BLEED);
+				}
 			}
 		}
 		//MVM Versus
@@ -4134,7 +4149,7 @@ void CTFPlayer::Spawn()
 		{
 			//We Reset your tags if you were for example a Gatebot
 			ClearTags();
-			if(GetTeamNumber() == TF_TEAM_PVE_INVADERS)
+			if( GetTeamNumber() == TF_TEAM_PVE_INVADERS )
 			{
 
 				//Spawn the player as Gatebot | 50% chance
@@ -4177,7 +4192,8 @@ void CTFPlayer::Spawn()
 					}
 				}
 			}
-			else
+			//MVM Versus - Keep the robot costume if user has it on
+			if ( GetTeamNumber() == TF_TEAM_PVE_DEFENDERS && !IsMVMRobot() )
 				GetPlayerClass()->SetCustomModel(NULL,USE_CLASS_ANIMATIONS);
 		}
 
@@ -14630,31 +14646,31 @@ int CTFPlayer::GiveAmmo( int iCount, int iAmmoIndex, bool bSuppressSound, EAmmoS
 	// ammo.
 	if ( iAmmoIndex != TF_AMMO_METAL )
 	{
-		//int iAmmoBecomesHealth = 0;
-		//CALL_ATTRIB_HOOK_INT( iAmmoBecomesHealth, ammo_becomes_health );
-		//if ( iAmmoBecomesHealth == 1 )
-		//{
-		//	// Ammo from ground pickups is converted to health.
-		//	if ( eAmmoSource == kAmmoSource_Pickup )
-		//	{
-		//		int iTakenHealth = TakeHealth( iCount, DMG_GENERIC );
-		//		if ( iTakenHealth > 0 )
-		//		{
-		//			if ( !bSuppressSound )
-		//			{
-		//				EmitSound( "BaseCombatCharacter.AmmoPickup" );
-		//			}
-		//			m_Shared.HealthKitPickupEffects( iCount );
-		//		}
-		//		return iTakenHealth;
-		//	}
+		int iAmmoBecomesHealth = 0;
+		CALL_ATTRIB_HOOK_INT( iAmmoBecomesHealth, ammo_becomes_health );
+		if ( iAmmoBecomesHealth == 1 )
+		{
+			// Ammo from ground pickups is converted to health.
+			if ( eAmmoSource == kAmmoSource_Pickup )
+			{
+				int iTakenHealth = TakeHealth( iCount, DMG_GENERIC );
+				if ( iTakenHealth > 0 )
+				{
+					if ( !bSuppressSound )
+					{
+						EmitSound( "BaseCombatCharacter.AmmoPickup" );
+					}
+					m_Shared.HealthKitPickupEffects( iCount );
+				}
+				return iTakenHealth;
+			}
 
-		//	// Ammo from the cart or engineer dispensers is flatly ignored.
-		//	if ( eAmmoSource == kAmmoSource_DispenserOrCart )
-		//		return 0;
+			// Ammo from the cart or engineer dispensers is flatly ignored.
+			if ( eAmmoSource == kAmmoSource_DispenserOrCart )
+				return 0;
 
-		//	Assert( eAmmoSource == kAmmoSource_Resupply );
-		//}
+			Assert( eAmmoSource == kAmmoSource_Resupply );
+		}
 
 		// Items that rely on timers to refill ammo use these attributes
 		// Prevents "touch supply closet and spam the thing" scenario.

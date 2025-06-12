@@ -148,20 +148,54 @@ objects
 		RequiresOwnBuilder	0
 	}
 	
+	OBJ_SPY_TRAP
+	{
+		ClassName			obj_spy_trap
+		StatusName			"MVM Magnet Trap"
+		BuildTime			0.1
+		MaxObjects			-1
+		Cost				0
+		CostMultiplier		1
+		UpgradeCost			0
+		UpgradeDuration		0
+		MaxUpgradeLevel		0
+		BuilderWeaponName	"Object Sapper"
+		BuilderPlacementString	"Place on object"
+		SelectionSlot		1
+		SelectionPosition	0
+		SapperAttachTime	0.0
+		IconActive			obj_spy_trap
+		IconInactive		obj_spy_trap
+		IconMenu			hud_menu_tele_entrance_build
+		UseItemInfo			1
+		Viewmodel			"models/weapons/c_models/c_sapper/c_sapper.mdl"
+		Playermodel			"models/weapons/c_models/c_sapper/c_sapper.mdl"
+		DisplayPriority		1
+		HudStatusIcon		"obj_status_sapper"
+		VisibleInWeaponSelection 1
+		autoswitchto		1
+		ExplodeSound		"Weapon_Sapper.Removed"
+		ExplodeEffect		"ExplosionCore_sapperdestroyed"
+		MetalToDropInGibs	10		
+		UpgradeSound		"Building_Sentrygun.Built"
+		BuildCount		1
+		RequiresOwnBuilder	0
+	}
+	
 	OBJ_CATAPULT
 	{
 		ClassName			obj_catapult
-		StatusName			"#TF_Object_Cata"
+		StatusName			"#TF_Object_catapult"
 		BuildTime			20
-		MaxObjects			1
-		Cost				50
+		MaxObjects			2
+		Cost				25
 		CostMultiplier		1
 		UpgradeCost			200
 		UpgradeDuration		1.5
 		MaxUpgradeLevel		0
 		BuilderWeaponName	"Catapult"
 		BuilderPlacementString	"Place on ground"
-		SelectionSlot		5
+		SelectionSlot		6
 		SelectionPosition	2
 		SapperAttachTime	0.0
 		IconActive			obj_teleporter_entrance

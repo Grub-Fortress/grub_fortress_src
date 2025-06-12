@@ -21570,12 +21570,10 @@ bool CTFGameRules::CanUpgradeWithAttrib( CTFPlayer *pPlayer, int iWeaponSlot, at
 				{
 					return ( pPlayer->IsPlayerClass( TF_CLASS_ENGINEER ) );
 				}
-#ifndef _DEBUG
 			case 480:	// "radius stealth"
 				{
 					return ( pPlayer->IsPlayerClass( TF_CLASS_SPY ) );
 				}
-#endif // !_DEBUG
 		}
 			return true;
 		}

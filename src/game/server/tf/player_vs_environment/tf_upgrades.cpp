@@ -123,8 +123,8 @@ void CUpgrades::UpgradeTouch( CBaseEntity *pOther )
 			{
 				CTFPlayer *pTFPlayer = ToTFPlayer( pOther );
 				// MVM Versus - Robots dont use stations, unless decided
-				if ( pTFPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS && TFGameRules()->IsMannVsMachineMode() && tf_mvm_versus_robot_stations.GetBool() )
-					return
+				if ( pTFPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS && TFGameRules()->IsMannVsMachineMode() && !tf_mvm_versus_robot_stations.GetBool() )
+					return;
 				pTFPlayer->m_Shared.SetInUpgradeZone( true );
 			}
 		}
@@ -142,8 +142,8 @@ void CUpgrades::EndTouch( CBaseEntity *pOther )
 		{
 			CTFPlayer *pTFPlayer = ToTFPlayer( pOther );
 			// MVM Versus - Robots dont use stations, unless decided
-			if ( pTFPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS && TFGameRules()->IsMannVsMachineMode() && tf_mvm_versus_robot_stations.GetBool() )
-				return
+			if ( pTFPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS && TFGameRules()->IsMannVsMachineMode() && !tf_mvm_versus_robot_stations.GetBool() )
+				return;
 			pTFPlayer->m_Shared.SetInUpgradeZone( false );
 		}
 	}

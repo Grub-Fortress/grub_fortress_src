@@ -254,6 +254,10 @@ bool CTFBotVision::IsIgnored( CBaseEntity *subject ) const
 			break;
 		}
 
+		if (enemy->m_Shared.InCond(TF_COND_REPROGRAMMED))
+		{
+			return true;
+		}
 
 		if ( me->IsKnownSpy( enemy ) )
 		{

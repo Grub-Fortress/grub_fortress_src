@@ -593,14 +593,18 @@ const char* CTFPowerupBottle::GetEffectLabelText( void )
 
 	case POWERUP_BOTTLE_RADIUS_STEALTH:
 		return "#TF_PVE_UsePowerup_RadiusStealth";
+
+	case POWERUP_BOTTLE_SEE_CASH_THROUGH_WALL:
+		return "#TF_PVE_UsePowerup_SeeCashThroughWall";
 	}
+
 
 	return "#TF_PVE_UsePowerup_CritBoost";
 }
 
 const char* CTFPowerupBottle::GetEffectIconName( void )
 {
-	switch ( GetPowerupType() )
+	switch (GetPowerupType())
 	{
 	case POWERUP_BOTTLE_CRITBOOST:
 		return "../hud/ico_powerup_critboost_red";
@@ -619,6 +623,9 @@ const char* CTFPowerupBottle::GetEffectIconName( void )
 
 	case POWERUP_BOTTLE_RADIUS_STEALTH:
 		return "../vgui/achievements/tf_soldier_kill_spy_killer";
+
+	case POWERUP_BOTTLE_SEE_CASH_THROUGH_WALL:
+		return "../vgui/achievements/tf_mvm_earn_money_bonus";
 	}
 
 	return "../hud/ico_powerup_critboost_red";
@@ -666,6 +673,7 @@ int CTFPowerupBottle::GetWorldModelIndex( void )
 			return modelinfo->GetModelIndex( "models/player/items/mvm_loot/all_class/mvm_flask_build.mdl" );
 
 		case POWERUP_BOTTLE_RADIUS_STEALTH:
+		case POWERUP_BOTTLE_SEE_CASH_THROUGH_WALL:
 			return modelinfo->GetModelIndex( "models/player/items/mvm_loot/all_class/mvm_flask_tele.mdl" );
 		}
 	}

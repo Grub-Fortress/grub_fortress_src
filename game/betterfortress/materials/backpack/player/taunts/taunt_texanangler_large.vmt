@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "backpack/player/taunts/taunt_texanangler_large"
+	"$translucent" 1
+	"$vertexcolor" 1
+}

@@ -96,6 +96,30 @@ void CTFCompoundBow::WeaponReset( void )
 
 #ifdef GAME_DLL
 
+void CTFCompoundBow::CreateExtraArrow(CTFProjectile_Arrow* pMainArrow, const QAngle& qSpreadAngles, float flSpeed)
+{
+	CTFProjectile_Arrow* pExtraArrow = CTFProjectile_Arrow::Create(pMainArrow->GetAbsOrigin(), qSpreadAngles, flSpeed, GetProjectileGravity(), (ProjectileType_t)GetWeaponProjectileType(), pMainArrow->GetOwnerEntity(), pMainArrow->GetOwnerEntity());
+	if (pExtraArrow)
+	{
+		pExtraArrow->SetLauncher(this);
+		pExtraArrow->SetCritical(IsCurrentAttackACrit());
+		pExtraArrow->SetDamage(0.5f * GetProjectileDamage());
+		if (pMainArrow->CanPenetrate())
+		{
+			pExtraArrow->SetPenetrate(true);
+		}
+		pExtraArrow->SetCollisionGroup(pMainArrow->GetCollisionGroup());
+	}
+}
+
+ConVar sv_arrow_spread_angle("sv_arrow_spread_angle", "5.f");
+ConVar sv_arrow_max_random_spread_angle("sv_arrow_random_spread_angle", "5.f");
+float CTFCompoundBow::GetRandomSpreadOffset(int iLevel)
+{
+	float flMaxRandomSpread = sv_arrow_max_random_spread_angle.GetFloat();
+	float flRandom = RemapValClamped(gpGlobals->curtime - GetInternalChargeBeginTime(), 0.f, GetChargeMaxTime(), RandomFloat(-flMaxRandomSpread, flMaxRandomSpread), 0.f);
+	return sv_arrow_spread_angle.GetFloat() * iLevel + flRandom;
+}
 
 #endif
 
@@ -123,6 +147,20 @@ void CTFCompoundBow::LaunchGrenade( void )
 	if ( pMainArrow )
 	{
 		pMainArrow->SetArrowAlight( m_bArrowAlight );
+		if ( TFGameRules() && TFGameRules()->GameModeUsesUpgrades() )
+		{
+			Vector vecMainVelocity = pMainArrow->GetAbsVelocity();
+			float flMainSpeed = vecMainVelocity.Length();
+			int iArrowMastery = 0;
+			CALL_ATTRIB_HOOK_INT(iArrowMastery, arrow_mastery);
+			for (int i = 0; i < iArrowMastery; ++i)
+			{
+				QAngle qOffset1 = pMainArrow->GetAbsAngles() + QAngle(0, GetRandomSpreadOffset(i + 1), 0);
+				CreateExtraArrow(pMainArrow, qOffset1, flMainSpeed);
+				QAngle qOffset2 = pMainArrow->GetAbsAngles() + QAngle(0, -GetRandomSpreadOffset(i + 1), 0);
+				CreateExtraArrow(pMainArrow, qOffset2, flMainSpeed);
+			}
+		}
 
 	}
 

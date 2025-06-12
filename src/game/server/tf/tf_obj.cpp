@@ -3689,6 +3689,8 @@ bool CBaseObject::ShouldQuickBuild( void )
 		if ( GetType() == OBJ_ATTACHMENT_SAPPER )
 			return false;
 
+		if ( GetType() == OBJ_SPY_TRAP )
+			return false;
 
 		if ( TFGameRules()->IsQuickBuildTime() )
 			return true;
