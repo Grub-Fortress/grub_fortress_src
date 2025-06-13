@@ -10,7 +10,7 @@
 	}
 	"itemtest"
 	{
-		"viewed"		"121"
+		"viewed"		"122"
 	}
 	"pl_goldrush"
 	{
@@ -55,5 +55,9 @@
 	"koth_badlands"
 	{
 		"viewed"		"1"
+	}
+	"pl_barnblitz"
+	{
+		"viewed"		"2"
 	}
 }

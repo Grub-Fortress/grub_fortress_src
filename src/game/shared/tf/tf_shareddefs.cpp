@@ -1403,8 +1403,8 @@ CObjectInfo g_ObjectInfos[OBJ_LAST] =
 	CObjectInfo( "OBJ_DISPENSER" ),
 	CObjectInfo( "OBJ_TELEPORTER" ),
 	CObjectInfo( "OBJ_SENTRYGUN" ),
-	CObjectInfo( "OBJ_CATAPULT" ),
 	CObjectInfo( "OBJ_ATTACHMENT_SAPPER" ),
+	CObjectInfo( "OBJ_CATAPULT" ),
 	CObjectInfo( "OBJ_SPY_TRAP" ),
 };
 COMPILE_TIME_ASSERT( ARRAYSIZE( g_ObjectInfos ) == OBJ_LAST );
