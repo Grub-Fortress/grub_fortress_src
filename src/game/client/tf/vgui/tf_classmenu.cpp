@@ -788,13 +788,12 @@ void CTFClassMenu::SelectClass( int iClass )
 	}
 	else
 	{
-		C_TFPlayer *pLocalTFPlayer = C_TFPlayer::GetLocalTFPlayer();
-		//MVM Versus - TODO: If the player has the MvM robot equipped -> Change the playermodel to the bot
-		int iRobot = pLocalTFPlayer->IsRobot();
-		m_pTFPlayerModelPanel->SetToPlayerClass( iClass, bClassWasRandom, iRobot ? g_szBotModels[iClass] : NULL );
+		bool bMVM = TFGameRules() && TFGameRules()->IsMannVsMachineMode();
+		int	iRobots = GetTeamNumber() == TF_TEAM_PVE_INVADERS;
+		m_pTFPlayerModelPanel->SetToPlayerClass( iClass, bClassWasRandom, bMVM && iRobots ? g_szBotModels[iClass] : NULL );
 
 		//MVM Versus - Carrier style
-		if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+		if ( bMVM && iRobots )
 		{
 			MDLHandle_t hModel = mdlcache->FindMDL( g_szBotModels[iClass] );
 			m_pTFPlayerModelPanel->SetMDL( hModel );

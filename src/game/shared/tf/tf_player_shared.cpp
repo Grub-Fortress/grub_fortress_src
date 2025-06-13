@@ -12019,13 +12019,13 @@ const char *CTFPlayer::GetOverrideStepSound( const char *pszBaseStepSoundName )
 			{ kFootstepSoundSet_HeavyGiant,		"",  MVMUnusedFootsteps  ? "MVM.GiantHeavyStep" : "MVM.BotGiantStep"  },
 
 			//
-			{ kFootstepSoundSet_SoldierGiant,	"", MVMUnusedFootsteps  ? "MVM.GiantSoldierStep" : "MVM.BotGiantStep" },
+			{ kFootstepSoundSet_SoldierGiant,	"",  MVMUnusedFootsteps  ? "MVM.GiantSoldierStep" : "MVM.BotGiantStep" },
 
 			//
-			{ kFootstepSoundSet_DemoGiant,		"", MVMUnusedFootsteps  ? "MVM.GiantDemomanStep" : "MVM.BotGiantStep" },
+			{ kFootstepSoundSet_DemoGiant,		"",  MVMUnusedFootsteps  ? "MVM.GiantDemomanStep" : "MVM.BotGiantStep" },
 
 			//
-			{ kFootstepSoundSet_ScoutGiant,		"", MVMUnusedFootsteps ? "MVM.GiantScoutStep" : "MVM.BotGiantStep" },
+			{ kFootstepSoundSet_ScoutGiant,		"",  MVMUnusedFootsteps ? "MVM.GiantScoutStep" : "MVM.BotGiantStep" },
 
 			//
 			{ kFootstepSoundSet_PyroGiant,		"",  MVMUnusedFootsteps ? "MVM.GiantPyroStep" : "MVM.BotGiantStep" },

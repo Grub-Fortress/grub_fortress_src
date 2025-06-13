@@ -1248,6 +1248,33 @@ void CTFPlayerModelPanel::UpdatePreviewVisuals()
 		Assert( fSkinOverride == 0.0f );
 	}
 
+	// HACK: Just set the models here so they override in the loadout menu when swapping cosmetics
+	if ( !m_strPlayerModelOverride.IsEmpty() )
+	{
+		SetMDL( m_strPlayerModelOverride.Get() );
+	}
+	else
+	{
+		TFPlayerClassData_t *pData = GetPlayerClassData( m_iCurrentClassIndex );
+		SetMDL( pData->GetModelName() );
+	}
+
+	static CSchemaAttributeDefHandle pAttrDef_RobotSkin( "robotrobotrobotrobot" );
+	Assert( pAttrDef_RobotSkin );
+	FOR_EACH_VEC( m_ItemsToCarry, i )
+	{
+		CEconItemView *pItem = m_ItemsToCarry[i];
+		if ( !pItem )
+			continue;
+		float fRobotModel = 0.0f;
+		if ( FindAttribute_UnsafeBitwiseCast<attrib_value_t>( pItem, pAttrDef_RobotSkin, &fRobotModel ) && fRobotModel == 1.0f )
+		{
+			SetMDL( g_szBotModels[ GetPlayerClass() ] );
+			break;
+		}
+		Assert( fRobotModel == 0.0f );
+	}
+
 	// Set the player model skin.
 	SetSkin( iSkin );
 

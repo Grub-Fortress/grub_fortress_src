@@ -1887,7 +1887,8 @@ void CTFPlayer::TFPlayerThink()
 			m_Shared.AddCond( TF_COND_INVULNERABLE_HIDE_UNLESS_DAMAGED, 0.5f );
 			m_Shared.AddCond( TF_COND_INVULNERABLE_WEARINGOFF, 0.5f );
 			m_Shared.AddCond( TF_COND_IMMUNE_TO_PUSHBACK, 1.0f );
-			AddCustomAttribute( "no_attack", 1, 1.0f );
+			if ( !g_pPopulationManager->CanBotsAttackWhileInSpawnRoom() )
+				AddCustomAttribute( "no_attack", 1, 1.0f );
 		}
 	}
 	if( TFGameRules()->IsMannVsMachineMode() && tf_mvm_forceversus.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsBot() && !TFGameRules()->InSetup() )
@@ -2042,7 +2043,8 @@ void CTFPlayer::MvMDeployBombThink()
 		m_Shared.AddCond( TF_COND_INVULNERABLE_HIDE_UNLESS_DAMAGED, 0.5f );
 		m_Shared.AddCond( TF_COND_INVULNERABLE_WEARINGOFF, 0.5f );
 		m_Shared.AddCond( TF_COND_IMMUNE_TO_PUSHBACK, 1.0f );
-		AddCustomAttribute( "no_attack", 1, 1.0f );
+		if ( !g_pPopulationManager->CanBotsAttackWhileInSpawnRoom() )
+			AddCustomAttribute( "no_attack", 1, 1.0f );
 	}
 
 	if ( MvMDeployUpgradeOverTime() )
@@ -4175,21 +4177,7 @@ void CTFPlayer::Spawn()
 				}
 				else
 				{
-					if(nRobotClassIndex >= TF_CLASS_SCOUT && nRobotClassIndex <= TF_CLASS_ENGINEER)
-					{
-						if((GetModelScale() >= tf_mvm_miniboss_scale.GetFloat() || IsMiniBoss()) && g_pFullFileSystem->FileExists(g_szBotBossModels[nRobotClassIndex]))
-						{
-							GetPlayerClass()->SetCustomModel(g_szBotBossModels[nRobotClassIndex],USE_CLASS_ANIMATIONS);
-							UpdateModel();
-							SetBloodColor(DONT_BLEED);
-						}
-						else if(g_pFullFileSystem->FileExists(g_szBotModels[nRobotClassIndex]))
-						{
-							GetPlayerClass()->SetCustomModel(g_szBotModels[nRobotClassIndex],USE_CLASS_ANIMATIONS);
-							UpdateModel();
-							SetBloodColor(DONT_BLEED);
-						}
-					}
+					MVM_TurnIntoRobot();
 				}
 			}
 			//MVM Versus - Keep the robot costume if user has it on
@@ -5005,6 +4993,20 @@ bool CTFPlayer::ItemIsAllowed( CEconItemView *pItem )
 		{
 			static CSchemaAttributeDefHandle pAttrib_AllowedInMedievalMode( "allowed in medieval mode" );
 			if ( !pItem->FindAttribute( pAttrib_AllowedInMedievalMode ) )
+			{
+				return false;
+			}
+		}
+	}
+	//MVM Versus - Robots don't need to wear themselves twice!
+	if ( TFGameRules()->IsMannVsMachineMode() )
+	{
+		static CSchemaAttributeDefHandle pAttrib_RobotSkin("robotrobotrobotrobot" );
+		static CSchemaAttributeDefHandle pAttrib_ZombieSkin("zombiezombiezombiezombie" );
+		if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+		{
+			//If you are wearing the Cursed Soul, or the Robot Armor == Delete
+			if ( pItem->FindAttribute(pAttrib_RobotSkin) || ( pItem->FindAttribute(pAttrib_ZombieSkin) && g_pPopulationManager->IsPopFileEventType(MVM_EVENT_POPFILE_HALLOWEEN) ) )
 			{
 				return false;
 			}
@@ -21283,6 +21285,26 @@ bool CTFPlayer::HasTag(const char* tag)
 
 	return false;
 }
+void CTFPlayer::MVM_TurnIntoRobot(void)
+{
+	int nRobotClassIndex = (GetPlayerClass() ? GetPlayerClass()->GetClassIndex() : TF_CLASS_UNDEFINED);
+
+	if(nRobotClassIndex >= TF_CLASS_SCOUT && nRobotClassIndex <= TF_CLASS_ENGINEER)
+	{
+		if((GetModelScale() >= tf_mvm_miniboss_scale.GetFloat() || IsMiniBoss()) && g_pFullFileSystem->FileExists(g_szBotBossModels[nRobotClassIndex]))
+		{
+			GetPlayerClass()->SetCustomModel(g_szBotBossModels[nRobotClassIndex],USE_CLASS_ANIMATIONS);
+			UpdateModel();
+			SetBloodColor(DONT_BLEED);
+		}
+		else if(g_pFullFileSystem->FileExists(g_szBotModels[nRobotClassIndex]))
+		{
+			GetPlayerClass()->SetCustomModel(g_szBotModels[nRobotClassIndex],USE_CLASS_ANIMATIONS);
+			UpdateModel();
+			SetBloodColor(DONT_BLEED);
+		}
+	}
+}
 
 //-----------------------------------------------------------------------------
 // MVM Versus - Placeholder boss list
@@ -21353,7 +21375,7 @@ void CTFPlayer::MVM_SetMinibossType(void)
 				break;
 			}
 		}
-		SetModelScale(1.9,0);
+		SetModelScale( tf_mvm_miniboss_scale.GetFloat() , 0 );
 	}
 }
 //-----------------------------------------------------------------------------
