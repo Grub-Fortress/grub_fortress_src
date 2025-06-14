@@ -10,7 +10,7 @@
 	}
 	"itemtest"
 	{
-		"viewed"		"122"
+		"viewed"		"126"
 	}
 	"pl_goldrush"
 	{
@@ -59,5 +59,13 @@
 	"pl_barnblitz"
 	{
 		"viewed"		"2"
+	}
+	"ctf_civfort"
+	{
+		"viewed"		"1"
+	}
+	"cp_5gorge"
+	{
+		"viewed"		"1"
 	}
 }
