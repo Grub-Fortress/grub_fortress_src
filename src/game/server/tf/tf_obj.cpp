@@ -1215,14 +1215,15 @@ bool CBaseObject::FindSnapToBuildPos( CBaseObject *pObjectOverride )
 				continue;
 			
 			// See if we're allowed to build on Robots
+			// MVM Versus - Patched, you can now sap robot players && Human bots can sap you
 			if ( TFGameRules() && TFGameRules()->GameModeUsesMiniBosses() && 
-				 GetType() == OBJ_ATTACHMENT_SAPPER && !pPlayer->IsBot() )
+				 GetType() == OBJ_ATTACHMENT_SAPPER )
 			{
 				CUtlVector< CTFPlayer * > playerVector;
 				CollectPlayers( &playerVector, pPlayer->GetOpposingTFTeam()->GetTeamNumber(), COLLECT_ONLY_LIVING_PLAYERS );
 				FOR_EACH_VEC( playerVector, i )
 				{
-					if ( !playerVector[i]->IsBot() )
+					if ( playerVector[i]->GetTeamNumber() == TF_TEAM_PVE_DEFENDERS )
 						continue;
 
 					if ( FindBuildPointOnPlayer( playerVector[i], pPlayer, flNearestPoint, vecNearestBuildPoint ) )

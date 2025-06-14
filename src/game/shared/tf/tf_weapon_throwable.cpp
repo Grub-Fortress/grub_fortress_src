@@ -39,9 +39,13 @@ END_NETWORK_TABLE()
 BEGIN_PREDICTION_DATA( CTFThrowable )
 END_PREDICTION_DATA()
 
-//LINK_ENTITY_TO_CLASS( tf_weapon_throwable, CTFThrowable );
-//PRECACHE_WEAPON_REGISTER( tf_weapon_throwable );
+LINK_ENTITY_TO_CLASS( tf_weapon_throwable, CTFThrowable );
+PRECACHE_WEAPON_REGISTER( tf_weapon_throwable );
 
+CREATE_SIMPLE_WEAPON_TABLE( TFThrowablePrimary, tf_weapon_throwable_primary )
+CREATE_SIMPLE_WEAPON_TABLE( TFThrowableSecondary, tf_weapon_throwable_secondary )
+CREATE_SIMPLE_WEAPON_TABLE( TFThrowableMelee, tf_weapon_throwable_melee )
+CREATE_SIMPLE_WEAPON_TABLE( TFThrowableUtility, tf_weapon_throwable_utility )
 
 // Projectile
 IMPLEMENT_NETWORKCLASS_ALIASED( TFProjectile_Throwable, DT_TFProjectile_Throwable )
@@ -339,11 +343,15 @@ CTFProjectile_Throwable *CTFThrowable::FireProjectileInternal( void )
 	if ( pGrenade )
 	{
 		// Set the pipebomb mode before calling spawn, so the model & associated vphysics get setup properly.
+		int nBreadTossables = (pPlayer->GetPlayerClass() ? pPlayer->GetPlayerClass()->GetClassIndex() : TF_CLASS_UNDEFINED);
+
 		pGrenade->SetPipebombMode();
 		pGrenade->SetLauncher( this );
 		pGrenade->SetCritical( IsCurrentAttackACrit() );
 
 		DispatchSpawn( pGrenade );
+		pGrenade->SetModel( g_pszBreadModels[ nBreadTossables ] );
+		pGrenade->VPhysicsInitNormal( SOLID_VPHYSICS, 0, false );
 
 		// Calculate a charge percentage
 		// For now Charge just effects exit velocity

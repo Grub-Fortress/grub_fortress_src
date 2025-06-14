@@ -5910,6 +5910,7 @@ void C_TFPlayer::ClientThink()
 		m_bWaterExitEffectActive = false;
 	}
 
+
 	// Kill the effect if either
 	// a) the player is dead
 	// b) the enemy disguised spy is now invisible
@@ -5918,6 +5919,7 @@ void C_TFPlayer::ClientThink()
 		( m_Shared.InCond( TF_COND_DISGUISED ) && IsEnemyPlayer() && ( GetPercentInvisible() > 0 ) ) )
 	{
 		StopSaveMeEffect( true );
+		ParticleProp()->StopParticlesNamed( "bot_eye_glow", true );
 	}
 
 	if ( ShouldTauntHintIconBeVisible() )
@@ -10512,9 +10514,12 @@ void C_TFPlayer::UpdateKillStreakEffects( int iCount, bool bKillScored /* = fals
 
 void C_TFPlayer::UpdateMVMEyeGlowEffect( bool bVisible )
 {
+	int usingRobotCosmetic = 0;
+	CALL_ATTRIB_HOOK_INT( usingRobotCosmetic, robotrobotrobotrobot );
 	if ( !TFGameRules() || !TFGameRules()->IsMannVsMachineMode() || GetTeamNumber() != TF_TEAM_PVE_INVADERS )
 	{
-		return;
+		if( usingRobotCosmetic == 0 )
+			return;
 	}
 	
 	// Remove the eye glows
@@ -10525,7 +10530,15 @@ void C_TFPlayer::UpdateMVMEyeGlowEffect( bool bVisible )
 	if ( bVisible && !(IsLocalPlayer() && LocalPlayerInFirstPersonView()) )
 	{
 		// Set color based on skill
-		Vector vColor = m_nBotSkill >= 2 ? Vector( 255, 180, 36 ) : Vector( 0, 240, 255 );
+		Vector vColor = Vector( 255, 255, 255 );
+		if( usingRobotCosmetic != 0)
+		{
+			vColor = GetTeamNumber() ==  TF_TEAM_RED ? Vector( 255, 0, 0 ) : Vector( 0, 240, 255 );
+		}
+		else
+		{
+			vColor = m_nBotSkill >= 2 ? Vector( 255, 180, 36 ) : Vector( 0, 240, 255 );
+		}
 
 		// Create the effects
 		int nAttachement = LookupAttachment( IsMiniBoss() ? "eye_boss_1" : "eye_1" );

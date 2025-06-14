@@ -81,6 +81,7 @@ PRECACHE_REGISTER( obj_teleporter );
 
 ConVar tf_teleporter_fov_start( "tf_teleporter_fov_start", "120", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Starting FOV for teleporter zoom.", true, 1, false, 0 );
 ConVar tf_teleporter_fov_time( "tf_teleporter_fov_time", "0.5", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "How quickly to restore FOV after teleport.", true, 0.0, false, 0 );
+ConVar tf_teleporter_always_bread( "tf_teleporter_always_bread", "0", FCVAR_CHEAT, "Force to spawn Bread everytime someone teleports" );
 
 LINK_ENTITY_TO_CLASS( obj_teleporter, CObjectTeleporter );
 
@@ -1026,7 +1027,7 @@ void CObjectTeleporter::RecieveTeleportingPlayer( CTFPlayer* pTeleportingPlayer 
 
 			// 1/20 of te time teleport bread -- except for Soldier who does it 1/3 of the time.
 			int nMax = pTeleportingPlayer->GetPlayerClass()->GetClassIndex() == TF_CLASS_SOLDIER  ? 2 : 19;
-			if ( RandomInt( 0, nMax ) == 0 )
+			if ( RandomInt( 0, nMax ) == 0 || tf_teleporter_always_bread.GetBool() )
 			{
 				SpawnBread( pTeleportingPlayer );
 			}

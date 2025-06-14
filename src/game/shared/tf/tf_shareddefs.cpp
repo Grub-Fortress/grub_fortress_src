@@ -213,15 +213,17 @@ const char g_szRomePromoItems_Misc[][ MAX_PATH ] =
 
 const char *g_pszBreadModels[] = 
 {
-	"models/weapons/c_models/c_bread/c_bread_baguette.mdl",		// Spy
-	"models/weapons/c_models/c_bread/c_bread_burnt.mdl",		// Pyro
-	"models/weapons/c_models/c_bread/c_bread_cinnamon.mdl",		// Demo?
-	"models/weapons/c_models/c_bread/c_bread_cornbread.mdl",	// Engineer
-	"models/weapons/c_models/c_bread/c_bread_crumpet.mdl",		// Sniper?
+	"models/weapons/c_models/c_bread/c_bread_plainloaf.mdl",	// UNDEFINED
+
 	"models/weapons/c_models/c_bread/c_bread_plainloaf.mdl",	// Scout
-	"models/weapons/c_models/c_bread/c_bread_pretzel.mdl",		// Medic
+	"models/weapons/c_models/c_bread/c_bread_crumpet.mdl",		// Sniper?
 	"models/weapons/c_models/c_bread/c_bread_ration.mdl",		// Soldier
+	"models/weapons/c_models/c_bread/c_bread_cinnamon.mdl",		// Demo?
+	"models/weapons/c_models/c_bread/c_bread_pretzel.mdl",		// Medic
 	"models/weapons/c_models/c_bread/c_bread_russianblack.mdl",	// Heavy?
+	"models/weapons/c_models/c_bread/c_bread_burnt.mdl",		// Pyro
+	"models/weapons/c_models/c_bread/c_bread_baguette.mdl",		// Spy
+	"models/weapons/c_models/c_bread/c_bread_cornbread.mdl",	// Engineer
 };
 
 int GetClassIndexFromString( const char *pClassName, int nLastClassIndex/*=TF_LAST_NORMAL_CLASS*/ )
