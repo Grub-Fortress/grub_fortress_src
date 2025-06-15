@@ -32,6 +32,7 @@ ConVar tf_bot_sniper_allow_opportunistic( "tf_bot_sniper_allow_opportunistic", "
 
 ConVar tf_mvm_bot_sniper_target_by_dps( "tf_mvm_bot_sniper_target_by_dps", "1", FCVAR_CHEAT, "If set, Snipers in MvM mode target the victim that has the highest DPS" );
 
+extern ConVar tf_bot_use_items;
 
 //---------------------------------------------------------------------------------------------
 ActionResult< CTFBot >	CTFBotSniperLurk::OnStart( CTFBot *me, Action< CTFBot > *priorAction )
@@ -71,6 +72,14 @@ ActionResult< CTFBot >	CTFBotSniperLurk::OnStart( CTFBot *me, Action< CTFBot > *
 		me->SetMission( CTFBot::MISSION_SNIPER, MISSION_DOESNT_RESET_BEHAVIOR_SYSTEM );
 	}
 
+	if ( tf_bot_use_items.GetInt() && ( RandomInt(0, 100) <= tf_bot_use_items.GetInt() ) )
+	{
+		CBaseCombatWeapon *myGun = me->Weapon_GetSlot( TF_WPN_TYPE_PRIMARY );
+		me->Weapon_Detach( myGun );
+		UTIL_Remove( myGun );
+
+		BotGenerateAndWearItem( me, "The Huntsman" );
+	}
 
 	return Continue();
 }

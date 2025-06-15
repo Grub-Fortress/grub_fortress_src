@@ -1415,6 +1415,8 @@ void BotGenerateAndWearItem( CTFPlayer *pBot, const char *itemName )
 	else
 	{
 		{
+			extern ConVar tf_bot_use_items;
+			if ( !tf_bot_use_items.GetInt() )
 			Msg( "Failed to create an item named %s\n", itemName );
 		}
 	}

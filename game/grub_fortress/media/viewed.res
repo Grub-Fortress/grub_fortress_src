@@ -14,7 +14,7 @@
 	}
 	"pl_goldrush"
 	{
-		"viewed"		"1"
+		"viewed"		"7"
 	}
 	"cp_dustbowl"
 	{
