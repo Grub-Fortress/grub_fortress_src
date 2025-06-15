@@ -10,7 +10,7 @@
 	}
 	"itemtest"
 	{
-		"viewed"		"126"
+		"viewed"		"129"
 	}
 	"pl_goldrush"
 	{
@@ -26,7 +26,7 @@
 	}
 	"pl_upward"
 	{
-		"viewed"		"1"
+		"viewed"		"2"
 	}
 	"ctf_grufort"
 	{
@@ -67,5 +67,9 @@
 	"cp_5gorge"
 	{
 		"viewed"		"1"
+	}
+	"ctf_turbine"
+	{
+		"viewed"		"2"
 	}
 }
