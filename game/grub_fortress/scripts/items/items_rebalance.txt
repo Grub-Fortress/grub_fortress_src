@@ -1,64 +1,21 @@
-#base items_game.txt
+#base items_game_live.txt
 "items_game"
 {
     "attributes"
     {
-		"733"
+		"419"
 		{
-			"name"				"lose hype on take damage"
-			"attribute_class"	"lose_hype_on_take_damage"
-			"description_string"	"#Attrib_losehypeontakedamage"
+			"name"	"hype resets on jump"
+			"attribute_class"	"hype_resets_on_jump"
+			"description_string"	"#Attrib_HypeResetsOnJump_percentage"
 			"description_format"	"value_is_additive"
-			"hidden"	"1"
+			"hidden"	"0"
 			"effect_type"	"negative"
+			"stored_as_integer"	"0"
 		}
     }
 	"prefabs"
 	{
-// 		"weapon_sniperrifle"
-// 		{
-// 			"capabilities"
-// 			{
-// 				"nameable"		"1"
-// 			}
-// 			"tags"
-// 			{
-// 				"can_deal_damage"			"1"
-// 				"can_headshot"				"1"
-// 				"can_deal_mvm_penetration_damage"	"1"
-// 				"can_deal_long_distance_damage"	"1"
-// 			}
-// 			"base_item_name"	"TF_WEAPON_SNIPERRIFLE"
-// 			"inspect_panel_dist" "71"
-// 			"enabled"	"1"
-// 			"item_class"	"tf_weapon_sniperrifle"
-// 			"craft_class"	"weapon"
-// 			"craft_material_type"	"weapon"
-// 			"item_type_name"	"#TF_Weapon_SniperRifle"
-// 			"item_name"	"#TF_Weapon_SniperRifle"
-// 			"item_slot"	"primary"
-// 			"item_quality"	"normal"
-// 			"min_ilevel"	"1"
-// 			"max_ilevel"	"1"
-// 			"image_inventory"	"backpack/weapons/w_models/w_sniperrifle"
-// 			"image_inventory_size_w"		"128"
-// 			"image_inventory_size_h"		"82"
-// 			"attach_to_hands" "1"
-// 			"model_player"	"models/weapons/c_models/c_sniperrifle/c_sniperrifle.mdl"
-// 			"used_by_classes"
-// 			{
-// 				"sniper"	"1"
-// 			}
-// 			"static_attrs"
-// 			{
-// 				"weapon_stattrak_module_scale"			"0.676"
-// 				"min_viewmodel_offset"					"10 0 -10"
-//                 "sniperrifle has laser pointer"         "1" 
-// 			}
-// 			"mouse_pressed_sound"	"ui/item_heavy_gun_pickup.wav"
-// 			"drop_sound"		"ui/item_heavy_gun_drop.wav"
-// 			"particle_suffix"		"sniperrifle"
-// 		}
 	}
 	"items"
 	{
@@ -168,11 +125,6 @@
 				{
 					"attribute_class"	"mult_clipsize"
 					"value"				"0.66"
-				}
-				"lose hype on take damage"
-				{
-					"attribute_class"	"lose_hype_on_take_damage"
-					"value"             "0"
 				}
 			}
 			"visuals"
