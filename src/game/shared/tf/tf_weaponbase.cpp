@@ -94,6 +94,9 @@ extern ConVar cl_crosshair_file;
 extern ConVar cl_flipviewmodels;
 #endif
 
+ConVar tf_centerfire_projectiles("tf_centerfire_projectiles", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Forces all weapons to use center-fire projectiles if enabled.");
+
+
 //=============================================================================
 //
 // Global functions.
@@ -1873,9 +1876,9 @@ bool CTFWeaponBase::UsesCenterFireProjectile( void ) const
 {
 	int nCenterFireProjectile = 0;
 	CALL_ATTRIB_HOOK_INT( nCenterFireProjectile, centerfire_projectile );
-
 	return ( nCenterFireProjectile != 0 );
 }
+
 
 bool CTFWeaponBase::AutoFiresFullClip( void ) const
 {
@@ -5680,11 +5683,14 @@ void CTFWeaponBase::GetProjectileFireSetup( CTFPlayer *pPlayer, Vector vecOffset
 	}
 
 	int iCenterFireProjectile = 0;
-	CALL_ATTRIB_HOOK_INT( iCenterFireProjectile, centerfire_projectile );
-	if ( iCenterFireProjectile == 1 )
+	CALL_ATTRIB_HOOK_INT(iCenterFireProjectile, centerfire_projectile);
+
+	// Force center-fire if the debug convar is set
+	if (iCenterFireProjectile == 1 || tf_centerfire_projectiles.GetBool())
 	{
 		vecOffset.y = 0;
 	}
+
 
 	QAngle angSpread = GetSpreadAngles();
 	Vector vecForward, vecRight, vecUp;

@@ -14,6 +14,8 @@
 #include "tf_weapon_flaregun.h"
 #include "tf_projectile_energy_ring.h"
 
+extern ConVar tf_centerfire_projectiles;
+
 #if !defined( CLIENT_DLL )	// Server specific.
 
 	#include "tf_gamestats.h"
@@ -681,10 +683,15 @@ CBaseEntity *CTFWeaponBaseGun::FirePipeBomb( CTFPlayer *pPlayer, int iPipeBombTy
 
 	// Create grenades here!!
 	float fRight = 8.f;
-	if ( IsViewModelFlipped() )
+	if (tf_centerfire_projectiles.GetBool())
+	{
+		fRight = 0.f; // Force center-fire
+	}
+	else if (IsViewModelFlipped())
 	{
 		fRight *= -1;
 	}
+
 	Vector vecSrc = pPlayer->Weapon_ShootPosition();
 	vecSrc +=  vecForward * 16.0f + vecRight * fRight + vecUp * -6.0f;
 

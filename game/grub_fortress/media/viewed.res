@@ -6,11 +6,11 @@
 	}
 	"ctf_2fort"
 	{
-		"viewed"		"12"
+		"viewed"		"13"
 	}
 	"itemtest"
 	{
-		"viewed"		"129"
+		"viewed"		"133"
 	}
 	"pl_goldrush"
 	{
@@ -22,7 +22,7 @@
 	}
 	"koth_harvest_final"
 	{
-		"viewed"		"5"
+		"viewed"		"6"
 	}
 	"pl_upward"
 	{
@@ -42,7 +42,7 @@
 	}
 	"devtest_ladder"
 	{
-		"viewed"		"10"
+		"viewed"		"11"
 	}
 	"cp_orange_x3_d"
 	{
