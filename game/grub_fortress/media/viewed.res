@@ -10,7 +10,7 @@
 	}
 	"itemtest"
 	{
-		"viewed"		"133"
+		"viewed"		"136"
 	}
 	"pl_goldrush"
 	{
@@ -42,7 +42,7 @@
 	}
 	"devtest_ladder"
 	{
-		"viewed"		"11"
+		"viewed"		"14"
 	}
 	"cp_orange_x3_d"
 	{
@@ -71,5 +71,9 @@
 	"ctf_turbine"
 	{
 		"viewed"		"2"
+	}
+	"devtest"
+	{
+		"viewed"		"10"
 	}
 }

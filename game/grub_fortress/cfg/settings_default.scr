@@ -32,7 +32,7 @@
 
 
 // Half-Life Server Configuration Layout Script (stores last settings chosen, too)
-// File generated:  Wed Jun 18 01:50:32 PM
+// File generated:  Mon Jul 12 05:28:33 PM
 //
 //
 // Cvar	-	Setting
@@ -45,7 +45,7 @@ DESCRIPTION SERVER_OPTIONS
 	{
 		"#Valve_Hostname"
 		{ STRING }
-		{ "Grub's Server" }
+		{ "Team Fortress 2" }
 	}
 
 	"maxplayers"
@@ -62,32 +62,30 @@ DESCRIPTION SERVER_OPTIONS
 		{ "" }
 	}
 
+	"mp_timelimit"
+	{
+		"#TF_Timelimit"
+		{ NUMBER 0 -1 }
+		{ "30" }
+	}
+
 	"mp_winlimit"
 	{
 		"#TF_WinLimit"
 		{ NUMBER 0 -1 }
 		{ "0" }
 	}
-
 	"mp_maxrounds"
 	{
 		"#TF_MaxRounds"
 		{ NUMBER 0 -1 }
 		{ "0" }
 	}
-
+	
 	"tf_sandvich_owner_can_heal"
 	{
 		"#TF_Lunchbox_OwnerPickup"
 		{ BOOL }
 		{ "0" }
 	}
-
-	"mp_timelimit"
-	{
-		"#TF_Timelimit"
-		{ NUMBER 0 -1 }
-		{ "10000000000" }
-	}
-
 }

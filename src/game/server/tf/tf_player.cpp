@@ -287,6 +287,10 @@ extern ConVar sv_vote_allow_spectators;
 ConVar sv_vote_late_join_time( "sv_vote_late_join_time", "90", FCVAR_NONE, "Grace period after the match starts before players who join the match receive a vote-creation cooldown" );
 ConVar sv_vote_late_join_cooldown( "sv_vote_late_join_cooldown", "300", FCVAR_NONE, "Length of the vote-creation cooldown when joining the server after the grace period has expired" );
 
+// GF
+
+ConVar tf_disable_taunt_kills("tf_disable_taunt_kills", "0", FCVAR_NOTIFY, "If set to 1, disables taunt kills.");
+
 extern ConVar tf_voice_command_suspension_mode;
 extern ConVar tf_feign_death_duration;
 extern ConVar spec_freeze_time;
@@ -19001,6 +19005,9 @@ static void DispatchRPSEffect( const CTFPlayer *pPlayer, const char* pszParticle
 //-----------------------------------------------------------------------------
 void CTFPlayer::DoTauntAttack( void )
 {
+	if (tf_disable_taunt_kills.GetBool())
+		return;
+
 	if ( !IsTaunting() || !IsAlive() || m_iTauntAttack == TAUNTATK_NONE )
 	{
 		return;
