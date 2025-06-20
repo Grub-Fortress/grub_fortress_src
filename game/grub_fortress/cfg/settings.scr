@@ -32,7 +32,7 @@
 
 
 // Half-Life Server Configuration Layout Script (stores last settings chosen, too)
-// File generated:  Wed Jun 18 01:50:32 PM
+// File generated:  Thu Jun 19 02:30:40 PM
 //
 //
 // Cvar	-	Setting
@@ -62,6 +62,13 @@ DESCRIPTION SERVER_OPTIONS
 		{ "" }
 	}
 
+	"mp_timelimit"
+	{
+		"#TF_Timelimit"
+		{ NUMBER 0 -1 }
+		{ "10000000000" }
+	}
+
 	"mp_winlimit"
 	{
 		"#TF_WinLimit"
@@ -80,14 +87,7 @@ DESCRIPTION SERVER_OPTIONS
 	{
 		"#TF_Lunchbox_OwnerPickup"
 		{ BOOL }
-		{ "0" }
-	}
-
-	"mp_timelimit"
-	{
-		"#TF_Timelimit"
-		{ NUMBER 0 -1 }
-		{ "10000000000" }
+		{ "1" }
 	}
 
 }

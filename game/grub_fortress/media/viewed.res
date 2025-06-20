@@ -22,7 +22,7 @@
 	}
 	"koth_harvest_final"
 	{
-		"viewed"		"6"
+		"viewed"		"7"
 	}
 	"pl_upward"
 	{
@@ -74,6 +74,10 @@
 	}
 	"devtest"
 	{
-		"viewed"		"10"
+		"viewed"		"12"
+	}
+	"cp_convoy"
+	{
+		"viewed"		"1"
 	}
 }
