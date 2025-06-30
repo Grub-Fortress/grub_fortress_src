@@ -32,7 +32,7 @@
 
 
 // Half-Life Server Configuration Layout Script (stores last settings chosen, too)
-// File generated:  Thu Jun 19 02:30:40 PM
+// File generated:  Sat Jun 21 01:17:21 PM
 //
 //
 // Cvar	-	Setting
@@ -52,7 +52,7 @@ DESCRIPTION SERVER_OPTIONS
 	{
 		"#Valve_Max_Players"
 		{ NUMBER 1 24 }
-		{ "24" }
+		{ "25" }
 	}
 
 	"sv_password"

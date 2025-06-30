@@ -10,7 +10,7 @@
 	}
 	"itemtest"
 	{
-		"viewed"		"136"
+		"viewed"		"139"
 	}
 	"pl_goldrush"
 	{
@@ -26,7 +26,7 @@
 	}
 	"pl_upward"
 	{
-		"viewed"		"2"
+		"viewed"		"3"
 	}
 	"ctf_grufort"
 	{
@@ -58,7 +58,7 @@
 	}
 	"pl_barnblitz"
 	{
-		"viewed"		"2"
+		"viewed"		"3"
 	}
 	"ctf_civfort"
 	{
@@ -74,7 +74,7 @@
 	}
 	"devtest"
 	{
-		"viewed"		"12"
+		"viewed"		"34"
 	}
 	"cp_convoy"
 	{

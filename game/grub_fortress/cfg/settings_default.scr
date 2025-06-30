@@ -84,7 +84,7 @@ DESCRIPTION SERVER_OPTIONS
 	
 	"tf_sandvich_owner_can_heal"
 	{
-		"#TF_Lunchbox_OwnerPickup"
+		"#TFGRUB_Lunchbox_OwnerPickup"
 		{ BOOL }
 		{ "0" }
 	}

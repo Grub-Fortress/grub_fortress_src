@@ -983,3 +983,6 @@ externalignore/logo/ext.png
 externalignore/logo/Discord.psd
 externalignore/logo/Discord.png
 game/grub_fortress/scripts/vscripts/mvmgiant.nut
+game/grub_fortress/cfg/settings.scr
+game/grub_fortress/cfg/user.scr
+game/grub_fortress/cfg/local_loadout.txt

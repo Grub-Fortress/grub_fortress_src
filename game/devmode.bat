@@ -1,1 +1,1 @@
-grub_fortress_win64.exe -dev -multirun
+grub_fortress_win64.exe -dev -multirun +mp_disable_respawn_times 1
