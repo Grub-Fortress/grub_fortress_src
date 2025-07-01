@@ -32,7 +32,7 @@
 
 
 // Half-Life User Info Configuration Layout Script (stores last settings chosen, too)
-// File generated:  Mon Jun 30 12:16:27 AM
+// File generated:  Mon Jun 30 22:27:31 AM
 //
 //
 // Cvar	-	Setting
@@ -262,7 +262,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_sniperbell"
 		"#Tooltip_sniperbell"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"category3"
@@ -373,19 +373,12 @@ DESCRIPTION INFO_OPTIONS
 		{ "1" }
 	}
 
-	"tf_enable_glows_after_respawn"
-	{
-		"#TF_EnableGlowsAfterRespawn"
-		{ BOOL }
-		{ "0" }
-	}
-
 	"cl_hud_playerclass_use_playermodel"
 	{
 		"#GameUI_HudPlayerClassUsePlayerModel"
 		"#ToolTip_HudPlayerClassUsePlayerModel"
 		{ BOOL }
-		{ "1" }
+		{ "0" }
 	}
 
 	"viewmodel_fov"
@@ -393,7 +386,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_viewmodelfov_option"
 		"#Tooltip_viewmodelfov_option"
 		{ SLIDER 54 70 }
-		{ "70" }
+		{ "54" }
 	}
 
 	"tf_spectator_target_location"
@@ -665,7 +658,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_use_min_viewmodels_option"
 		"#Tooltip_use_min_viewmodels_option"
 		{ BOOL }
-		{ "1" }
+		{ "0" }
 	}
 
 	"cl_spraydisable"

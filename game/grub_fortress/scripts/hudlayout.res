@@ -1520,39 +1520,5 @@
 		"mouseinputenabled"		"0"
 		"alpha"					"100"
 	}
-	"InDevNotice"
-	{
-		"ControlName"	"Label"
-		"fieldName"		"InDevNotice"
-		"xpos"			"5"
-		"ypos"			"r19"
-		"wide"			"600"
-		"tall"			"24"
-		"autoResize"	"0"
-		"pinCorner"		"0"
-		"visible"		"1"
-		"enabled"		"1"
-		"labelText"		"#TFGRUB_BetaMessage"
-		"textAlignment"	"west"
-		"dulltext"		"0"
-		"brighttext"	"1"
-	}
-	"InDevNotice2"
-	{
-		"ControlName"	"Label"
-		"fieldName"		"InDevNotice2"
-		"xpos"			"-5"
-		"ypos"			"r19"
-		"wide"			"600"
-		"tall"			"24"
-		"autoResize"	"0"
-		"pinCorner"		"0"
-		"visible"		"0"
-		"enabled"		"0"
-		"labelText"		"#TFGRUB_Version"
-		"textAlignment"	"east"
-		"dulltext"		"0"
-		"brighttext"	"1"
-	}
 }
 

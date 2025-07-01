@@ -6,7 +6,7 @@
 	}
 	"ctf_2fort"
 	{
-		"viewed"		"13"
+		"viewed"		"14"
 	}
 	"itemtest"
 	{
@@ -74,9 +74,13 @@
 	}
 	"devtest"
 	{
-		"viewed"		"34"
+		"viewed"		"44"
 	}
 	"cp_convoy"
+	{
+		"viewed"		"1"
+	}
+	"koth_brazil"
 	{
 		"viewed"		"1"
 	}

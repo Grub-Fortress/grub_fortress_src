@@ -319,7 +319,7 @@ not sure if it should be used as a weapon"
 				"fire rate penalty"
 				{
 					"attribute_class"	"mod_firerate"
-					"value"				"1.5"
+					"value"				"1.2"
 				}
 				"crit mod disabled"
 				{

@@ -744,6 +744,7 @@ void CBaseViewport::ReloadScheme(const char *fromFile)
 
 	// reload the .res file from disk
 	LoadControlSettings( "scripts/HudLayout.res", NULL, NULL, pConditions );
+	LoadControlSettings( "scripts/devtext.res", NULL, NULL, pConditions );
 
 	gHUD.RefreshHudTextures();
 
