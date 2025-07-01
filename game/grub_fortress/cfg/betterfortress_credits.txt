@@ -47,4 +47,11 @@ DESCRIPTION INFO_OPTIONS
 		{ BOOL }
 		{ "1" }
 	}
+	"credit2_5"
+	{
+		"Toru the Red Fox - Old TF2 Main menu"
+		"https://github.com/TorutheRedFox/source-sdk-2013"
+		{ BOOL }
+		{ "1" }
+	}
 }

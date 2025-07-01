@@ -864,8 +864,8 @@ $Project "Client (Grub Fortress)"
 				$File	"tf\vgui\halloween_offering_panel.h"
 				$File	"tf\vgui\sc_hinticon.cpp"
 				$File	"tf\vgui\sc_hinticon.h"
-				$File	"tf\vgui\report_player_dialog.cpp"	[!$SOURCESDK]
-				$File	"tf\vgui\report_player_dialog.h"	[!$SOURCESDK]
+				$File	"tf\vgui\report_player_dialog.cpp"
+				$File	"tf\vgui\report_player_dialog.h"
 				$File	"tf\tf_streams.h"
 				$File	"tf\tf_streams.cpp"
 				$File	"tf\vgui\mute_player_dialog.cpp"

@@ -32,7 +32,7 @@
 
 
 // Half-Life User Info Configuration Layout Script (stores last settings chosen, too)
-// File generated:  Mon Jun 30 22:27:31 AM
+// File generated:  Tue Jul  1 16:25:07 AM
 //
 //
 // Cvar	-	Setting
@@ -148,7 +148,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_LastHitbeeps"
 		"#Tooltip_Hitbeeps"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"tf_dingaling_lasthit_volume"
@@ -206,7 +206,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_CombatTextBatching"
 		"#Tooltip_CombatTextBatching"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"hud_combattext_doesnt_block_overhead_text"
@@ -262,7 +262,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_sniperbell"
 		"#Tooltip_sniperbell"
 		{ BOOL }
-		{ "1" }
+		{ "0" }
 	}
 
 	"category3"
@@ -276,7 +276,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_simple_disguise_menu_option"
 		"#Tooltip_simple_disguise_menu_option"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"cl_autorezoom"
@@ -362,7 +362,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_SpectateCarriedItems"
 		"#Tooltip_SpectateCarriedItems"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"glow_outline_effect_enable"
@@ -386,7 +386,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_viewmodelfov_option"
 		"#Tooltip_viewmodelfov_option"
 		{ SLIDER 54 70 }
-		{ "54" }
+		{ "70" }
 	}
 
 	"tf_spectator_target_location"
@@ -658,7 +658,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_use_min_viewmodels_option"
 		"#Tooltip_use_min_viewmodels_option"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"cl_spraydisable"
@@ -666,7 +666,7 @@ DESCRIPTION INFO_OPTIONS
 		"#GameUI_DisableSprays"
 		"#Tooltip_DisableSprays"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"tf_hide_custom_decals"

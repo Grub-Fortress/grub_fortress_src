@@ -30,7 +30,7 @@
 	}
 	"ctf_grufort"
 	{
-		"viewed"		"10"
+		"viewed"		"11"
 	}
 	"cp_grubowl"
 	{
@@ -74,7 +74,7 @@
 	}
 	"devtest"
 	{
-		"viewed"		"44"
+		"viewed"		"47"
 	}
 	"cp_convoy"
 	{
