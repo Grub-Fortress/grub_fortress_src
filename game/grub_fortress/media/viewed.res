@@ -6,7 +6,7 @@
 	}
 	"ctf_2fort"
 	{
-		"viewed"		"14"
+		"viewed"		"15"
 	}
 	"itemtest"
 	{
@@ -30,7 +30,7 @@
 	}
 	"ctf_grufort"
 	{
-		"viewed"		"11"
+		"viewed"		"12"
 	}
 	"cp_grubowl"
 	{
@@ -74,13 +74,33 @@
 	}
 	"devtest"
 	{
-		"viewed"		"47"
+		"viewed"		"53"
 	}
 	"cp_convoy"
 	{
 		"viewed"		"1"
 	}
 	"koth_brazil"
+	{
+		"viewed"		"1"
+	}
+	"cp_gorge"
+	{
+		"viewed"		"3"
+	}
+	"ctf_2bine_v1"
+	{
+		"viewed"		"1"
+	}
+	"ctf_snowfort"
+	{
+		"viewed"		"1"
+	}
+	"ctf_doublecross"
+	{
+		"viewed"		"2"
+	}
+	"ctf_sawmill"
 	{
 		"viewed"		"1"
 	}

@@ -1,9 +1,9 @@
-"Resource/devtext.res"
+"Resource/beta_message.res"
 {
-	"InDevNotice"
+	"BetaMessage"
 	{
 		"ControlName"	"Label"
-		"fieldName"		"InDevNotice"
+		"fieldName"		"BetaMessage"
 		"xpos"			"5"
 		"ypos"			"r19"
 		"wide"			"600"
@@ -18,4 +18,3 @@
 		"brighttext"	"1"
 	}
 }
-

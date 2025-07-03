@@ -146,43 +146,6 @@
 			"wide"			"o1.6"
 			"tall"			"f0"
 		}
-		
-		if_halloween_0
-		{
-			"image"		"../console/title_team_halloween2011_widescreen"
-		}
-		if_halloween_1
-		{
-			"image"		"../console/title_team_halloween2012_widescreen"
-		}
-		if_halloween_2
-		{
-			"image"		"../console/title_team_halloween2013_widescreen"
-		}
-		if_halloween_3
-		{
-			"image"		"../console/title_team_halloween2014_widescreen"
-		}
-		if_halloween_4
-		{	
-			"image"		"../console/title_team_halloween2015_widescreen"
-		}
-		if_halloween_5
-		{	
-			"image"		"../console/title_scream_fortress_2017_widescreen"
-		}
-		if_fullmoon
-		{
-			"image"		"../console/title_fullmoon_widescreen"
-		}
-		if_christmas_0
-		{
-			"image"		"../console/background_xmas2020_widescreen"
-		}
-		if_christmas_1
-		{
-			"image"		"../console/background_xmas2023_widescreen"
-		}
 	}
 					
 	"TFLogoImage"
@@ -253,7 +216,7 @@
 		"ControlName"	"CExLabel"
 		"fieldName"		"PlayLabel"
 		"font"			"HudFontSmallBold"
-		"labelText"		"#MMenu_Play"
+		"labelText"		"Welcome back, "
 		"textAlignment"	"west"
 		"xpos"			"c-278"
 		"ypos"			"93"
@@ -264,6 +227,22 @@
 		"visible"		"1"
 		"enabled"		"1"
 		"fgcolor_override"	"235 227 203 255"
+	}
+	
+	"RankPanel"
+	{
+		"ControlName"	"CPvPRankPanel"
+		"fieldName"		"RankPanel"
+		"textAlignment"	"west"
+		"xpos"			"c-297"
+		"ypos"			"75"
+		"wide"			"320"
+		"tall"			"60"
+		"visible"		"1"
+		"proportionaltoparent"	"1"
+		"mouseinputenabled"	"0"
+		"show_model"	"0"
+		"show_type"		"0"
 	}
 	
 	"TooltipPanel"
@@ -1390,7 +1369,7 @@
 		"ControlName"	"CExLabel"
 		"fieldName"		"CustomizeLabel"
 		"font"			"HudFontSmallBold"
-		"labelText"		"#MMenu_Customize"
+		"labelText"		"#TFGRUB_MMenu_Player"
 		"textAlignment"	"west"
 		"xpos"			"c-278"
 		"ypos"			"226"
@@ -1421,7 +1400,7 @@
 		"ControlName"	"CExLabel"
 		"fieldName"		"CreateLabel"
 		"font"			"HudFontSmallBold"
-		"labelText"		"#MMenu_Create"
+		"labelText"		"#TFGRUB_MMenu_Other"
 		"textAlignment"	"west"
 		"xpos"			"c-278"
 		"ypos"			"298"
@@ -2120,8 +2099,8 @@
 		"tall"			"25"
 		"autoResize"	"0"
 		"pinCorner"		"3"
-		"visible"		"1"
-		"enabled"		"1"
+		"visible"		"0"
+		"enabled"		"0"
 		"tabPosition"	"0"
 		"labelText"		""
 		"font"			"HudFontSmallBold"
@@ -2167,8 +2146,8 @@
 		"tall"			"25"
 		"autoResize"	"0"
 		"pinCorner"		"3"
-		"visible"		"1"
-		"enabled"		"1"
+		"visible"		"0"
+		"enabled"		"0"
 		"tabPosition"	"0"
 		"labelText"		""
 		"font"			"HudFontSmallBold"
@@ -2214,8 +2193,8 @@
 		"tall"			"25"
 		"autoResize"	"0"
 		"pinCorner"		"3"
-		"visible"		"1"
-		"enabled"		"1"
+		"visible"		"0"
+		"enabled"		"0"
 		"tabPosition"	"0"
 		"labelText"		""
 		"font"			"HudFontSmallBold"
@@ -2261,8 +2240,8 @@
 		"tall"			"25"
 		"autoResize"	"0"
 		"pinCorner"		"3"
-		"visible"		"1"
-		"enabled"		"1"
+		"visible"		"0"
+		"enabled"		"0"
 		"tabPosition"	"0"
 		"labelText"		""
 		"font"			"HudFontSmallBold"
@@ -2308,8 +2287,8 @@
 		"tall"			"25"
 		"autoResize"	"0"
 		"pinCorner"		"3"
-		"visible"		"1"
-		"enabled"		"1"
+		"visible"		"0"
+		"enabled"		"0"
 		"tabPosition"	"0"
 		"labelText"		""
 		"font"			"HudFontSmallBold"
@@ -2449,8 +2428,8 @@
 		"tall"			"25"
 		"autoResize"	"0"
 		"pinCorner"		"3"
-		"visible"		"1"
-		"enabled"		"1"
+		"visible"		"0"
+		"enabled"		"0"
 		"tabPosition"	"0"
 		"labelText"		"#Gameui_Gamemenu_Credits"
 		"font"			"HudFontSmallBold"

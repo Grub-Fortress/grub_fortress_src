@@ -42,8 +42,8 @@
 	}
 	"SteamWorkshopButton"
 	{
-		"label" "#MMenu_SteamWorkshop"
-		"command" "engine OpenSteamWorkshopDialog"
+		"label" "#Gameui_Gamemenu_Credits"
+		"command" "openmodcredits"
 		"subimage" "glyph_steamworkshop"
 	}
 	
@@ -56,9 +56,9 @@
 	}
 	"GeneralStoreButton"
 	{
-		"label" "#MMenu_Shop"
-		"command" "engine open_store"
-		"subimage" "glyph_store"
+		"label" "#TFGRUB_MMenu_Achievements"
+		"command" "OpenAchievementsDialog"
+		"subimage" "glyph_achievements"
 	}	
 	"CharacterSetupButton"
 	{

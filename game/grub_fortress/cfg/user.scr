@@ -32,7 +32,7 @@
 
 
 // Half-Life User Info Configuration Layout Script (stores last settings chosen, too)
-// File generated:  Tue Jul  1 16:25:07 AM
+// File generated:  Thu Jul  3 01:22:21 AM
 //
 //
 // Cvar	-	Setting
@@ -386,7 +386,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_viewmodelfov_option"
 		"#Tooltip_viewmodelfov_option"
 		{ SLIDER 54 70 }
-		{ "70" }
+		{ "54" }
 	}
 
 	"tf_spectator_target_location"
@@ -658,7 +658,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_use_min_viewmodels_option"
 		"#Tooltip_use_min_viewmodels_option"
 		{ BOOL }
-		{ "1" }
+		{ "0" }
 	}
 
 	"cl_spraydisable"
