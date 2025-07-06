@@ -1,0 +1,7 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "landfall/pine_leaves_raw"
+	"$alphatest" "1"
+	"$nocull" "1"
+	"%keywords" "tf"
+}

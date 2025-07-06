@@ -30,7 +30,7 @@
 	}
 	"ctf_grufort"
 	{
-		"viewed"		"12"
+		"viewed"		"13"
 	}
 	"cp_grubowl"
 	{
@@ -74,7 +74,7 @@
 	}
 	"devtest"
 	{
-		"viewed"		"53"
+		"viewed"		"62"
 	}
 	"cp_convoy"
 	{
@@ -103,5 +103,13 @@
 	"ctf_sawmill"
 	{
 		"viewed"		"1"
+	}
+	"ctf_landfall"
+	{
+		"viewed"		"2"
+	}
+	"koth_landfall"
+	{
+		"viewed"		"8"
 	}
 }

@@ -4,12 +4,12 @@
 	"last_request_language"		"english"
 	"118"
 	{
-		"post_time"		"2025-01-09 15:55:00"
-		"title_english"		"Welcome to Better Fortress 2!"
-		"text_english"		"We got multiple fixes and improvements for Team Fortress 2 cooking up, take this mod as a preview of what Team Fortress 2 would be in the future. If you want to keep up to date with our builds, remember to check out our github!"
-		"url"		"https://github.com/ALIEN31ITA/Better-Fortress-2"
+		"post_time"		"2025-07-06 15:55:00"
+		"title_english"		"Welcome to Grub Fortress!"
+		"text_english"		"As a reminder, this is an ALPHA BUILD, and it's not finished at all"
+		"url"		""
 		"image"		"../logo/new_tf2_logo"
 		"header_type"		"0"
-		"header_english"		"#TF_SteamWorkshop_Tag_CommunityFix"
+		"header_english"		"REMINDER"
 	}
 }

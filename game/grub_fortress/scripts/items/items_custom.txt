@@ -59,7 +59,7 @@ not sure if it should be used as a weapon"
 			"inspect_panel_dist"		"44"			
 			"attach_to_hands"			"0"
 			"model_world"				"models/weapons/w_models/w_nailgun.mdl"
-			"model_player"				"models/weapons/v_models/v_nailgun.mdl"
+			"model_player"				"models/weapons/v_models/v_nailgun_scout.mdl"
 			"used_by_classes"
 			{
 				"scout"					"1"
@@ -262,12 +262,12 @@ not sure if it should be used as a weapon"
 				"damage bonus"
 				{
 					"attribute_class"	"mult_dmg"
-					"value"				"1.15"
+					"value"				"1.20"
 				}
 				"clip size penalty"
 				{
 					"attribute_class"	"mult_clipsize"
-					"value"				"0.75"
+					"value"				"0.50"
 				}
 			}
 		}
@@ -416,7 +416,8 @@ not sure if it should be used as a weapon"
 		}
 		"32006"
 		{
-			"name"						"Syringe Gun 2"
+			"name"						"TF_WEAPON_SYRINGEGUN_2"
+			"item_quality"				"unique"
 			"prefab"					"weapon_syringegun"						
 			"show_in_armory"			"1"	
 			"moditem"					"1"

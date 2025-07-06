@@ -987,7 +987,7 @@ void CHudMainMenuOverride::ApplySchemeSettings(IScheme* scheme)
 
 	RemoveAllMenuEntries();
 
-	LoadControlSettings("resource/UI/MainMenuOverride.res", NULL, NULL, pConditions);
+	LoadControlSettings("resource/UI/MainMenu.res", NULL, NULL, pConditions);
 
 	BaseClass::ApplySchemeSettings(vgui::scheme()->GetIScheme(pScheme));
 
@@ -1221,16 +1221,16 @@ void CHudMainMenuOverride::LoadMenuEntries(void)
 {
 	KeyValues* datafile = new KeyValues("GameMenu");
 	datafile->UsesEscapeSequences(true);	// VGUI uses escape sequences
-	bool bLoaded = datafile->LoadFromFile(g_pFullFileSystem, "Resource/GameMenu.res", "custom_mod");
+	bool bLoaded = datafile->LoadFromFile(g_pFullFileSystem, "Resource/GameMenu_Grub.res", "custom_mod");
 	if (!bLoaded)
 	{
-		bLoaded = datafile->LoadFromFile(g_pFullFileSystem, "Resource/GameMenu.res", "vgui");
+		bLoaded = datafile->LoadFromFile(g_pFullFileSystem, "Resource/GameMenu_Grub.res", "vgui");
 		if (!bLoaded)
 		{
 			// only allow to load loose files when using insecure mode
 			//if (CommandLine()->FindParm("-insecure"))
 			//{
-				bLoaded = datafile->LoadFromFile(g_pFullFileSystem, "Resource/GameMenu.res");
+				bLoaded = datafile->LoadFromFile(g_pFullFileSystem, "Resource/GameMenu_Grub.res");
 			//}
 		}
 	}
