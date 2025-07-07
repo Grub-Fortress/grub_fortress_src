@@ -416,15 +416,21 @@ not sure if it should be used as a weapon"
 		}
 		"32006"
 		{
-			"name"						"TF_WEAPON_SYRINGEGUN_2"
+			"name"						"TF_WEAPON_UNDER_PRESSURE"
 			"item_quality"				"unique"
-			"prefab"					"weapon_syringegun"						
+			"prefab"					"weapon_syringegun"		
+			"item_description"			"(Credits : Haau, Dim)"				
 			"show_in_armory"			"1"	
 			"moditem"					"1"
 			"item_slot"					"primary"
-			"propername"				"0"
-			"item_name"					"Syringe Gun 2"	
-			"item_logname"				"syringe_gun_2"
+			"propername"				"1"
+			"item_name"					"The Under Pressure"	
+			"item_logname"				"under_pressure"
+			"image_inventory"			"backpack\weapons\c_models\c_underpressure\c_underpressure"
+			"image_inventory_size_w"	"128"
+			"image_inventory_size_h"	"82"
+			"inspect_panel_dist"		"44"					
+			"model_player"				"models\weapons\c_models\c_underpressure/c_underpressure.mdl"
 			"attach_to_hands"			"1"
 			"used_by_classes"
 			{
@@ -446,7 +452,7 @@ not sure if it should be used as a weapon"
 				{
 					"attribute_class"	"mult_dmg"
 					"value"				"0.75"			
-				}							
+				}					
 			}
 			"visuals"
 			{

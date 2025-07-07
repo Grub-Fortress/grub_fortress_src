@@ -18,7 +18,7 @@
 	}
 	"cp_dustbowl"
 	{
-		"viewed"		"5"
+		"viewed"		"6"
 	}
 	"koth_harvest_final"
 	{
@@ -74,7 +74,7 @@
 	}
 	"devtest"
 	{
-		"viewed"		"62"
+		"viewed"		"68"
 	}
 	"cp_convoy"
 	{
@@ -110,6 +110,6 @@
 	}
 	"koth_landfall"
 	{
-		"viewed"		"8"
+		"viewed"		"10"
 	}
 }

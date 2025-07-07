@@ -1,5 +1,5 @@
 //CREDITS TO BETAM!! PLAY HIS MOD RIGHT NOW!
-VERSION 1.0
+VERSION 0001
 DESCRIPTION INFO_OPTIONS
 {
 	"category1"
@@ -16,38 +16,50 @@ DESCRIPTION INFO_OPTIONS
 	}	
 	"category2"
 	{
-		"Community Help/Contributions"
+		"Weapon Models"
 		{ CATEGORY }
 	}	
 	"credit2_1"
+	{
+		"The Under Presusre - Haau, Dim"
+		"gamebanana.com/mods/529270"
+		{ BOOL }
+		{ "1" }
+	}
+	"category3"
+	{
+		"Community Help/Contributions"
+		{ CATEGORY }
+	}	
+	"credit3_1"
 	{
 		"BetaM - Custom Items, Credits menu, misc. fixes"
 		"https://www.youtube.com/BetaM"
 		{ BOOL }
 		{ "1" }
 	}	
-	"credit2_2"
+	"credit3_2"
 	{
 		"Better Fortress 2 - The mod Grub Fortress is a fork of"
 		"https://github.com/ALIEN31ITA/Better-Fortress-2"
 		{ BOOL }
 		{ "1" }
 	}	
-	"credit2_3"
+	"credit3_3"
 	{
 		"Team Fortress 2 Classic - Rocket Gravity Attribute"
 		"https://www.tf2classic.com"
 		{ BOOL }
 		{ "1" }
 	}	
-	"credit2_4"
+	"credit3_4"
 	{
 		"Team Fortress 2 Goldrush - Removed MYM Hud, And V_Model Support"
 		"https://www.tf2goldrush.com/"
 		{ BOOL }
 		{ "1" }
 	}
-	"credit2_5"
+	"credit3_5"
 	{
 		"Toru the Red Fox - Old TF2 Main menu"
 		"https://github.com/TorutheRedFox/source-sdk-2013"
