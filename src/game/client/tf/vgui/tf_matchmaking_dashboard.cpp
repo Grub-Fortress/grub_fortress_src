@@ -610,14 +610,6 @@ void CTFMatchmakingDashboard::OnTick()
 	{
 		SetCollapsed( false );
 		UpdateDisconnectAndResume();
-		auto pChat = GetDashboardPanel().GetTypedPanel< CExpandablePanel >( k_eChat );
-		if ( pChat->BIsExpanded() )
-		{
-			// Immediately be collapsed
-			pChat->SetCollapsed( true, true );
-			// Casually expand like it's no thing
-			pChat->SetCollapsed( false );
-		}
 	}
 
 	SetKeyBoardInputEnabled( false );

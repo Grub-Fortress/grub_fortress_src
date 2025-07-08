@@ -7,7 +7,7 @@
 		"post_time"		"2025-07-06 15:55:00"
 		"title_english"		"Welcome to Grub Fortress!"
 		"text_english"		"As a reminder, this is an ALPHA BUILD, and it's not finished at all"
-		"url"		"grub-fortress.github.io"
+		"url"		"https://grub-fortress.github.io"
 		"image"		"../logo/new_tf2_logo"
 		"header_type"		"0"
 		"header_english"		"REMINDER"
