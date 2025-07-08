@@ -74,7 +74,7 @@
 	}
 	"devtest"
 	{
-		"viewed"		"70"
+		"viewed"		"88"
 	}
 	"cp_convoy"
 	{
@@ -110,6 +110,6 @@
 	}
 	"koth_landfall"
 	{
-		"viewed"		"10"
+		"viewed"		"15"
 	}
 }

@@ -88,4 +88,28 @@ DESCRIPTION SERVER_OPTIONS
 		{ BOOL }
 		{ "0" }
 	}
+	"tf_bot_quota"
+	{
+		"Number of Bots"
+		{ NUMBER 0 100 }
+		{ "0" }
+	}
+	"tf_bot_difficulty"
+	{
+		"Bot Difficulty"
+		{
+			LIST
+			"#TF_Bot_Difficulty0" "0"
+			"#TF_Bot_Difficulty1" "1"
+			"#TF_Bot_Difficulty2" "2"
+			"#TF_Bot_Difficulty3" "3"
+		}
+		{ "1" }
+	}
+	"tf_bot_join_after_player"
+	{
+		"Bots Join After Player"
+		{ BOOL }
+		{ "0" }
+	}
 }

@@ -26,6 +26,13 @@ DESCRIPTION INFO_OPTIONS
 		{ BOOL }
 		{ "1" }
 	}
+	"credit2_2"
+	{
+		"The Perforator - Haau, kibbleknight"
+		"gamebanana.com/mods/516732"
+		{ BOOL }
+		{ "1" }
+	}
 	"category3"
 	{
 		"Community Help/Contributions"

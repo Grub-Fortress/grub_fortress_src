@@ -348,8 +348,8 @@
 		}
 		"nailgun"
 		{
-				"dfile"	"HUD/d_images_mod"
-				"dnegfile"	"HUD/dneg_images_mod"
+				"dfile"	"hud/nailgun/d_nailgun"
+				"dnegfile"	"hud/nailgun/dneg_nailgun"
 				"x"		"0"
 				"y"		"0"
 				"width"		"64"
@@ -3771,6 +3771,33 @@
 				"x"		"384"
 				"y"		"480"
 				"width"		"64"
+				"height"	"32"
+		}
+		"leadpipe"
+		{
+				"dfile"	"hud/leadpipe/d_leadpipe"
+				"dnegfile"	"hud/leadpipe/dneg_leadpipe"
+				"x"		"0"
+				"y"		"0"
+				"width"		"96"
+				"height"	"32"
+		}
+		"under_pressure"
+		{
+				"dfile"	"hud/under_pressure/d_under_pressure"
+				"dnegfile"	"hud/under_pressure/dneg_under_pressure"
+				"x"		"0"
+				"y"		"0"
+				"width"		"96"
+				"height"	"32"
+		}	
+		"perforator"
+		{
+				"dfile"	"hud/perforator/d_perforator"
+				"dnegfile"	"hud/perforator/dneg_perforator"
+				"x"		"0"
+				"y"		"0"
+				"width"		"96"
 				"height"	"32"
 		}
 	}
