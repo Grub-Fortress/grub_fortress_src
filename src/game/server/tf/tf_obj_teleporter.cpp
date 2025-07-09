@@ -87,7 +87,7 @@ PRECACHE_REGISTER( obj_teleporter );
 ConVar tf_teleporter_fov_start( "tf_teleporter_fov_start", "120", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Starting FOV for teleporter zoom.", true, 1, false, 0 );
 ConVar tf_teleporter_fov_time( "tf_teleporter_fov_time", "0.5", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "How quickly to restore FOV after teleport.", true, 0.0, false, 0 );
 ConVar tf_teleporter_always_bread( "tf_teleporter_always_bread", "0", FCVAR_CHEAT, "Force to spawn Bread everytime someone teleports" );
-ConVar tf_teleporter_spawns_tossable_bread( "tf_teleporter_spawns_tossable_bread", "1", FCVAR_CHEAT, "Enable Bread Tossing item drops when teleported" );
+ConVar tf_teleporter_spawns_tossable_bread( "tf_teleporter_spawns_tossable_bread", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "I don't like tossing cooked wheat" );
 
 LINK_ENTITY_TO_CLASS( obj_teleporter, CObjectTeleporter );
 
