@@ -296,6 +296,7 @@ static MapInfo_t s_ValveMaps[] = {
 	{ "sd_doomsday",	"Doomsday",	"#Gametype_SD" },
 	{ "sd_doomsday_event",	"Carnival of Carnage",	"#Gametype_SD" },
 	{ "cp_mercenarypark",	"Mercenary Park",	"#TF_AttackDefend" },
+	{ "koth_landfall", "Landfall", "#Gametype_KOTH" },
 };
 
 static MapInfo_t s_CommunityMaps[] = {
@@ -738,7 +739,7 @@ ConVar tf_item_based_forced_holiday( "tf_item_based_forced_holiday", "0", FCVAR_
 	, cc_tf_forced_holiday_changed
 #endif // GAME_DLL
 );
-ConVar tf_force_holidays_off( "tf_force_holidays_off", "0", FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, ""
+ConVar tf_force_holidays_off( "tf_force_holidays_off", "1", FCVAR_NOTIFY | FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, ""
 #ifdef GAME_DLL
 , cc_tf_forced_holiday_changed
 #endif // GAME_DLL
@@ -1057,7 +1058,7 @@ ConVar tf_creep_wave_player_respawn_time( "tf_creep_wave_player_respawn_time", "
 
 ConVar hide_server( "hide_server", "0", FCVAR_GAMEDLL, "Whether the server should be hidden from the master server" );
 
-ConVar mp_waitingforplayers_time( "mp_waitingforplayers_time", (IsX360()?"15":"30"), FCVAR_GAMEDLL | WAITING_FOR_PLAYERS_FLAGS, "WaitingForPlayers time length in seconds" );
+ConVar mp_waitingforplayers_time( "mp_waitingforplayers_time", (IsX360()?"15":"15"), FCVAR_GAMEDLL | WAITING_FOR_PLAYERS_FLAGS, "WaitingForPlayers time length in seconds" );
 
 ConVar tf_gamemode_arena ( "tf_gamemode_arena", "0", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY );
 ConVar tf_gamemode_cp ( "tf_gamemode_cp", "0", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY );
@@ -18764,6 +18765,8 @@ convar_tags_t convars_to_check_for_tags[] =
 	{ "tf_powerup_mode", "powerup", NULL },
 	{ "tf_gamemode_passtime", "passtime", NULL },
 	{ "tf_gamemode_misc", "misc", NULL }, // catch-all for matchmaking to identify sd, tc, and pd servers via sv_tags
+	{ "tf_sandvich_owner_can_heal", "sandvichhealthpack", NULL },
+	{ "tf_disable_taunt_kills", "notauntkills", NULL },
 };
 
 //-----------------------------------------------------------------------------

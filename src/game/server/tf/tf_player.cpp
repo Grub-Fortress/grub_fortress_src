@@ -8372,7 +8372,7 @@ bool CTFPlayer::ClientCommand( const CCommand &args )
 			Q_snprintf( pszWelcome, sizeof(pszWelcome), "#TF_Welcome" );
 			if ( UTIL_GetActiveHolidayString() )
 			{
-				Q_snprintf( pszWelcome, sizeof(pszWelcome), "#TF_Welcome_%s", UTIL_GetActiveHolidayString() );
+				Q_snprintf( pszWelcome, sizeof(pszWelcome), "#TF_Welcome" );
 			}
 
 			KeyValues *data = new KeyValues( "data" );
@@ -14241,7 +14241,7 @@ void CTFPlayer::StateEnterWELCOME( void )
 			Q_snprintf( pszWelcome, sizeof(pszWelcome), "#TF_Welcome" );
 			if ( UTIL_GetActiveHolidayString() )
 			{
-				Q_snprintf( pszWelcome, sizeof(pszWelcome), "#TF_Welcome_%s", UTIL_GetActiveHolidayString() );
+				Q_snprintf( pszWelcome, sizeof(pszWelcome), "#TF_Welcome" );
 			}
 
 			KeyValues *data = new KeyValues( "data" );

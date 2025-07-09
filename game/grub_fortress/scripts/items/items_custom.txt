@@ -548,7 +548,7 @@ not sure if it should be used as a weapon"
 				"damage bonus"
 				{
 					"attribute_class"	"mult_dmg"
-					"value"				"1.5"
+					"value"				"1.25"
 				}
 				"weapon spread bonus"
 				{
