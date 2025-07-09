@@ -1,0 +1,52 @@
+// Choreo version 1
+actor "Engineer"
+{
+  channel "Engineer"
+  {
+    event sequence "taunt_fishing_success_v2"
+    {
+      time 0.000000 8.166667
+      param "taunt_fishing_success_v2"
+      fixedlength
+    }
+  }
+  channel "face"
+  {
+    event speak "Taunt.Engineer_Fishing_Catch"
+    {
+      time 0.150000 2.250000
+      param "Taunt.Engineer_Fishing_Catch"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Taunt.Engineer_Fishing_Success"
+    {
+      time 4.411111 -1.000000
+      param "Taunt.Engineer_Fishing_Success"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Taunt.Engineer_Fishing_Struggle"
+    {
+      time 3.188889 -1.000000
+      param "Taunt.Engineer_Fishing_Struggle"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "60"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "RampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

@@ -27,6 +27,7 @@
 #include "halloween/c_headless_hatman.h"
 #include "halloween/c_eyeball_boss.h"
 #include "halloween/c_merasmus.h"
+#include "player_vs_environment/c_tf_tank_boss.h"
 #include "tf_wardata.h"
 
 #if defined( REPLAY_ENABLED )
@@ -559,6 +560,16 @@ void CTFFreezePanel::FireGameEvent( IGameEvent * event )
 			else if ( dynamic_cast< C_Merasmus * >( pKiller ) != NULL )
 			{
 				m_pBasePanel->SetDialogVariable( "killername", g_pVGuiLocalize->Find( "#TF_HALLOWEEN_MERASMUS_DEATHCAM_NAME" ) );
+
+				if ( m_pAvatar )
+				{
+					m_pAvatar->SetVisible( false );
+				}
+			}
+			else if ( dynamic_cast< C_TFTankBoss * >( pKiller ) != NULL )
+			{
+				m_pBasePanel->SetDialogVariable( "killername", g_pVGuiLocalize->Find( "#TF_TANK_BOSS_DEATHCAM_NAME" ) );
+				m_pFreezeLabel->SetText( "#FreezePanel_Killer_Crusher" );
 
 				if ( m_pAvatar )
 				{

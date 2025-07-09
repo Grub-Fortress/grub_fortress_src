@@ -1536,6 +1536,11 @@ const char *g_szLoadoutStrings[] =
 	"",				// LOADOUT_POSITION_TAUNT7
 	"",				// LOADOUT_POSITION_TAUNT8
 
+	"throwable",	// LOADOUT_POSITION_THROWABLE
+	"",				// LOADOUT_POSITION_THROWABLE2
+	"",				// LOADOUT_POSITION_THROWABLE3
+	"",				// LOADOUT_POSITION_THROWABLE4
+
 };
 COMPILE_TIME_ASSERT( ARRAYSIZE( g_szLoadoutStrings ) <= CLASS_LOADOUT_POSITION_COUNT );	// we don't support mapping directly to slots like "misc2", "taunt2-8", etc.
 
@@ -1565,6 +1570,11 @@ const char *g_szLoadoutStringsForDisplay[] =
 	"#LoadoutSlot_Taunt6",		// LOADOUT_POSITION_TAUNT6,
 	"#LoadoutSlot_Taunt7",		// LOADOUT_POSITION_TAUNT7,
 	"#LoadoutSlot_Taunt8",		// LOADOUT_POSITION_TAUNT8,
+
+	"#LoadoutSlot_Taunt",		// LOADOUT_POSITION_THROWABLE,
+	"#LoadoutSlot_Taunt2",		// LOADOUT_POSITION_THROWABLE2,
+	"#LoadoutSlot_Taunt3",		// LOADOUT_POSITION_THROWABLE3,
+	"#LoadoutSlot_Taunt4",		// LOADOUT_POSITION_THROWABLE4,
 
 };
 COMPILE_TIME_ASSERT( ARRAYSIZE( g_szLoadoutStringsForDisplay ) == CLASS_LOADOUT_POSITION_COUNT );

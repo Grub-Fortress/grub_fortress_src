@@ -1277,7 +1277,7 @@ void CTFClassMenu::Go()
 
 	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() )
 	{
-		CBaseEntity::EmitSound( filter, SOUND_FROM_UI_PANEL, "music.mvm_class_select" );
+		CBaseEntity::EmitSound( filter, SOUND_FROM_UI_PANEL, GetTeamNumber() == TF_TEAM_RED ? "music.mvm_class_select" : "MVM.Endless_BotsUpgraded");
 	}
 	else
 	{

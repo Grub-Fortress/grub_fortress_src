@@ -2421,6 +2421,20 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetSolid, "GetSolid", "" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetSolid, "SetSolid", "" )
 	
+	DEFINE_SCRIPTFUNC_NAMED( ScriptMakePhysics, "MakePhysics", "Give the entity Physics" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptDestroyPhysics, "DestroyPhysics", "Remove the entity Physics" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetMass, "SetMass", "Set the entity's Mass" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMass, "GetMass", "Get the entity's Mass" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetBuoyancyRatio, "SetBuoyancyRatio", "Set the entity's Bouyancy, 0 = sink, 1 = float" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetElasticity, "SetElasticity", "Set the entity's Elasticity" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetElasticity, "GetElasticity", "Get the entity's Elasticity" )
+
+	//TF2 Specific
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetExplodeProjectilesOnTouch, "SetExplodeProjectilesOnTouch", "Make Some Projectiles explode on contact with this entity." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptCanStickProjectiles, "CanStickProjectiles", "Make Stickybombs attach with this entity." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptCanBeHealed, "CanBeHealed", "Make this entity Healable from Mediguns." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetTargetable, "SetTargetable", "Make this entity Targetable from Bots or Sentryguns." )
+	
 	DEFINE_SCRIPTFUNC( TerminateScriptScope, "Clear the current script scope for this entity" )
 
 	DEFINE_SCRIPTFUNC_NAMED( ScriptAcceptInput, "AcceptInput", "Generate a synchronous I/O event" )

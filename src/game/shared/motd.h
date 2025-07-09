@@ -28,6 +28,7 @@ public:
 	const char	*GetTitle( ELanguage eLang );
 	const char	*GetText( ELanguage eLang );
 	const char	*GetURL( void ) { return m_pKVMOTD ? m_pKVMOTD->GetString("url","") : NULL; }
+	const char	*GetURL2( void ) { return m_pKVMOTD ? m_pKVMOTD->GetString("url2","") : NULL; }
 	const char	*GetImage( void ) { return m_pKVMOTD ? m_pKVMOTD->GetString("image","") : NULL; }
 	const char	*GetPostTimeStr( void ) { return m_pKVMOTD ? m_pKVMOTD->GetString("time") : NULL; }
 

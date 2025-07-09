@@ -274,8 +274,10 @@ void CTFReviveMarker::ReviveThink( void )
 		}
 
 		// DispatchParticleEffect( pszParticle, GetAbsOrigin() + Vector( 0, 0, 80 ), vec3_angle );
+		//MVM Versus - Robot Players don't need to know where the enemy died, to avoid Camping/Waiting medics
+		CTeamRecipientFilter filterRED( TF_TEAM_PVE_DEFENDERS, true );
 		DispatchParticleEffect( pszParticle, PATTACH_POINT_FOLLOW, this, "mediccall" );
-		EmitSound( "Medic.AutoCallerAnnounce" );
+		EmitSound( filterRED, entindex(), "Medic.AutoCallerAnnounce" );
 	}
 
 	// Close revive prompt if no longer being revived

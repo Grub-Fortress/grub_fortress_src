@@ -254,9 +254,9 @@ void CTFDiscordRPC::UpdateServerInfo()
 	const char* pszGameTypeShort = NULL;
 
 	// update our actual server details lol
-	if (TFGameRules())
+	if ( TFGameRules() )
 	{
-		switch (TFGameRules()->GetGameType())
+		switch ( TFGameRules()->GetGameType() )
 		{
 		case TF_GAMETYPE_CP:
 			pszGameType = "Control Point";
@@ -277,6 +277,18 @@ void CTFDiscordRPC::UpdateServerInfo()
 		case TF_GAMETYPE_MVM:
 			pszGameType = "Mann vs Machine";
 			pszGameTypeShort = "mvm";
+			break;
+		case TF_GAMETYPE_RD:
+			pszGameType = "Robot Destruction";
+			pszGameTypeShort = "rd";
+			break;
+		case TF_GAMETYPE_PD:
+			pszGameType = "Player Destruction";
+			pszGameTypeShort = "pd";
+			break;
+		case TF_GAMETYPE_PASSTIME:
+			pszGameType = "Passtime";
+			pszGameTypeShort = "pass";
 			break;
 		default:
 			pszGameType = "Find out yourself, fuck you.";
@@ -360,7 +372,7 @@ void CTFDiscordRPC::LevelShutdownPreEntity()
 // the bloody discord events
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose: What? Who is this guy? *chokes*
 //-----------------------------------------------------------------------------
 void CTFDiscordRPC::DiscordReady(const DiscordUser* connectedBastard)
 {

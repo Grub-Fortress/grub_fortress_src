@@ -103,6 +103,23 @@ const char *g_aRawPlayerClassNames[TF_CLASS_MENU_BUTTONS] =
 	"random"
 };
 
+const char *g_aRawPlayerClassNamesRandom[TF_CLASS_MENU_BUTTONS] =
+{
+	"undefined",
+	"scout",
+	"sniper",
+	"soldier",
+	"demoman",
+	"medic",
+	"heavy",// short
+	"pyro",
+	"spy",
+	"engineer",
+	"civilian",
+	"",
+	"random"
+};
+
 const char g_szBotModels[][ MAX_PATH ] = 
 {
 	"", //TF_CLASS_UNDEFINED
@@ -213,17 +230,15 @@ const char g_szRomePromoItems_Misc[][ MAX_PATH ] =
 
 const char *g_pszBreadModels[] = 
 {
-	"models/weapons/c_models/c_bread/c_bread_plainloaf.mdl",	// UNDEFINED
-
-	"models/weapons/c_models/c_bread/c_bread_plainloaf.mdl",	// Scout
-	"models/weapons/c_models/c_bread/c_bread_crumpet.mdl",		// Sniper?
-	"models/weapons/c_models/c_bread/c_bread_ration.mdl",		// Soldier
-	"models/weapons/c_models/c_bread/c_bread_cinnamon.mdl",		// Demo?
-	"models/weapons/c_models/c_bread/c_bread_pretzel.mdl",		// Medic
-	"models/weapons/c_models/c_bread/c_bread_russianblack.mdl",	// Heavy?
-	"models/weapons/c_models/c_bread/c_bread_burnt.mdl",		// Pyro
 	"models/weapons/c_models/c_bread/c_bread_baguette.mdl",		// Spy
+	"models/weapons/c_models/c_bread/c_bread_burnt.mdl",		// Pyro
+	"models/weapons/c_models/c_bread/c_bread_cinnamon.mdl",		// Demo?
 	"models/weapons/c_models/c_bread/c_bread_cornbread.mdl",	// Engineer
+	"models/weapons/c_models/c_bread/c_bread_crumpet.mdl",		// Sniper?
+	"models/weapons/c_models/c_bread/c_bread_plainloaf.mdl",	// Scout
+	"models/weapons/c_models/c_bread/c_bread_pretzel.mdl",		// Medic
+	"models/weapons/c_models/c_bread/c_bread_ration.mdl",		// Soldier
+	"models/weapons/c_models/c_bread/c_bread_russianblack.mdl",	// Heavy?
 };
 
 int GetClassIndexFromString( const char *pClassName, int nLastClassIndex/*=TF_LAST_NORMAL_CLASS*/ )
@@ -947,7 +962,8 @@ const char *g_szSpecialDamageNames[] =
 	"TF_DMG_CUSTOM_AXTINGUISHER_BOOSTED",
 	"TF_DMG_CUSTOM_KRAMPUS_MELEE",
 	"TF_DMG_CUSTOM_KRAMPUS_RANGED",
-	"TF_DMG_CUSTOM_DECAPITATION_BOSS_HAMMER"
+	"TF_DMG_CUSTOM_DECAPITATION_BOSS_HAMMER",
+	"TF_DMG_CUSTOM_MVM_BOSS_TANK"
 };
 COMPILE_TIME_ASSERT( ARRAYSIZE( g_szSpecialDamageNames ) == TF_DMG_CUSTOM_END );
 
@@ -1005,8 +1021,6 @@ const char *g_szProjectileNames[] =
 	"projectile_bread_monster",
 	"projectile_jar_gas",
 	"tf_projectile_balloffire",
-	"projectile_pipe_remote_roller",
-	"projectile_nail",
 
 };
 COMPILE_TIME_ASSERT( ARRAYSIZE( g_szProjectileNames ) == TF_NUM_PROJECTILES );
@@ -1045,8 +1059,6 @@ int g_iProjectileWeapons[] =
 	TF_WEAPON_THROWABLE,
 	TF_WEAPON_JAR_GAS,
 	TF_WEAPON_FLAME_BALL,
-	TF_PROJECTILE_PIPEBOMB_ROLLER,
-	TF_PROJECTILE_NAIL,
 
 };
 
@@ -1406,8 +1418,6 @@ CObjectInfo g_ObjectInfos[OBJ_LAST] =
 	CObjectInfo( "OBJ_TELEPORTER" ),
 	CObjectInfo( "OBJ_SENTRYGUN" ),
 	CObjectInfo( "OBJ_ATTACHMENT_SAPPER" ),
-	CObjectInfo( "OBJ_CATAPULT" ),
-	CObjectInfo( "OBJ_SPY_TRAP" ),
 };
 COMPILE_TIME_ASSERT( ARRAYSIZE( g_ObjectInfos ) == OBJ_LAST );
 

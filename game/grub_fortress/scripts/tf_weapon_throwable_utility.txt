@@ -1,12 +1,13 @@
-	WeaponData
+WeaponData
 {
 	// Attributes Base.
 	"printname"			"#TF_Weapon_Throwable"
 	"BuiltRightHanded"		"0"
 	"MeleeWeapon"			"1"
 	"weight"			"5"
-	"WeaponType"			"item1"
+	"WeaponType"			"utility"
 	"ITEM_FLAG_NOITEMPICKUP" 	"1"
+	"DontDrop" "1"
 	
 	// Attributes TF.
 	"Damage"			"5"
@@ -25,12 +26,12 @@
 
 	// Buckets.	
 	"bucket"			"5"
-	"bucket_position"		"1"
+	"bucket_position"		"0"
 
 	// Model & Animation
 	"viewmodel"			"models/workshop/weapons/c_models/c_madmilk/c_madmilk.mdl"
 	"playermodel"			"models/workshop/weapons/c_models/c_madmilk/c_madmilk.mdl"
-	"anim_prefix"			"pj"
+	"anim_prefix"			"throw"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData

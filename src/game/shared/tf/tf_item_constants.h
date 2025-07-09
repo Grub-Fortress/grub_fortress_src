@@ -76,6 +76,11 @@ enum loadout_positions_t
 	LOADOUT_POSITION_TAUNT7,
 	LOADOUT_POSITION_TAUNT8,
 
+	// Throwables
+	LOADOUT_POSITION_THROWABLE,
+	LOADOUT_POSITION_THROWABLE2,
+	LOADOUT_POSITION_THROWABLE3,
+	LOADOUT_POSITION_THROWABLE4,
 
 	CLASS_LOADOUT_POSITION_COUNT,
 };
@@ -147,12 +152,21 @@ inline bool IsValidItemSlot( int iSlot )
 {
 	return iSlot > LOADOUT_POSITION_INVALID && iSlot < CLASS_LOADOUT_POSITION_COUNT;
 }
+// Tossable Bread - Allow pick up dropped throwables!
+inline bool IsThrowableWeaponSlot( int iSlot )
+{
+	return iSlot == LOADOUT_POSITION_THROWABLE
+		|| iSlot == LOADOUT_POSITION_THROWABLE2
+		|| iSlot == LOADOUT_POSITION_THROWABLE3
+		|| iSlot == LOADOUT_POSITION_THROWABLE4;
+}
 
 inline bool IsValidPickupWeaponSlot( int iSlot )
 {
 	return iSlot == LOADOUT_POSITION_PRIMARY
 		|| iSlot == LOADOUT_POSITION_SECONDARY
-		|| iSlot == LOADOUT_POSITION_MELEE;
+		|| iSlot == LOADOUT_POSITION_MELEE
+		|| IsThrowableWeaponSlot( iSlot );
 }
 
 

@@ -160,6 +160,7 @@ public:
 	virtual int			GetWeaponID( void ) const OVERRIDE			{ return TF_WEAPON_GRENADE_JAR; }
 	virtual float		GetDamage()									{ return 0.f; }
 	virtual bool		ExplodesOnHit()								{ return true; }
+	virtual float		GetShakeAmplitude( void )					{ return 0.f; }
 
 	virtual void		Precache() OVERRIDE;
 	virtual void		SetCustomPipebombModel() OVERRIDE;

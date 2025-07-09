@@ -297,7 +297,7 @@ void CTFBaseBoss::ResolvePlayerCollision( CTFPlayer *player )
 		if ( result.startsolid )
 		{
 			// player was crushed against something
-			player->TakeDamage( CTakeDamageInfo( this, this, 99999.9f, DMG_CRUSH ) );
+			player->TakeDamage( CTakeDamageInfo( this, this, 99999.9f, DMG_CRUSH, GetDamageCustom() ) );
 			return;
 		}
 		else

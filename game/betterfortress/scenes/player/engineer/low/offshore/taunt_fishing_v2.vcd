@@ -1,0 +1,64 @@
+// Choreo version 1
+event loop "loop"
+{
+  time 6.300000 -1.000000
+  param "3.566667"
+  loopcount "255"
+}
+actor "Engineer"
+{
+  channel "Engineer"
+  {
+    event sequence "taunt_fishing_intro_v2"
+    {
+      time 0.000000 6.300000
+      param "taunt_fishing_intro_v2"
+      fixedlength
+    }
+    event sequence "placehold"
+    {
+      time 3.566667 6.300000
+      param "taunt_fishing_idle_v2_PROMO"
+      fixedlength
+    }
+  }
+  channel "face"
+  {
+    event speak "Taunt.Engineer_Fishing_Start"
+    {
+      time 0.149967 2.202507
+      param "Taunt.Engineer_Fishing_Start"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "taunt_headbutt_sfx_hand_swoosh"
+    {
+      time 0.000001 0.572133
+      param "taunt_headbutt_sfx_hand_swoosh"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+    event speak "Taunt.Engineer_Fishing_Waiting"
+    {
+      time 6.212011 -1.000000
+      param "Taunt.Engineer_Fishing_Waiting"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "96"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "RampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

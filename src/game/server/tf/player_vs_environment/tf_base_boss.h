@@ -67,6 +67,7 @@ public:
 	void BossThink( void );
 
 	void SetResolvePlayerCollisions( bool bResolve ) { m_bResolvePlayerCollisions = bResolve; }
+	virtual int GetDamageCustom( void ) {return TF_DMG_CUSTOM_NONE; }
 
 	void SetMaxSpeed( float value ) { m_speed = value; }
 	float GetMaxSpeed( void ) const { return m_speed; }

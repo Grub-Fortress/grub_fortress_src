@@ -25,6 +25,7 @@
 
 #ifdef GAME_DLL
 ConVar tf_dropped_weapon_lifetime( "tf_dropped_weapon_lifetime", "30", FCVAR_CHEAT ); 
+ConVar tf_mvm_dropped_weapons( "tf_mvm_dropped_weapons", "0", FCVAR_REPLICATED ); 
 
 EXTERN_SEND_TABLE( DT_ScriptCreatedItem );
 
@@ -46,6 +47,14 @@ BEGIN_NETWORK_TABLE( CTFDroppedWeapon, DT_TFDroppedWeapon )
 	RecvPropFloat( RECVINFO( m_flChargeLevel ) ),
 #endif
 END_NETWORK_TABLE()
+
+#ifdef GAME_DLL
+BEGIN_ENT_SCRIPTDESC( CTFDroppedWeapon, CBaseAnimating, "Dropped Weapon" )
+DEFINE_SCRIPTFUNC_NAMED( ScriptAddAttribute, "AddAttribute", "Add an attribute to the entity" )
+DEFINE_SCRIPTFUNC_NAMED( ScriptRemoveAttribute, "RemoveAttribute", "Remove an attribute to the entity" )
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetAttribute, "GetAttribute", "Get an attribute float from the entity" )
+END_SCRIPTDESC()
+#endif
 
 IMPLEMENT_AUTO_LIST( IDroppedWeaponAutoList );
 
@@ -473,8 +482,15 @@ bool CTFDroppedWeapon::IsVisibleToTargetID( void ) const
 CTFDroppedWeapon *CTFDroppedWeapon::Create( CTFPlayer *pLastOwner, const Vector &vecOrigin, const QAngle &vecAngles, const char *pszModelName, const CEconItemView *pItem )
 {
 	// don't drop weapon in MVM
-	if ( TFGameRules()->IsMannVsMachineMode() )
-		return NULL;
+	if ( TFGameRules()->IsMannVsMachineMode() && pLastOwner )
+	{ 
+		if ( !tf_mvm_dropped_weapons.GetBool() )
+			return NULL;
+		else if ( tf_mvm_dropped_weapons.GetInt() == 2 && pLastOwner->GetTeamNumber() != TF_TEAM_PVE_DEFENDERS )
+			return NULL;
+		else if ( tf_mvm_dropped_weapons.GetInt() == 3 && pLastOwner->GetTeamNumber() != TF_TEAM_PVE_INVADERS )
+			return NULL;
+	}
 
 	int nNumRemoved = 0;
 
@@ -552,8 +568,9 @@ void CTFDroppedWeapon::InitDroppedWeapon( CTFPlayer *pPlayer, CTFWeaponBase *pWe
 
 	m_nSkin = pWeapon->GetSkin();
 	
+
 	m_nClip = pWeapon->IsEnergyWeapon() ? pWeapon->GetMaxClip1() : pWeapon->Clip1();
-	m_nAmmo = pPlayer->GetAmmoCount( pWeapon->GetPrimaryAmmoType() );
+	m_nAmmo = pPlayer ? pPlayer->GetAmmoCount( pWeapon->GetPrimaryAmmoType() ) : pWeapon->GetDefaultClip1();
 	m_flEnergy = pWeapon->Energy_GetEnergy();
 	m_flNextPrimaryAttack = pWeapon->m_flNextPrimaryAttack;
 	m_flNextSecondaryAttack = pWeapon->m_flNextSecondaryAttack;
@@ -567,8 +584,16 @@ void CTFDroppedWeapon::InitDroppedWeapon( CTFPlayer *pPlayer, CTFWeaponBase *pWe
 		CTFItemDefinition *pItemDef = pEconItemView->GetStaticData();
 		if ( pItemDef )
 		{
-			loadout_positions_t eLoadoutPosition = ( loadout_positions_t )( pItemDef->GetLoadoutSlot( pPlayer->GetPlayerClass()->GetClassIndex() ) );
-			m_flMeter = pPlayer->m_Shared.GetItemChargeMeter( eLoadoutPosition );
+			//Tossable Bread - Unowned itemws, like spawned bread, don't have the player
+			if ( pPlayer )
+			{ 
+				loadout_positions_t eLoadoutPosition = ( loadout_positions_t )( pItemDef->GetLoadoutSlot( pPlayer->GetPlayerClass()->GetClassIndex() ) );
+				m_flMeter = pPlayer->m_Shared.GetItemChargeMeter( eLoadoutPosition );
+			}
+			else
+			{
+				m_flMeter = 100;
+			}
 		}
 	}
 
@@ -679,3 +704,49 @@ void CTFDroppedWeapon::SetItem( const CEconItemView *pItem )
 		m_Item.CopyFrom( *pItem );
 }
 #endif // GAME_DLL
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+float CTFDroppedWeapon::ScriptGetAttribute( const char *pszAttributeName, float flFallbackValue )
+{
+	CEconItemView *pItem = GetItem();
+	if ( pItem )
+	{
+		CEconItemAttributeDefinition *pDef = GetItemSchema()->GetAttributeDefinitionByName( pszAttributeName );
+		if ( pDef )
+		{
+			CEconGetAttributeIterator it( pDef->GetDefinitionIndex(), flFallbackValue );
+			pItem->IterateAttributes( &it );
+			return it.m_flValue;
+		}
+	}
+
+	return flFallbackValue;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTFDroppedWeapon::ScriptAddAttribute( const char *pszAttributeName, float flVal, float flDuration )
+{
+	CEconItemView *pItem = GetItem();
+	const CEconItemAttributeDefinition *pDef = GetItemSchema()->GetAttributeDefinitionByName( pszAttributeName );
+	if ( !pDef )
+		return;
+
+	GetItem()->GetAttributeList()->SetRuntimeAttributeValue( pDef, flVal );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTFDroppedWeapon::ScriptRemoveAttribute( const char *pszAttributeName )
+{
+	CEconItemView *pItem = GetItem();
+	const CEconItemAttributeDefinition *pDef = GetItemSchema()->GetAttributeDefinitionByName( pszAttributeName );
+	if ( !pDef )
+		return;
+
+	GetItem()->GetAttributeList()->RemoveAttribute( pDef );
+}

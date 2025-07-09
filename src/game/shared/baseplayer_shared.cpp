@@ -795,14 +795,27 @@ void CBasePlayer::PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, flo
 	ep.m_nChannel = CHAN_BODY;
 	ep.m_pSoundName = params.soundname;
 #if defined ( TF_DLL ) || defined ( TF_CLIENT_DLL )
+
+	CTFPlayer* pPlayer = ToTFPlayer( this );
+#if defined (CLIENT_DLL)
+	if( TFGameRules()->IsMannVsMachineMode() )
+	{
+		ep.m_flVolume = ( IsLocalPlayer() && GetTeamNumber() == TF_TEAM_PVE_INVADERS || IsLocalPlayer() && pPlayer->IsRobot() ) ? params.volume * 0.3 : params.volume;
+	}
+	else
+	{
+		ep.m_flVolume = ( IsLocalPlayer() && pPlayer->IsRobot() ) ? fvol * 0.3: fvol;
+	}
+#else
 	if( TFGameRules()->IsMannVsMachineMode() )
 	{
 		ep.m_flVolume = params.volume;
-	}
+}
 	else
 	{
 		ep.m_flVolume = fvol;
 	}
+#endif
 #else
 	ep.m_flVolume = fvol;
 #endif

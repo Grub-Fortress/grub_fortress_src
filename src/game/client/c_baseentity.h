@@ -1353,6 +1353,13 @@ public:
 	// Team Handling
 	int								m_iTeamNum;
 
+	//TF2 Specific
+	bool							m_bExplodesProjectiles;
+	bool							m_bSticksProjectiles;
+	int                             m_bCanBeHealed;
+	bool                            m_bCanBeTargeted;
+
+
 #if !defined( NO_ENTITY_PREDICTION )
 	// Certain entities (projectiles) can be created on the client
 	CPredictableId					m_PredictableID;

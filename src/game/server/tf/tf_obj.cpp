@@ -1876,6 +1876,9 @@ int CBaseObject::OnTakeDamage( const CTakeDamageInfo &info )
 		if ( InSameTeam(info.GetAttacker()) && !friendlyfire.GetBool() )
 			return 0;
 
+		if ( friendlyfire.GetBool() && info.GetAttacker() == GetOwner() && GetOwner() )
+			return 0;
+
 		if ( TFGameRules() && TFGameRules()->IsTruceActive() )
 		{
 			// players cannot damage buildings while a truce is active
@@ -3688,9 +3691,6 @@ bool CBaseObject::ShouldQuickBuild( void )
 	if ( TFGameRules() )
 	{
 		if ( GetType() == OBJ_ATTACHMENT_SAPPER )
-			return false;
-
-		if ( GetType() == OBJ_SPY_TRAP )
 			return false;
 
 		if ( TFGameRules()->IsQuickBuildTime() )

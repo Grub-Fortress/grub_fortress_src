@@ -1,0 +1,31 @@
+// Choreo version 1
+event loop "taunt_fishing_prop_loop"
+{
+  time 6.300000 -1.000000
+  param "3.566667"
+  loopcount "255"
+}
+actor "Engineer"
+{
+  channel "Engineer"
+  {
+    event sequence "intro"
+    {
+      time 0.000000 6.300000
+      param "intro"
+      fixedlength
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "52"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "RampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

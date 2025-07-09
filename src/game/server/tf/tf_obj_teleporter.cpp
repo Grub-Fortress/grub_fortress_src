@@ -22,6 +22,11 @@
 #include "rtime.h"
 #include "tf_logic_player_destruction.h"
 
+//Tossable bread
+#include "tf_weapon_throwable.h"
+#include "tf_dropped_weapon.h"
+#include "econ_entity_creation.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -82,6 +87,7 @@ PRECACHE_REGISTER( obj_teleporter );
 ConVar tf_teleporter_fov_start( "tf_teleporter_fov_start", "120", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Starting FOV for teleporter zoom.", true, 1, false, 0 );
 ConVar tf_teleporter_fov_time( "tf_teleporter_fov_time", "0.5", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "How quickly to restore FOV after teleport.", true, 0.0, false, 0 );
 ConVar tf_teleporter_always_bread( "tf_teleporter_always_bread", "0", FCVAR_CHEAT, "Force to spawn Bread everytime someone teleports" );
+ConVar tf_teleporter_spawns_tossable_bread( "tf_teleporter_spawns_tossable_bread", "1", FCVAR_CHEAT, "Enable Bread Tossing item drops when teleported" );
 
 LINK_ENTITY_TO_CLASS( obj_teleporter, CObjectTeleporter );
 
@@ -467,7 +473,7 @@ void CObjectTeleporter::Precache()
 	PrecacheGibsForModel( iModelIndex );
 
 	// Bread models
-	int nRange = TF_LAST_NORMAL_CLASS - TF_FIRST_NORMAL_CLASS;
+	int nRange = TF_LAST_NORMAL_CLASS - TF_FIRST_NORMAL_CLASS + 1;
 	for( int i = 0; i < nRange; ++i )
 	{
 		if ( g_pszBreadModels[i] && *g_pszBreadModels[i] )
@@ -1467,46 +1473,79 @@ void CObjectTeleporter::SpawnBread( const CTFPlayer* pTeleportingPlayer )
 		studiohdr_t *pStudioHdr = mdlcache->GetStudioHdr( h );
 		if ( pStudioHdr && mdlcache->GetVCollide( h ) )
 		{	
-			// Try to create entity
-			pProp = dynamic_cast< CPhysicsProp * >( CreateEntityByName( "prop_physics_override" ) );
-			if ( pProp )
+			if ( !tf_teleporter_spawns_tossable_bread.GetBool() )
+			{ 
+				// Try to create entity
+				pProp = dynamic_cast< CPhysicsProp * >( CreateEntityByName( "prop_physics_override" ) );
+				if ( pProp )
+				{
+					Vector vecSpawn = GetAbsOrigin();
+					vecSpawn.z += TELEPORTER_MAXS.z + 50;
+					QAngle qSpawnAngles = GetAbsAngles();
+					pProp->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
+					// so it can be pushed by airblast
+					pProp->AddFlag( FL_GRENADE );
+					// so that it will always be interactable with the player
+					char buf[512];
+					// Pass in standard key values
+					Q_snprintf( buf, sizeof(buf), "%.10f %.10f %.10f", vecSpawn.x, vecSpawn.y, vecSpawn.z );
+					pProp->KeyValue( "origin", buf );
+					Q_snprintf( buf, sizeof(buf), "%.10f %.10f %.10f", qSpawnAngles.x, qSpawnAngles.y, qSpawnAngles.z );
+					pProp->KeyValue( "angles", buf );
+					pProp->KeyValue( "model", pszModelName );
+					pProp->KeyValue( "fademindist", "-1" );
+					pProp->KeyValue( "fademaxdist", "0" );
+					pProp->KeyValue( "fadescale", "1" );
+					pProp->KeyValue( "inertiaScale", "1.0" );
+					pProp->KeyValue( "physdamagescale", "0.1" );
+					pProp->Precache();
+					DispatchSpawn( pProp );
+					pProp->m_takedamage = DAMAGE_YES;	// Take damage, otherwise this can block trains
+					pProp->SetHealth( 5000 );
+					pProp->Activate();
+					IPhysicsObject *pPhysicsObj = pProp->VPhysicsGetObject();
+					if ( pPhysicsObj )
+					{
+						AngularImpulse angImpulse( RandomFloat( -100, 100 ), RandomFloat( -100, 100 ), RandomFloat( -100, 100 ) );
+						Vector vForward;
+						AngleVectors( qSpawnAngles, &vForward );
+						Vector vecVel = ( vForward * 100 ) + Vector( 0, 0, 200 ) + RandomVector( -50, 50 );
+						pPhysicsObj->SetVelocityInstantaneous( &vecVel, &angImpulse );
+					}
+
+					// Die in 10 seconds
+					pProp->ThinkSet( &CBaseEntity::SUB_Remove, gpGlobals->curtime + 10, "DieContext" );
+				}
+			}
+			else
 			{
 				Vector vecSpawn = GetAbsOrigin();
 				vecSpawn.z += TELEPORTER_MAXS.z + 50;
 				QAngle qSpawnAngles = GetAbsAngles();
-				pProp->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
-				// so it can be pushed by airblast
-				pProp->AddFlag( FL_GRENADE );
-				// so that it will always be interactable with the player
-				char buf[512];
-				// Pass in standard key values
-				Q_snprintf( buf, sizeof(buf), "%.10f %.10f %.10f", vecSpawn.x, vecSpawn.y, vecSpawn.z );
-				pProp->KeyValue( "origin", buf );
-				Q_snprintf( buf, sizeof(buf), "%.10f %.10f %.10f", qSpawnAngles.x, qSpawnAngles.y, qSpawnAngles.z );
-				pProp->KeyValue( "angles", buf );
-				pProp->KeyValue( "model", pszModelName );
-				pProp->KeyValue( "fademindist", "-1" );
-				pProp->KeyValue( "fademaxdist", "0" );
-				pProp->KeyValue( "fadescale", "1" );
-				pProp->KeyValue( "inertiaScale", "1.0" );
-				pProp->KeyValue( "physdamagescale", "0.1" );
-				pProp->Precache();
-				DispatchSpawn( pProp );
-				pProp->m_takedamage = DAMAGE_YES;	// Take damage, otherwise this can block trains
-				pProp->SetHealth( 5000 );
-				pProp->Activate();
-				IPhysicsObject *pPhysicsObj = pProp->VPhysicsGetObject();
-				if ( pPhysicsObj )
+
+				int nClassBread = RandomInt( TF_FIRST_NORMAL_CLASS, TF_LAST_NORMAL_CLASS - 1 );
+				const char *name = g_aRawPlayerClassNamesRandom[nClassBread];
+
+				//Spawn Bread Dummy
+				CItemSelectionCriteria criteria;
+				criteria.SetItemLevel( AE_USE_SCRIPT_VALUE );
+				criteria.SetQuality( AE_USE_SCRIPT_VALUE );
+				criteria.BAddCondition( "name", k_EOperator_String_EQ, CFmtStr( "Bread %s",name), true );
+				CBaseEntity *pDummyWeapon = ItemGeneration()->GenerateRandomItem( &criteria, WorldSpaceCenter(), vec3_angle );
+				Assert( pDummyWeapon );
+
+				CBaseCombatWeapon *pWeapon = static_cast< CBaseCombatWeapon * >( pDummyWeapon );
+				CEconItemView *pItem = pWeapon->GetAttributeContainer()->GetItem();
+				CTFDroppedWeapon *pDroppedWeapon = CTFDroppedWeapon::Create( NULL, vecSpawn, qSpawnAngles, pWeapon->GetWorldModel(), pItem);
+				if ( pDroppedWeapon )
 				{
+					pDroppedWeapon->InitDroppedWeapon( NULL, static_cast< CTFThrowable* >( pDummyWeapon ) ,  false, false );
 					AngularImpulse angImpulse( RandomFloat( -100, 100 ), RandomFloat( -100, 100 ), RandomFloat( -100, 100 ) );
 					Vector vForward;
 					AngleVectors( qSpawnAngles, &vForward );
 					Vector vecVel = ( vForward * 100 ) + Vector( 0, 0, 200 ) + RandomVector( -50, 50 );
-					pPhysicsObj->SetVelocityInstantaneous( &vecVel, &angImpulse );
+					pDroppedWeapon->VPhysicsGetObject()->SetVelocityInstantaneous( &vecVel, &angImpulse );
 				}
-
-				// Die in 10 seconds
-				pProp->ThinkSet( &CBaseEntity::SUB_Remove, gpGlobals->curtime + 10, "DieContext" );
 			}
 		}
 

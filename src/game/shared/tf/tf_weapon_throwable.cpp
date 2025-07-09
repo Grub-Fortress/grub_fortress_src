@@ -24,6 +24,8 @@
 #include "tf_target_dummy.h"
 #endif
 
+extern ConVar sv_infinite_ammo;
+
 
 // Base
 // Launcher
@@ -343,15 +345,24 @@ CTFProjectile_Throwable *CTFThrowable::FireProjectileInternal( void )
 	if ( pGrenade )
 	{
 		// Set the pipebomb mode before calling spawn, so the model & associated vphysics get setup properly.
-		int nBreadTossables = (pPlayer->GetPlayerClass() ? pPlayer->GetPlayerClass()->GetClassIndex() : TF_CLASS_UNDEFINED);
-
 		pGrenade->SetPipebombMode();
 		pGrenade->SetLauncher( this );
 		pGrenade->SetCritical( IsCurrentAttackACrit() );
 
 		DispatchSpawn( pGrenade );
-		pGrenade->SetModel( g_pszBreadModels[ nBreadTossables ] );
+		pGrenade->SetModel( GetWorldModel() );
 		pGrenade->VPhysicsInitNormal( SOLID_VPHYSICS, 0, false );
+		//This fixes the bread interacting with triggers
+		pGrenade->AddSolidFlags( FSOLID_TRIGGER );
+		pGrenade->SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
+
+		//Switch to an attribute, Remove on ran out of ammo? or upon fire
+		if ( pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) >= 1 && gpGlobals->curtime + SequenceDuration() && !sv_infinite_ammo.GetBool() )
+		{
+			pPlayer->Weapon_Detach( this );
+			UTIL_Remove( this );
+			pPlayer->Weapon_Switch( pPlayer->GetLastWeapon() );
+		}
 
 		// Calculate a charge percentage
 		// For now Charge just effects exit velocity
@@ -428,6 +439,7 @@ void CTFProjectile_Throwable::OnHit( CBaseEntity *pOther )
 	}
 
 	m_bHit = true;
+
 }
 //-----------------------------------------------------------------------------
 void CTFProjectile_Throwable::Explode()
@@ -528,7 +540,7 @@ void CTFProjectile_ThrowableBrick::OnHit( CBaseEntity *pOther )
 
 	CTFPlayer *pPlayer = dynamic_cast< CTFPlayer*>( pOther );
 
-	if ( pPlayer && !pPlayer->InSameTeam( GetThrower() ) )
+	if ( pPlayer && ( !pPlayer->InSameTeam( GetThrower() ) && !friendlyfire.GetBool() || friendlyfire.GetBool() ) )
 	{
 		CTraceFilterIgnoreTeammates tracefilter( this, COLLISION_GROUP_NONE, GetTeamNumber() );
 		trace_t trace;
@@ -546,7 +558,12 @@ void CTFProjectile_ThrowableBrick::OnHit( CBaseEntity *pOther )
 		info.SetDamage( GetDamage() );
 		info.SetDamageCustom( GetCustomDamageType() );
 		info.SetDamagePosition( GetAbsOrigin() );
-		info.SetDamageType( DMG_CLUB );
+		int iDamageType = DMG_CLUB;
+		if ( IsCritical() )
+		{
+			iDamageType |= DMG_CRITICAL;
+		}
+		info.SetDamageType( iDamageType );
 
 		pPlayer->DispatchTraceAttack( info, vecToTarget, &trace );
 		pPlayer->ApplyPunchImpulseX( RandomInt( 15, 20 ) );

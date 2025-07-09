@@ -231,6 +231,7 @@ extern const char *g_aPlayerClassNames[TF_CLASS_MENU_BUTTONS];				// localizatio
 extern const char *g_aPlayerClassNames_NonLocalized[TF_CLASS_MENU_BUTTONS];	// non-localized class names
 extern const char *g_aRawPlayerClassNamesShort[TF_CLASS_MENU_BUTTONS];		// raw class names, useful for formatting resource/material filenames - "heavy" instead of "heavyweapons" and "demo" instead of "demoman"
 extern const char *g_aRawPlayerClassNames[TF_CLASS_MENU_BUTTONS];			// raw class names, useful for formatting resource/material filenames
+extern const char *g_aRawPlayerClassNamesRandom[TF_CLASS_MENU_BUTTONS];			// raw class names, useful for formatting resource/material filenames
 
 extern const char g_szPlayerRobotModels[TF_LAST_NORMAL_CLASS][ MAX_PATH ];
 
@@ -1273,6 +1274,7 @@ enum ETFDmgCustom
 	// INSERT NEW ITEMS HERE TO AVOID BREAKING DEMOS
 	//
 	TF_DMG_CUSTOM_DECAPITATION_BOSS_HAMMER,
+	TF_DMG_CUSTOM_MVM_BOSS_TANK,
 
 	TF_DMG_CUSTOM_END // END
 };
@@ -1384,8 +1386,6 @@ enum ObjectType_t
 	//
 
 
-	OBJ_CATAPULT,
-	OBJ_SPY_TRAP,
 
 
 	OBJ_LAST,

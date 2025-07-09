@@ -1139,14 +1139,14 @@ void cc_powerup_mode( IConVar *pConVar, const char *pOldString, float flOldValue
 	}
 }
 
-ConVar tf_powerup_mode( "tf_powerup_mode", "0", FCVAR_NOTIFY, "Enable/disable powerup mode. Not compatible with Mann Vs Machine mode", cc_powerup_mode );
-ConVar tf_powerup_mode_imbalance_delta( "tf_powerup_mode_imbalance_delta", "24", FCVAR_CHEAT, "Powerup kill score lead one team must have before imbalance measures are initiated" );
-ConVar tf_powerup_mode_imbalance_consecutive_min_players( "tf_powerup_mode_imbalance_consecutive_min_players", "10", FCVAR_CHEAT, "Minimum number of players on the server before consecutive imbalance measures trigger team balancing" );
-ConVar tf_powerup_mode_imbalance_consecutive_time( "tf_powerup_mode_imbalance_consecutive_time", "1200", FCVAR_CHEAT, "Teams are balanced if consecutive imbalance measures for the same team are triggered in less time (seconds)" );
-ConVar tf_powerup_mode_dominant_multiplier( "tf_powerup_mode_dominant_multiplier", "3", FCVAR_CHEAT, "The multiple by which a player must exceed the median kills by in order to be considered dominant" );
-ConVar tf_powerup_mode_killcount_timer_length( "tf_powerup_mode_killcount_timer_length", "300", FCVAR_CHEAT, "How long to wait between kill count tests that determine if a player is dominating" ); //should be a multiple of 60 because we use this to calculate an integer
+ConVar tf_powerup_mode( "tf_powerup_mode", "0", FCVAR_REPLICATED, "Enable/disable powerup mode. Not compatible with Mann Vs Machine mode", cc_powerup_mode );
+ConVar tf_powerup_mode_imbalance_delta( "tf_powerup_mode_imbalance_delta", "24", FCVAR_REPLICATED, "Powerup kill score lead one team must have before imbalance measures are initiated" );
+ConVar tf_powerup_mode_imbalance_consecutive_min_players( "tf_powerup_mode_imbalance_consecutive_min_players", "10", FCVAR_REPLICATED, "Minimum number of players on the server before consecutive imbalance measures trigger team balancing" );
+ConVar tf_powerup_mode_imbalance_consecutive_time( "tf_powerup_mode_imbalance_consecutive_time", "1200", FCVAR_REPLICATED, "Teams are balanced if consecutive imbalance measures for the same team are triggered in less time (seconds)" );
+ConVar tf_powerup_mode_dominant_multiplier( "tf_powerup_mode_dominant_multiplier", "3", FCVAR_REPLICATED, "The multiple by which a player must exceed the median kills by in order to be considered dominant" );
+ConVar tf_powerup_mode_killcount_timer_length( "tf_powerup_mode_killcount_timer_length", "300", FCVAR_REPLICATED, "How long to wait between kill count tests that determine if a player is dominating" ); //should be a multiple of 60 because we use this to calculate an integer
 
-ConVar tf_skillrating_update_interval( "tf_skillrating_update_interval", "180", FCVAR_ARCHIVE, "How often to update the GC and OGS." );
+ConVar tf_skillrating_update_interval( "tf_skillrating_update_interval", "180", FCVAR_REPLICATED, "How often to update the GC and OGS." );
 
 extern ConVar mp_teams_unbalance_limit;
 
@@ -4640,7 +4640,13 @@ const char* CTFGameRules::WinSongName( int nTeam )
 			? "Announcer.Helltower_Hell_Red_Win" 
 			: "Announcer.Helltower_Hell_Blue_Win";
 	}
-
+	//MVM Versus - Robots Win Theme
+	else if ( IsMannVsMachineMode() )
+	{
+		return (nTeam == TF_TEAM_RED) 
+			? "Game.YourTeamWon" 
+			: "music.mvm_end_wave";
+	}
 	return "Game.YourTeamWon"; 
 }
 
@@ -12300,6 +12306,10 @@ const char *CTFGameRules::GetKillingWeaponName( const CTakeDamageInfo &info, CTF
 	{
 		killer_weapon_name = "necro_smasher";
 	}
+	else if (info.GetDamageCustom() == TF_DMG_CUSTOM_MVM_BOSS_TANK)
+	{
+		killer_weapon_name = "boss_tank";
+	}
 	else if ( info.GetDamageCustom() == TF_DMG_CUSTOM_EYEBALL_ROCKET )
 	{
 		killer_weapon_name = "eyeball_rocket";
@@ -13006,17 +13016,17 @@ void CTFGameRules::DeathNotice( CBasePlayer *pVictim, const CTakeDamageInfo &inf
 
 	IGameEvent * event = gameeventmanager->CreateEvent( eventName /* "player_death" */ );
 
-	//if ( event && FStrEq( eventName, "throwable_hit" ) )
-	//{
-	//	int iHitCount = 1;
-	//	PlayerStats_t *pStats = CTF_GameStats.FindPlayerStats( pScorer );
-	//	if ( pStats )
-	//	{
-	//		iHitCount = pStats->statsAccumulated.Get( TFSTAT_THROWABLEHIT );
-	//	}
+	if ( event && FStrEq( eventName, "throwable_hit" ) )
+	{
+		int iHitCount = 1;
+		PlayerStats_t *pStats = CTF_GameStats.FindPlayerStats( pScorer );
+		if ( pStats )
+		{
+			iHitCount = pStats->statsAccumulated.Get( TFSTAT_THROWABLEHIT );
+		}
 
-	//	event->SetInt( "totalhits", iHitCount );
-	//}
+		event->SetInt( "totalhits", iHitCount );
+	}
 
 	if ( event )
 	{

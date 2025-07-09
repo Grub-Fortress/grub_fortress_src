@@ -27,6 +27,9 @@ public:
 	DECLARE_CLASS( CTFDroppedWeapon, CBaseAnimating );
 	DECLARE_NETWORKCLASS();
 
+#ifdef GAME_DLL
+	DECLARE_ENT_SCRIPTDESC();
+#endif
 	CTFDroppedWeapon();
 	~CTFDroppedWeapon();
 
@@ -59,6 +62,12 @@ public:
 	const CEconItemView *GetItem() const { return &m_Item; }
 
 	float GetChargeLevel( void ){ return m_flChargeLevel; }
+
+	float ScriptGetAttribute( const char *pszAttributeName, float flFallbackValue );
+
+	void ScriptAddAttribute( const char *pszAttributeName, float flVal, float flDuration );
+
+	void ScriptRemoveAttribute( const char *pszAttributeName );
 
 private:
 

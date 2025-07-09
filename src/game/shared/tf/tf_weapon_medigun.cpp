@@ -599,6 +599,16 @@ bool CWeaponMedigun::AllowedToHealTarget( CBaseEntity *pTarget )
 	}
 	else
 	{
+
+		// VSCRIPT - Allow anything to be healable
+		if ( pTarget->m_bCanBeHealed )
+		{
+			if ( !pTarget->InSameTeam( pOwner ) && pTarget->m_bCanBeHealed == 1 )
+				return true;
+			else if ( pTarget->InSameTeam( pOwner ) && pTarget->m_bCanBeHealed == 2  )
+				return true;
+		}
+
 		if ( !pTarget->InSameTeam( pOwner ) )
 			return false;
 
@@ -906,9 +916,9 @@ medigun_resist_types_t CWeaponMedigun::GetResistType() const
 //-----------------------------------------------------------------------------
 bool CWeaponMedigun::IsAllowedToTargetBuildings( void )
 {
-	int iHealBuildings = 0;
-	CALL_ATTRIB_HOOK_INT( iHealBuildings, medic_machinery_beam );
-	return iHealBuildings ? true : false;
+	int iCanHealEngineerBuildings = 0;
+	CALL_ATTRIB_HOOK_INT( iCanHealEngineerBuildings, medic_machinery_beam );
+	return iCanHealEngineerBuildings ? true : false;
 
 }
 

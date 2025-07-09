@@ -1247,6 +1247,12 @@ public:
 	CNetworkVarForDerived( char, m_lifeState );
 	CNetworkVarForDerived( char , m_takedamage );
 
+	//TF2 Specific
+	CNetworkVarForDerived( bool , m_bExplodesProjectiles );
+	CNetworkVarForDerived( bool , m_bSticksProjectiles );
+	CNetworkVarForDerived( int , m_bCanBeHealed );
+	CNetworkVarForDerived( bool , m_bCanBeTargeted );
+
 	// Damage filtering
 	string_t	m_iszDamageFilterName;	// The name of the entity to use as our damage filter.
 	EHANDLE		m_hDamageFilter;		// The entity that controls who can damage us.
@@ -1344,6 +1350,78 @@ public:
 	{
 		return (int)GetSolid();
 	}
+
+	void ScriptMakePhysics( int nSolidType, int nSolidFlags, bool asleep ) 
+	{ 
+		VPhysicsInitNormal( (SolidType_t) nSolidType, nSolidFlags, asleep ); 
+	}
+
+	void ScriptDestroyPhysics( void ) 
+	{ 
+		VPhysicsDestroyObject(); 
+	}
+
+	void ScriptSetMass( float flMass ) 
+	{ 
+		IPhysicsObject * vPhys = VPhysicsGetObject();
+		if ( vPhys )
+		{
+			Assert(flMass > 0);
+			vPhys->SetMass( flMass );
+		}
+		else
+		{
+			Log_Warning( LOG_VScript, "Entity has no Physics, use MakePhysics function\n" );
+		} 
+	}
+	
+
+	float ScriptGetMass( void ) const
+	{ 
+		IPhysicsObject *vPhys = VPhysicsGetObject();
+		if ( vPhys )
+		{
+			return vPhys->GetMass();
+		}
+		else
+		{
+			Log_Warning( LOG_VScript, "Entity has no Physics, use MakePhysics function\n" );
+			return -1;
+		} 
+	}
+	
+
+	void ScriptSetBuoyancyRatio( float flBuoyancy )
+	{ 
+		IPhysicsObject *vPhys = VPhysicsGetObject();
+		if ( vPhys )
+		{
+			return vPhys->SetBuoyancyRatio( flBuoyancy );
+		}
+		else
+		{
+			Log_Warning( LOG_VScript, "Entity has no Physics, use MakePhysics function\n" );
+		} 
+	}
+
+
+	void ScriptSetElasticity( float flElasticity ) 
+	{ 
+		SetElasticity( flElasticity );
+	}
+
+
+	float ScriptGetElasticity (void ) const
+	{
+		return m_flElasticity; 
+	}
+
+	//TF2 Specific
+
+	void ScriptSetExplodeProjectilesOnTouch( bool bValue ) { m_bExplodesProjectiles = bValue; }
+	void ScriptCanStickProjectiles( bool bValue ) { m_bSticksProjectiles = bValue; }
+	void ScriptCanBeHealed( int bValue ) { m_bCanBeHealed = bValue; }
+	void ScriptSetTargetable( bool bValue ) { m_bCanBeTargeted = bValue; }
 
 	HSCRIPT ScriptGetModelKeyValues( void );
 

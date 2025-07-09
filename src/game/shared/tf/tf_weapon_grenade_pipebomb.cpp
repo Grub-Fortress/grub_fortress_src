@@ -789,7 +789,7 @@ void CTFGrenadePipebombProjectile::PipebombTouch( CBaseEntity *pOther )
 	bool bExploded = false;
 
 	// Blow up if we hit an enemy we can damage
-	if ( pOther->GetTeamNumber() && ( pOther->GetTeamNumber() != GetTeamNumber() || friendlyfire.GetBool() ) && pOther->m_takedamage != DAMAGE_NO)
+	if ( pOther->GetTeamNumber() && ( pOther->GetTeamNumber() != GetTeamNumber() || friendlyfire.GetBool() ) && pOther->m_takedamage != DAMAGE_NO || pOther->m_bExplodesProjectiles )
 	{
 		// Check to see if this is a respawn room.
 		if ( !pOther->IsPlayer() )
@@ -907,7 +907,7 @@ void CTFGrenadePipebombProjectile::VPhysicsCollision( int index, gamevcollisione
 			}
 		}
 		// Blow up if we hit an enemy we can damage
-		else if ( pHitEntity->GetTeamNumber() && ( pHitEntity->GetTeamNumber() != GetTeamNumber() || friendlyfire.GetBool() ) && pHitEntity->m_takedamage != DAMAGE_NO)
+		else if ( pHitEntity->GetTeamNumber() && ( pHitEntity->GetTeamNumber() != GetTeamNumber() || friendlyfire.GetBool() ) && pHitEntity->m_takedamage != DAMAGE_NO || pHitEntity->m_bExplodesProjectiles )
 		{
 			SetThink( &CTFGrenadePipebombProjectile::Detonate );
 			SetNextThink( gpGlobals->curtime );
@@ -958,7 +958,7 @@ void CTFGrenadePipebombProjectile::VPhysicsCollision( int index, gamevcollisione
 	}
 
 	// Pipebombs stick to the world when they touch it
-	if ( pHitEntity && ( pHitEntity->IsWorld() || bIsDynamicProp ) && gpGlobals->curtime > m_flMinSleepTime )
+	if ( pHitEntity && ( pHitEntity->IsWorld() || bIsDynamicProp || pHitEntity->m_bSticksProjectiles ) && gpGlobals->curtime > m_flMinSleepTime )
 	{
 		int iNoStick = 0;
 		if (GetLauncher())

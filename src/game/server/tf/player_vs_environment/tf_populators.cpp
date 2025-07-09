@@ -2212,6 +2212,9 @@ void CWave::WaveCompleteUpdate( void )
 		}
 	}
 
+	// rabscootle - MVM Wave Win/Lose Responses
+	TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed( MP_CONCEPT_MVM_WAVE_LOSE,TF_TEAM_PVE_DEFENDERS );
+
 	CBroadcastRecipientFilter filter;
 	filter.MakeReliable();
 	UserMessageBegin( filter, "MVMAnnouncement" );

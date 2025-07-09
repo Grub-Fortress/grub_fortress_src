@@ -654,7 +654,7 @@ void CTFHudDeathNotice::Init()
 	ListenForGameEvent( "fish_notice__arm" );
 	ListenForGameEvent( "duck_xp_level_up" );
 	ListenForGameEvent( "slap_notice" );
-	//ListenForGameEvent( "throwable_hit" );
+	ListenForGameEvent( "throwable_hit" );
 
 	m_bShowItemOnKill = true;
 
@@ -778,7 +778,7 @@ bool CTFHudDeathNotice::EventIsPlayerDeath( const char* eventName )
 	return FStrEq( eventName, "fish_notice" )
 		|| FStrEq( eventName, "fish_notice__arm" )
 		|| FStrEq( eventName, "slap_notice" )
-		//|| FStrEq( eventName, "throwable_hit" )
+		|| FStrEq( eventName, "throwable_hit" )
 		|| BaseClass::EventIsPlayerDeath( eventName );
 }
 
@@ -1321,36 +1321,36 @@ void CTFHudDeathNotice::OnGameEvent( IGameEvent *event, int iDeathNoticeMsg )
 			Q_strncpy( msg.Killer.szName, szKillerBuf, ARRAYSIZE( msg.Killer.szName ) );
 		}
 	}
-	//else if ( FStrEq( "throwable_hit", pszEventName ) )
-	//{
-	//	DeathNoticeItem &msg = m_DeathNotices[ iDeathNoticeMsg ];
-	//	int deathFlags = event->GetInt( "death_flags" );
-	//	int iCustomDamage = event->GetInt( "customkill" );
+	else if ( FStrEq( "throwable_hit", pszEventName ) )
+	{
+		DeathNoticeItem &msg = m_DeathNotices[ iDeathNoticeMsg ];
+		int deathFlags = event->GetInt( "death_flags" );
+		int iCustomDamage = event->GetInt( "customkill" );
 
-	//	// Make sure the icon is up to date
-	//	m_DeathNotices[iDeathNoticeMsg].iconDeath = GetIcon( m_DeathNotices[ iDeathNoticeMsg ].szIcon, m_DeathNotices[iDeathNoticeMsg].bLocalPlayerInvolved ? kDeathNoticeIcon_Inverted : kDeathNoticeIcon_Standard );
+		// Make sure the icon is up to date
+		m_DeathNotices[iDeathNoticeMsg].iconDeath = GetIcon( m_DeathNotices[ iDeathNoticeMsg ].szIcon, m_DeathNotices[iDeathNoticeMsg].bLocalPlayerInvolved ? kDeathNoticeIcon_Inverted : kDeathNoticeIcon_Standard );
 
-	//	if ( ( iCustomDamage == TF_DMG_CUSTOM_THROWABLE_KILL ) || ( deathFlags & TF_DEATH_FEIGN_DEATH ) )
-	//	{
-	//		g_pVGuiLocalize->ConstructString_safe( msg.wzInfoText, g_pVGuiLocalize->Find("#Throwable_Kill"), 0 );
-	//	}
-	//	else
-	//	{
-	//		wchar_t wzCount[10];
-	//		_snwprintf( wzCount, ARRAYSIZE( wzCount ), L"%d", event->GetInt( "totalhits" ) );
-	//		g_pVGuiLocalize->ConstructString_safe( msg.wzInfoText, g_pVGuiLocalize->Find("#Humiliation_Count"), 1, wzCount );
-	//	}
+		if ( ( iCustomDamage == TF_DMG_CUSTOM_THROWABLE_KILL ) || ( deathFlags & TF_DEATH_FEIGN_DEATH ) )
+		{
+			g_pVGuiLocalize->ConstructString_safe( msg.wzInfoText, g_pVGuiLocalize->Find("#Throwable_Kill"), 0 );
+		}
+		else
+		{
+			wchar_t wzCount[10];
+			_snwprintf( wzCount, ARRAYSIZE( wzCount ), L"%d", ++msg.iCount );
+			g_pVGuiLocalize->ConstructString_safe( msg.wzInfoText, g_pVGuiLocalize->Find("#Humiliation_Count"), 1, wzCount );
+		}
 
-	//	// if there was an assister, put both the killer's and assister's names in the death message
-	//	int iAssisterID = engine->GetPlayerForUserID( event->GetInt( "assister" ) );
-	//	const char *assister_name = ( iAssisterID > 0 ? g_PR->GetPlayerName( iAssisterID ) : NULL );
-	//	if ( assister_name )
-	//	{
-	//		char szKillerBuf[MAX_PLAYER_NAME_LENGTH*2];
-	//		Q_snprintf( szKillerBuf, ARRAYSIZE(szKillerBuf), "%s + %s", msg.Killer.szName, assister_name );
-	//		Q_strncpy( msg.Killer.szName, szKillerBuf, ARRAYSIZE( msg.Killer.szName ) );
-	//	}
-	//}
+		// if there was an assister, put both the killer's and assister's names in the death message
+		int iAssisterID = engine->GetPlayerForUserID( event->GetInt( "assister" ) );
+		const char *assister_name = ( iAssisterID > 0 ? g_PR->GetPlayerName( iAssisterID ) : NULL );
+		if ( assister_name )
+		{
+			char szKillerBuf[MAX_PLAYER_NAME_LENGTH*2];
+			Q_snprintf( szKillerBuf, ARRAYSIZE(szKillerBuf), "%s + %s", msg.Killer.szName, assister_name );
+			Q_strncpy( msg.Killer.szName, szKillerBuf, ARRAYSIZE( msg.Killer.szName ) );
+		}
+	}
 	else if ( FStrEq( "rd_robot_killed", pszEventName ) )
 	{
 		DeathNoticeItem &msg = m_DeathNotices[ iDeathNoticeMsg ];

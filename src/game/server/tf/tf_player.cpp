@@ -241,6 +241,8 @@ ConVar tf_halloween_giant_health_scale( "tf_halloween_giant_health_scale", "10",
 ConVar tf_grapplinghook_los_force_detach_time( "tf_grapplinghook_los_force_detach_time", "1", FCVAR_CHEAT );
 ConVar tf_powerup_max_charge_time( "tf_powerup_max_charge_time", "30", FCVAR_CHEAT );
 
+ConVar tf_spawn_with_throwable( "tf_spawn_with_throwable", "0", FCVAR_CHEAT );
+
 extern ConVar tf_powerup_mode;
 extern ConVar tf_mvm_buybacks_method;
 extern ConVar tf_mvm_buybacks_per_wave;
@@ -2135,6 +2137,8 @@ void CTFPlayer::MvMDeployBombThink()
 
 				m_deployBombTimer.Start( 2.0f );
 				TFGameRules()->BroadcastSound( 255, "Announcer.MVM_Robots_Planted" );
+				// rabscootle - MVM Wave Win/Lose Responses
+				TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed( MP_CONCEPT_MVM_WAVE_LOSE, TF_TEAM_PVE_DEFENDERS );
 				SetDeployingBombState( TF_BOMB_DEPLOYING_COMPLETE );
 				m_takedamage = DAMAGE_NO;
 				AddEffects( EF_NODRAW );
@@ -4162,7 +4166,7 @@ void CTFPlayer::Spawn()
 				if(random->RandomInt(0,1) == 1)
 				{
 					AddTag("bot_gatebot");
-					const char *name = g_aRawPlayerClassNamesShort[nRobotClassIndex];
+					const char *name = g_aRawPlayerClassNamesRandom[nRobotClassIndex];
 					GiveItemString( CFmtStr( "MvM GateBot Light %s",name) );
 				}
 				//Spawn the player as Miniboss | 50% chance
@@ -4189,6 +4193,8 @@ void CTFPlayer::Spawn()
 				GetPlayerClass()->SetCustomModel(NULL,USE_CLASS_ANIMATIONS);
 		}
 
+		if ( tf_spawn_with_throwable.GetBool() )
+			GiveItemString( "Throwable Bread" );
 
 		if ( IsInCommentaryMode() && !IsFakeClient() )
 		{
@@ -7832,22 +7838,60 @@ bool CTFPlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
-#ifdef _DEBUG
-	else if ( FStrEq( pcmd, "burn" ) ) 
+	// Better Fortress - Add attribute shortcuts
+	else if ( FStrEq( pcmd, "addgunattribute" ) )
 	{
-		m_Shared.Burn( this, GetActiveTFWeapon() );
+		if ( sv_cheats->GetBool() && args.ArgC() >= 2 )
+		{
+			const CEconItemAttributeDefinition *pDef = GetItemSchema()->GetAttributeDefinitionByName( args[1] );
+			if ( !pDef )
+				return false;
+			GetActiveTFWeapon()->GetAttributeList()->SetRuntimeAttributeValue( pDef, atof(args[2]) );
+		}
 		return true;
 	}
+	else if ( FStrEq( pcmd, "removegunattribute" ) )
+	{
+		if ( sv_cheats->GetBool() && args.ArgC() >= 2 )
+		{
+			const CEconItemAttributeDefinition *pDef = GetItemSchema()->GetAttributeDefinitionByName( args[1] );
+			if ( !pDef )
+				return false;
+			GetActiveTFWeapon()->GetAttributeList()->RemoveAttribute( pDef );
+		}
+		return true;
+	}
+	else if ( FStrEq( pcmd, "addattribute" ) )
+	{
+		if ( sv_cheats->GetBool() && args.ArgC() >= 2 )
+		{
+			AddCustomAttribute( args[1],  atof(args[2]),  atof(args[3]) );
+		}
+		return true;
+	}
+	else if ( FStrEq( pcmd, "removeattribute" ) )
+	{
+		if ( sv_cheats->GetBool() && args.ArgC() >= 2 )
+		{
+			RemoveCustomAttribute( args[1] );
+		}
+		return true;
+	}
+	//else if ( FStrEq( pcmd, "burn" ) ) 
+	//{
+	//	m_Shared.Burn( this, GetActiveTFWeapon() );
+	//	return true;
+	//}
 	else if ( FStrEq( pcmd, "bleed" ) )
 	{
 		m_Shared.MakeBleed( this, GetActiveTFWeapon(), 10.0f );
 		return true;
 	}
-	else if ( FStrEq( pcmd, "dump_damagers" ) )
-	{
-		m_AchievementData.DumpDamagers();
-		return true;
-	}
+	//else if ( FStrEq( pcmd, "dump_damagers" ) )
+	//{
+	//	m_AchievementData.DumpDamagers();
+	//	return true;
+	//}
 	else if ( FStrEq( pcmd, "stun" ) )
 	{
 		if ( args.ArgC() >= 4 )
@@ -7856,16 +7900,16 @@ bool CTFPlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
-// 	else if ( FStrEq( pcmd, "decoy" ) )
-// 	{
-// 		CBotNPCDecoy *decoy = (CBotNPCDecoy *)CreateEntityByName( "bot_npc_decoy" );
-// 		if ( decoy )
-// 		{
-// 			decoy->SetOwnerEntity( this );
-// 			DispatchSpawn( decoy );
-// 		}
-// 		return true;
-// 	}
+ 	else if ( FStrEq( pcmd, "decoy" ) )
+ 	{
+ 		CBotNPCDecoy *decoy = (CBotNPCDecoy *)CreateEntityByName( "bot_npc_decoy" );
+ 		if ( decoy )
+ 		{
+			decoy->SetOwnerEntity( this );
+ 			DispatchSpawn( decoy );
+		}
+ 		return true;
+ 	}
 	else if ( FStrEq( pcmd, "tada" ) )
 	{
 		if ( ShouldRunRateLimitedCommand( args ) )
@@ -7880,10 +7924,7 @@ bool CTFPlayer::ClientCommand( const CCommand &args )
 //		pPlayer->m_Shared.Disguise( Q_atoi( args[2] ), Q_atoi( args[3] ) );
 //		return true;
 //	}
-	else
-#endif
-
-	if ( FStrEq( pcmd, "jointeam" ) )
+	else if ( FStrEq( pcmd, "jointeam" ) )
 	{
 		// don't let them spam the server with changes
 		if ( GetNextChangeTeamTime() > gpGlobals->curtime )
@@ -10326,20 +10367,20 @@ int CTFPlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 	}
 
 	// Add humilation Obituary here for throwable hits
-	//if ( info.GetDamageCustom() == TF_DMG_CUSTOM_THROWABLE )
-	//{
-	//	bool bDisguised = m_Shared.InCond( TF_COND_DISGUISED ) && (m_Shared.GetDisguiseTeam() == pTFAttacker->GetTeamNumber());
+	if ( info.GetDamageCustom() == TF_DMG_CUSTOM_THROWABLE )
+	{
+		bool bDisguised = m_Shared.InCond( TF_COND_DISGUISED ) && (m_Shared.GetDisguiseTeam() == pTFAttacker->GetTeamNumber());
 
-	//	if( m_iHealth <= 0 )
-	//	{
-	//		info.SetDamageCustom( TF_DMG_CUSTOM_THROWABLE_KILL );
-	//	}
+		if( m_iHealth <= 0 )
+		{
+			info.SetDamageCustom( TF_DMG_CUSTOM_THROWABLE_KILL );
+		}
 
-	//	if ( m_iHealth <= 0 || !bDisguised )
-	//	{
-	//		TFGameRules()->DeathNotice( this, info, "throwable_hit" );
-	//	}
-	//}
+		if ( m_iHealth <= 0 || !bDisguised )
+		{
+			TFGameRules()->DeathNotice( this, info, "throwable_hit" );
+		}
+	}
 
 	// Let attacker react to the damage they dealt
 	if ( pTFAttacker )
@@ -15838,10 +15879,12 @@ void CTFPlayer::DeathSound( const CTakeDamageInfo &info )
 		nDeathSoundOffset = IsMiniBoss() ? DEATH_SOUND_GIANT_MVM_FIRST : DEATH_SOUND_MVM_FIRST;
 	}
 	
+	//MVM Versus - Robots don't need to hear this
 	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && 
 		 GetTeamNumber() != TF_TEAM_PVE_INVADERS && !m_bGoingFeignDeath )
 	{
-		EmitSound( "MVM.PlayerDied" );
+		CTeamRecipientFilter filterRED( TF_TEAM_PVE_DEFENDERS, true );
+		EmitSound( filterRED, entindex(), "MVM.PlayerDied" );
 		return;
 	}
 
@@ -21226,7 +21269,7 @@ void CTFPlayer::MVM_StartIdleSound(void)
 
 		if (pszSoundName)
 		{
-			CReliableBroadcastRecipientFilter filter;
+			CBroadcastNonOwnerRecipientFilter filter( this );
 			CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 			m_pGiantIdleSound = controller.SoundCreate(filter, entindex(), pszSoundName);
 			controller.Play(m_pGiantIdleSound, 1.0, 100);
@@ -23681,9 +23724,11 @@ bool CTFPlayer::PickupWeaponFromOther( CTFDroppedWeapon *pDroppedWeapon )
 	{
 		int iClass = GetPlayerClass()->GetClassIndex();
 		int iItemSlot = pItem->GetStaticData()->GetLoadoutSlot( iClass );
+		// Tossable Bread - Allow picking up world Throwables, since you are not meant to equip them normally!
+		int IsThrowable = IsThrowableWeaponSlot( iItemSlot );
 		CTFWeaponBase *pWeapon = dynamic_cast< CTFWeaponBase* >( GetEntityForLoadoutSlot( iItemSlot ) );
 
-		if ( !pWeapon )
+		if ( !pWeapon && !IsThrowable )
 		{
 			AssertMsg( false, "No weapon to put down when picking up a dropped weapon!" );
 			return false;
@@ -23752,6 +23797,10 @@ bool CTFPlayer::PickupWeaponFromOther( CTFDroppedWeapon *pDroppedWeapon )
 			{
 				// try next best thing we can use
 				SwitchToNextBestWeapon( pNewItem );
+			}
+			else if( IsThrowable )
+			{
+				Weapon_Switch( pNewItem );
 			}
 
 			// delay pickup weapon message

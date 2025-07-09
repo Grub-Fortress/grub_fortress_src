@@ -3943,6 +3943,7 @@ C_TFPlayer::C_TFPlayer() :
 
 	m_iPlayerSkinOverride = 0;
 	m_bIsRobot = false;
+	m_pGiantIdleSound = NULL;
 
 	ListenForGameEvent( "player_hurt" );
 	ListenForGameEvent( "hltv_changed_mode" );
@@ -3984,6 +3985,12 @@ C_TFPlayer::~C_TFPlayer()
 	{
 		controller.SoundDestroy( m_pFallingSoundLoop );
 		m_pFallingSoundLoop = NULL;
+	}
+
+	if ( m_pGiantIdleSound )
+	{
+		controller.SoundDestroy( m_pGiantIdleSound );
+		m_pGiantIdleSound = NULL;
 	}
 
 	StopTauntSoundLoop();
@@ -6003,6 +6010,16 @@ void C_TFPlayer::ClientThink()
 	// Act on prediction suppress (halloween karts, hopefully never anything else)
 	if ( IsLocalPlayer() )
 	{
+		if ( !m_pGiantIdleSound )
+		{
+			MVM_StartIdleSound();
+		}
+		else if( !IsMiniBoss() )
+		{
+			MVM_StopIdleSound();
+			Msg( "No longer a miniboss. Stopping sounds...\n" );
+		}
+
 		bool bWantPredict = !m_Shared.ShouldSuppressPrediction();
 		if ( bWantPredict != cl_predict->GetBool() )
 		{
@@ -6058,6 +6075,73 @@ void C_TFPlayer::ClientThink()
 	    {
 		    engine->ClientCmd("voicemenu 1 8");
 	    }
+	}
+}
+
+void C_TFPlayer::MVM_StartIdleSound(void)
+{
+	MVM_StopIdleSound();
+
+
+	// SHIELD YOUR EYES MIKEB!!!
+	if (IsMiniBoss())
+	{
+		const char* pszSoundName = NULL;
+
+		int iClass = GetPlayerClass()->GetClassIndex();
+		switch (iClass)
+		{
+		case TF_CLASS_HEAVYWEAPONS:
+		{
+			pszSoundName = "MVM.GiantHeavyLoop";
+			break;
+		}
+		case TF_CLASS_SOLDIER:
+		{
+			pszSoundName = "MVM.GiantSoldierLoop";
+			break;
+		}
+		case TF_CLASS_DEMOMAN:
+		{
+			pszSoundName = "MVM.GiantDemomanLoop";
+			break;
+		}
+		case TF_CLASS_SCOUT:
+		{
+			pszSoundName = "MVM.GiantScoutLoop";
+			break;
+		}
+		case TF_CLASS_PYRO:
+		{
+			pszSoundName = "MVM.GiantPyroLoop";
+			break;
+		}
+		case TF_CLASS_MEDIC:
+		case TF_CLASS_ENGINEER:
+		case TF_CLASS_SNIPER:
+		case TF_CLASS_SPY:
+		{
+			return;
+			break;
+		}
+		}
+
+		if (pszSoundName)
+		{
+			CBroadcastRecipientFilter filter;
+			CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
+			m_pGiantIdleSound = controller.SoundCreate(filter, entindex(), pszSoundName);
+			controller.Play(m_pGiantIdleSound, 0.3, 100);
+		}
+	}
+}
+
+void C_TFPlayer::MVM_StopIdleSound(void)
+{
+	if (m_pGiantIdleSound)
+	{
+		CSoundEnvelopeController::GetController().SoundDestroy(m_pGiantIdleSound);
+		m_pGiantIdleSound = NULL;
 	}
 }
 
@@ -11111,6 +11195,17 @@ void C_TFPlayer::FireGameEvent( IGameEvent *event )
 							pHudChat->ChatPrintf( pLocalPlayer->entindex(), CHAT_FILTER_NAMECHANGE, "%s", szLocalized );
 						}
 					}
+				}
+			}
+		}
+		if( TFGameRules() && TFGameRules()->IsMannVsMachineMode() )
+		{
+			if( pLocalPlayer && pLocalPlayer == this )
+			{
+				C_BasePlayer *pEventPlayer = UTIL_PlayerByUserId( event->GetInt( "userid" ) );
+				if( pEventPlayer == pLocalPlayer )
+				{
+					MVM_StopIdleSound();
 				}
 			}
 		}

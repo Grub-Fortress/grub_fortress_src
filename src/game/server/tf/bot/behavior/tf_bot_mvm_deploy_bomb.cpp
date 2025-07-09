@@ -123,6 +123,8 @@ ActionResult< CTFBot > CTFBotMvMDeployBomb::Update( CTFBot *me, float interval )
 
 			m_timer.Start( 2.0f );
 			TFGameRules()->BroadcastSound( 255, "Announcer.MVM_Robots_Planted" );
+			// rabscootle - MVM Wave Win/Lose Responses
+			TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed( MP_CONCEPT_MVM_WAVE_LOSE, TF_TEAM_PVE_DEFENDERS );
 			me->SetDeployingBombState( TF_BOMB_DEPLOYING_COMPLETE );
 			me->m_takedamage = DAMAGE_NO;
 			me->AddEffects( EF_NODRAW );

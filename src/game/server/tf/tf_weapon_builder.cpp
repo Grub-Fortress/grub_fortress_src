@@ -1130,11 +1130,6 @@ void CTFWeaponBuilder::StartBuilding( void )
 					pOwner->RemoveAmmo( 1, TF_AMMO_GRENADES2 );
 					StartEffectBarRegen();
 				}
-				// REPROGRAMMED TRAP
-				else if ( pObj->GetType() == OBJ_SPY_TRAP )
-				{
-					pOwner->RemoveAmmo(1, TF_AMMO_GRENADES1);
-				}
 			}
 		}
 	}

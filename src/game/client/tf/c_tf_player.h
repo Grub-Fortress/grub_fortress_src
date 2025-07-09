@@ -611,6 +611,9 @@ private:
 	int			m_iOldKartState;
 
 	C_BaseAnimating *m_pKart;
+	void		MVM_StartIdleSound(void);
+	void		MVM_StopIdleSound(void);
+	CSoundPatch		*m_pGiantIdleSound;
 
 public:
 	float			GetKartSpeedBoost( void );
