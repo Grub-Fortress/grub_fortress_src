@@ -92,26 +92,6 @@ static int flagSlots[NUM_ENGY_BUILDINGS] =
 	0x08
 };
 
-const EngyBuildingReplacement_t s_alternateEngineerBuildings[] =
-{
-	// Catapult
-	EngyBuildingReplacement_t(
-		OBJ_CATAPULT,
-		0,
-		"tele_entrance_active.res",
-		"tele_entrance_already_built.res",
-		"tele_entrance_cant_afford.res",
-		"tele_entrance_unavailable.res",
-		"tele_entrance_active.res",
-		"tele_entrance_inactive.res",
-		"tele_entrance_inactive.res",
-		flagSlots[2],
-		flagSlots[3]
-	),
-
-		// Add more objects here
-};
-
 //======================================
 DECLARE_HUDELEMENT_DEPTH( CHudMenuEngyBuild, 40 );	// in front of engy building status
 
@@ -785,20 +765,6 @@ void CHudMenuEngyBuild::ReplaceBuildings( EngyConstructBuilding_t (&targetBuildi
 		return;
 
 	CUtlVector< const EngyBuildingReplacement_t* > vecReplacements;
-
-	int iOverrideType = -1;
-	CALL_ATTRIB_HOOK_INT_ON_OTHER(pLocalPlayer, iOverrideType, override_engineer_object_type );
-	if (iOverrideType >= 0 && iOverrideType < ARRAYSIZE(s_alternateEngineerBuildings))
-	{
-		vecReplacements.AddToTail(&s_alternateEngineerBuildings[iOverrideType]);
-	}
-
-	iOverrideType = -1;
-	CALL_ATTRIB_HOOK_INT_ON_OTHER(pLocalPlayer, iOverrideType, override_engineer_object_type_2);
-	if (iOverrideType >= 0 && iOverrideType < ARRAYSIZE(s_alternateEngineerBuildings))
-	{
-		vecReplacements.AddToTail(&s_alternateEngineerBuildings[iOverrideType]);
-	}
 
 	// verify the override data to make sure that they don't conflict with each other
 	int iReplacedSlots = 0;

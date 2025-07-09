@@ -74,7 +74,7 @@
 	}
 	"devtest"
 	{
-		"viewed"		"92"
+		"viewed"		"93"
 	}
 	"cp_convoy"
 	{
@@ -110,6 +110,10 @@
 	}
 	"koth_landfall"
 	{
-		"viewed"		"16"
+		"viewed"		"17"
+	}
+	"mvm_coaltown"
+	{
+		"viewed"		"1"
 	}
 }

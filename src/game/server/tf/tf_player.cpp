@@ -7900,16 +7900,6 @@ bool CTFPlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
- 	else if ( FStrEq( pcmd, "decoy" ) )
- 	{
- 		CBotNPCDecoy *decoy = (CBotNPCDecoy *)CreateEntityByName( "bot_npc_decoy" );
- 		if ( decoy )
- 		{
-			decoy->SetOwnerEntity( this );
- 			DispatchSpawn( decoy );
-		}
- 		return true;
- 	}
 	else if ( FStrEq( pcmd, "tada" ) )
 	{
 		if ( ShouldRunRateLimitedCommand( args ) )
