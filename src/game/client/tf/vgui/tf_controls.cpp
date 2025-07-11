@@ -2482,7 +2482,7 @@ void CreateSwoop( int nX, int nY, int nWide, int nTall, float flDelay, bool bDow
 	pSwoop->SetBounds( nX, nY, nWide, nTall );
 }
 
-#define MOD_CREDITS_FILE "cfg/betterfortress_credits.txt"
+#define MOD_CREDITS_FILE "cfg/tfgrub_credits.txt"
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
