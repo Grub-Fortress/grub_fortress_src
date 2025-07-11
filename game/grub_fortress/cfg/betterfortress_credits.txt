@@ -33,6 +33,13 @@ DESCRIPTION INFO_OPTIONS
 		{ BOOL }
 		{ "1" }
 	}
+	"credit2_3"
+	{
+		"The Big Owen - Haau, kibbleknight"
+		"gamebanana.com/mods/603188"
+		{ BOOL }
+		{ "1" }
+	}
 	"category3"
 	{
 		"Community Help/Contributions"

@@ -6,7 +6,7 @@
 	}
 	"ctf_2fort"
 	{
-		"viewed"		"15"
+		"viewed"		"16"
 	}
 	"itemtest"
 	{
@@ -66,7 +66,7 @@
 	}
 	"cp_5gorge"
 	{
-		"viewed"		"1"
+		"viewed"		"2"
 	}
 	"ctf_turbine"
 	{
@@ -110,9 +110,13 @@
 	}
 	"koth_landfall"
 	{
-		"viewed"		"25"
+		"viewed"		"27"
 	}
 	"mvm_coaltown"
+	{
+		"viewed"		"2"
+	}
+	"cp_badlands"
 	{
 		"viewed"		"1"
 	}
