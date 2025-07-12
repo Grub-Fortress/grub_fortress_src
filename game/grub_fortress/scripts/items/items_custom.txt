@@ -214,23 +214,12 @@ not sure if it should be used as a weapon"
 		}
 		"5002"
 		{
-			"name"	"override engineer object type"
-			"attribute_class"	"override_engineer_object_type"
-			"description_string"	"override engineer object type"
-			"description_format"	"value_is_additive_percentage"
+			"name"	"grenade no bounce stickless"
+			"attribute_class"	"grenade_no_bounce"
+			"description_string"	"Attrib_grenade_no_bounce_stickless"
+			"description_format"	"value_is_additive"
 			"hidden"	"0"
-			"effect_type"	"neutral"
-			"stored_as_integer"	"0"
-		}
-		"5003"
-		{
-			"name"	"override engineer object type 2"
-			"attribute_class"	"override_engineer_object_type_2"
-			"description_string"	"override engineer object type 2"
-			"description_format"	"value_is_additive_percentage"
-			"hidden"	"0"
-			"effect_type"	"neutral"
-			"stored_as_integer"	"0"
+			"effect_type"	"positive"
 		}
 	}
 	"items"
@@ -349,6 +338,11 @@ not sure if it should be used as a weapon"
 					"attribute_class"	"grenade_no_stick"
 					"value"				"1"
 				}
+				"grenade no bounce"
+				{
+					"attribute_class"	"grenade_no_bounce"
+					"value"	"1"
+				}
 				"override projectile type"
 				{
 					"attribute_class"	"override_projectile_type"
@@ -376,6 +370,11 @@ not sure if it should be used as a weapon"
 				{
 					"attribute_class"	"grenade_no_stick"
 					"value"				"1"
+				}
+				"grenade no bounce"
+				{
+					"attribute_class"	"grenade_no_bounce"
+					"value"	"1"
 				}
 				"override projectile type"
 				{
@@ -545,11 +544,11 @@ not sure if it should be used as a weapon"
 			}
 			"attributes"
 			{
-				"damage bonus"
-				{
-					"attribute_class"	"mult_dmg"
-					"value"				"1.25"
-				}
+//				"damage bonus"
+//				{
+//					"attribute_class"	"mult_dmg"
+//					"value"				"1.25"
+//				}
 				"weapon spread bonus"
 				{
 					"attribute_class"	"mult_spread_scale"

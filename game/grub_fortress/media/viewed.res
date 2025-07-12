@@ -74,7 +74,7 @@
 	}
 	"devtest"
 	{
-		"viewed"		"110"
+		"viewed"		"118"
 	}
 	"cp_convoy"
 	{
@@ -86,7 +86,7 @@
 	}
 	"cp_gorge"
 	{
-		"viewed"		"3"
+		"viewed"		"4"
 	}
 	"ctf_2bine_v1"
 	{
@@ -110,13 +110,17 @@
 	}
 	"koth_landfall"
 	{
-		"viewed"		"32"
+		"viewed"		"33"
 	}
 	"mvm_coaltown"
 	{
 		"viewed"		"2"
 	}
 	"cp_badlands"
+	{
+		"viewed"		"1"
+	}
+	"pl_coal_event"
 	{
 		"viewed"		"1"
 	}

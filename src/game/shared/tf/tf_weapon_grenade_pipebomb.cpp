@@ -985,6 +985,19 @@ void CTFGrenadePipebombProjectile::VPhysicsCollision( int index, gamevcollisione
 		{
 			SetDetonateTimerLength( flFizzle );
 		}
+		int iNoBounce = 0;
+		if (GetLauncher())
+		{
+			CALL_ATTRIB_HOOK_INT_ON_OTHER(GetLauncher(), iNoBounce, grenade_no_bounce)
+			if (iNoBounce)
+			{
+				Vector velocity;
+				AngularImpulse angularVelocity;
+				VPhysicsGetObject()->GetVelocity(&velocity, &angularVelocity);
+				velocity *= 0.7f;
+				VPhysicsGetObject()->SetVelocity(&velocity, &angularVelocity);
+			}
+		}
 	}
 }
 
