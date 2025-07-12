@@ -110,7 +110,7 @@
 	}
 	"koth_landfall"
 	{
-		"viewed"		"30"
+		"viewed"		"32"
 	}
 	"mvm_coaltown"
 	{

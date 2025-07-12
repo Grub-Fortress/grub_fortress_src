@@ -80,4 +80,11 @@ DESCRIPTION INFO_OPTIONS
 		{ BOOL }
 		{ "1" }
 	}
+	"credit3_6"
+	{
+		"Hactica - Ultimate Weapon Animation Fixes"
+		"gamebanana.com/wips/86367"
+		{ BOOL }
+		{ "1" }
+	}
 }

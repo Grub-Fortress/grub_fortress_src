@@ -5,7 +5,7 @@
 		"scout"		"0"
 		"sniper"		"0"
 		"soldier"		"0"
-		"demoman"		"1"
+		"demoman"		"0"
 		"medic"		"0"
 		"heavy"		"0"
 		"pyro"		"0"
@@ -69,7 +69,7 @@
 		}
 		"soldier"
 		{
-			"0"		"0x0000000292C7D3D0"
+			"0"		"0x0000000000007D02"
 			"1"		"0x00000002F27E25DB"
 			"2"		"0xFFFFFFFFFFFFFFFF"
 			"3"		"0x0000000000000000"
