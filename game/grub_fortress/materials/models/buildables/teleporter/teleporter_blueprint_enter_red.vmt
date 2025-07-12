@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture"	"models/buildables/teleporter/teleporter_blueprint_enter_red"
+	"$surfaceprop"	"no_decal"
+}
