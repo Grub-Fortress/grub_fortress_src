@@ -18748,6 +18748,7 @@ convar_tags_t convars_to_check_for_tags[] =
 	{ "tf_gamemode_ctf", "ctf", NULL },
 	{ "tf_gamemode_sd", "sd", NULL },
 	{ "tf_gamemode_mvm", "mvm", NULL },
+	{ "tf_mvm_forceversus", "versus", NULL },
 	{ "tf_gamemode_payload", "payload", NULL },
 	{ "tf_gamemode_rd",	"rd", NULL },
 	{ "tf_gamemode_pd",	"pd", NULL },

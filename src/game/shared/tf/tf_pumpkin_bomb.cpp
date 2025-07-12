@@ -147,6 +147,8 @@ void CTFPumpkinBomb::PumpkinTouch( CBaseEntity *pOther )
 		return;
 
 #ifdef GAME_DLL
+	BaseClass::ScriptOnTouch( pOther );
+
 	if ( pOther->GetFlags() & FL_GRENADE )
 	{
 		// Only let my team destroy

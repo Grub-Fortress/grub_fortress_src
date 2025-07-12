@@ -1086,6 +1086,11 @@ public:
 	virtual void			Blocked( CBaseEntity *pOther );
 	virtual void			EndBlocked( void ) {}
 
+	//Vscript - Touch hooks
+	virtual void			ScriptOnStartTouch( CBaseEntity *pOther ); 
+	virtual void			ScriptOnTouch( CBaseEntity *pOther ); 
+	virtual void			ScriptOnEndTouch( CBaseEntity *pOther ); 
+
 	// Physics simulation
 	virtual void			PhysicsSimulate( void );
 
@@ -1252,6 +1257,7 @@ public:
 	CNetworkVarForDerived( bool , m_bSticksProjectiles );
 	CNetworkVarForDerived( int , m_bCanBeHealed );
 	CNetworkVarForDerived( bool , m_bCanBeTargeted );
+	CNetworkVarForDerived( bool , m_bCanBeBurned );
 
 	// Damage filtering
 	string_t	m_iszDamageFilterName;	// The name of the entity to use as our damage filter.
@@ -1422,6 +1428,7 @@ public:
 	void ScriptCanStickProjectiles( bool bValue ) { m_bSticksProjectiles = bValue; }
 	void ScriptCanBeHealed( int bValue ) { m_bCanBeHealed = bValue; }
 	void ScriptSetTargetable( bool bValue ) { m_bCanBeTargeted = bValue; }
+	void ScriptSetBurnable(bool bValue) { m_bCanBeBurned = bValue; }
 
 	HSCRIPT ScriptGetModelKeyValues( void );
 

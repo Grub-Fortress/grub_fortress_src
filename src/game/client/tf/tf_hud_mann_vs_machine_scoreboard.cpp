@@ -662,8 +662,8 @@ void CTFHudMannVsMachineScoreboard::UpdatePopFile( void )
 				SetDialogVariable( "popfile", wszChallengeName );
 				
 				m_pDifficultyContainer->SetVisible( true );
-				m_pDifficultyContainer->SetDialogVariable( "difficultyvalue", g_pVGuiLocalize-> Find( iEndlessMode ? "#TF_MvM_EndlessWave" : GetMvMChallengeDifficultyLocName( mission.m_eDifficulty ) )  );
-		
+				m_pDifficultyContainer->SetDialogVariable( "difficultyvalue", g_pVGuiLocalize-> Find( GetMvMChallengeDifficultyLocName( mission.m_eDifficulty ) ) );
+				//MVM Versus - TODO: make it change to #TF_MvM_EndlessWave when endless mode is active
 			}
 			else 
 			{

@@ -671,7 +671,7 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent *event )
 		if ( bIsMvM )
 		{
 			// MvM only cares about Defend notifications
-			if ( iEventType != TF_FLAGEVENT_DEFEND )
+			if ( iEventType == TF_FLAGEVENT_PICKUP || iEventType == TF_FLAGEVENT_CAPTURE && !tf_mvm_forceversus.GetBool() )
 			{
 				// unsupported, don't put anything up			
 				m_DeathNotices.Remove( iMsg );
@@ -697,10 +697,15 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent *event )
 		case TF_FLAGEVENT_CAPTURE:
 			if (Q_strlen(pszCapturedText) <= 0)
 			{
-				if (bIsHalloween2014)
-					pszMsgKey = "#Msg_CapturedFlagHalloween2014";
+				//MvM Versus - Deploying the bomb will be Notified!
+				if ( bIsMvM && tf_mvm_forceversus.GetBool() )
+				{
+					pszMsgKey = "#Msg_DeployedBomb";
+				}
 				else
-					pszMsgKey = "#Msg_CapturedFlag";
+				{
+					pszMsgKey = bIsHalloween2014 ? "#Msg_CapturedFlagHalloween2014" : "#Msg_CapturedFlag";
+				}
 			}
 			else
 				pszMsgKey = pszCapturedText;

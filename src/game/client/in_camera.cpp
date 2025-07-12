@@ -743,7 +743,7 @@ CAM_ToFirstPerson
 void CInput::CAM_ToOrthographic(void)
 {
 	m_fCameraInThirdPerson = false;
-	m_CameraIsOrthographic = true;
+	m_CameraIsOrthographic = !m_CameraIsOrthographic;
 	cam_command.SetValue( 0 );
 }
 

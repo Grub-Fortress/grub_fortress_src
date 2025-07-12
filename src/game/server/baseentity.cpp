@@ -2434,6 +2434,7 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( ScriptCanStickProjectiles, "CanStickProjectiles", "Make Stickybombs attach with this entity." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptCanBeHealed, "CanBeHealed", "Make this entity Healable from Mediguns." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetTargetable, "SetTargetable", "Make this entity Targetable from Bots or Sentryguns." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetBurnable, "SetBurnable", "Make this entity catch fire from Pyro weapons.")
 	
 	DEFINE_SCRIPTFUNC( TerminateScriptScope, "Clear the current script scope for this entity" )
 
@@ -2618,6 +2619,8 @@ void CBaseEntity::StartTouch( CBaseEntity *pOther )
 	// notify parent
 	if ( m_pParent != NULL )
 		m_pParent->StartTouch( pOther );
+
+	ScriptOnStartTouch( pOther );
 }
 
 void CBaseEntity::Touch( CBaseEntity *pOther )
@@ -2628,6 +2631,56 @@ void CBaseEntity::Touch( CBaseEntity *pOther )
 	// notify parent of touch
 	if ( m_pParent != NULL )
 		m_pParent->Touch( pOther );
+
+	ScriptOnTouch( pOther );
+}
+
+void CBaseEntity::ScriptOnStartTouch( CBaseEntity *pOther )
+{ 
+	if ( ScriptHookEnabled( "OnStartTouch" ) )
+	{		
+		IScriptVM *pVM = g_pScriptVM;
+
+		ScriptVariant_t varTable;
+		pVM->CreateTable( varTable );
+		
+		pVM->SetValue( varTable, "toucher_entity", ToHScript( pOther ) );  
+		pVM->SetValue( varTable, "touched_entity", ToHScript( this ) );
+
+		RunScriptHook( "OnStartTouch", varTable );
+	}
+}
+
+void CBaseEntity::ScriptOnTouch( CBaseEntity *pOther )
+{ 
+	if ( ScriptHookEnabled( "OnTouch" ) )
+	{		
+		IScriptVM *pVM = g_pScriptVM;
+
+		ScriptVariant_t varTable;
+		pVM->CreateTable( varTable );
+		
+		pVM->SetValue( varTable, "toucher_entity", ToHScript( pOther ) );  
+		pVM->SetValue( varTable, "touched_entity", ToHScript( this ) );
+
+		RunScriptHook( "OnTouch", varTable );
+	}
+}
+
+void CBaseEntity::ScriptOnEndTouch( CBaseEntity *pOther )
+{ 
+	if ( ScriptHookEnabled( "OnEndTouch" ) )
+	{		
+		IScriptVM *pVM = g_pScriptVM;
+
+		ScriptVariant_t varTable;
+		pVM->CreateTable( varTable );
+		
+		pVM->SetValue( varTable, "toucher_entity", ToHScript( pOther ) );  
+		pVM->SetValue( varTable, "touched_entity", ToHScript( this ) );
+
+		RunScriptHook( "OnEndTouch", varTable );
+	}
 }
 
 void CBaseEntity::EndTouch( CBaseEntity *pOther )
@@ -2637,6 +2690,8 @@ void CBaseEntity::EndTouch( CBaseEntity *pOther )
 	{
 		m_pParent->EndTouch( pOther );
 	}
+
+	ScriptOnEndTouch( pOther );
 }
 
 

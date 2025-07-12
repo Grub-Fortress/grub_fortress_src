@@ -1358,6 +1358,7 @@ public:
 	bool							m_bSticksProjectiles;
 	int                             m_bCanBeHealed;
 	bool                            m_bCanBeTargeted;
+	bool							m_bCanBeBurned;
 
 
 #if !defined( NO_ENTITY_PREDICTION )

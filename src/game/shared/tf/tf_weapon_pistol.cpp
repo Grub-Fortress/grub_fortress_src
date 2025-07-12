@@ -138,7 +138,7 @@ void CTFPistol_ScoutPrimary::Push( void )
 		if ( pVictim == pOwner )
 			continue;
 
-		if ( pVictim->InSameTeam( pOwner ) )
+		if ( pVictim->InSameTeam( pOwner ) && !friendlyfire.GetBool() )
 			continue;
 
 		if ( TFGameRules() && TFGameRules()->IsTruceActive() && pOwner->IsTruceValidForEnt() )

@@ -1096,6 +1096,9 @@ void CTFMinigun::StandardBlendingRules( CStudioHdr *hdr, Vector pos[], Quaternio
 //-----------------------------------------------------------------------------
 void CTFMinigun::UpdateBarrelMovement()
 {
+	//Can i spin my barrel in peace? i wanna hear the full winddown sound!
+	if ( !prediction->IsFirstTimePredicted() )	{ return; }
+
 	if ( m_flBarrelCurrentVelocity != m_flBarrelTargetVelocity )
 	{
 		float flBarrelAcceleration = CanHolsterWhileSpinning() ? 0.5f : 0.1f;

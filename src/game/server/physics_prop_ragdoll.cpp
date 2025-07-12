@@ -83,7 +83,7 @@ BEGIN_DATADESC(CRagdollProp)
 
 	DEFINE_KEYFIELD( m_bStartDisabled, FIELD_BOOLEAN, "StartDisabled" ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartRagdollBoogie", InputStartRadgollBoogie ),
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "StartRagdollBoogie", InputStartRadgollBoogie ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "EnableMotion", InputEnableMotion ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "DisableMotion", InputDisableMotion ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "Enable",		InputTurnOn ),

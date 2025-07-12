@@ -77,11 +77,13 @@ bool C_FuncRespawnRoomVisualizer::ShouldCollide( int collisionGroup, int content
 
 	if ( collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT || collisionGroup == COLLISION_GROUP_VEHICLE )
 	{
+		// MvM Versus - We prevent Human robots leave their spawn before the start of a Wave
+		bool bMvM = TFGameRules()->IsMannVsMachineMode();
 		switch( GetTeamNumber() )
 		{
 		case TF_TEAM_BLUE:
 			if ( !(contentsMask & CONTENTS_BLUETEAM) )
-				return false;
+					return bMvM ? TFGameRules()->InSetup() : false;
 			break;
 
 		case TF_TEAM_RED:
