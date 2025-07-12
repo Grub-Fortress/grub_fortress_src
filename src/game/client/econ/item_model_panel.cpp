@@ -594,7 +594,7 @@ IMaterial* GetMaterialForImage( CEmbeddedItemModelPanel::InventoryImageType_t eI
 	switch ( eImageType )
 	{
 	case CEmbeddedItemModelPanel::IMAGETYPE_SMALL:
-		pMaterial = g_pMaterialSystem->FindMaterial( pszBaseName, TEXTURE_GROUP_VGUI );
+		pMaterial = g_pMaterialSystem->FindMaterial(CFmtStr("%s_large", pszBaseName).Access(), TEXTURE_GROUP_VGUI);
 		break;
 	case CEmbeddedItemModelPanel::IMAGETYPE_DETAILED:
 		pMaterial = g_pMaterialSystem->FindMaterial( CFmtStr("%s_detail",pszBaseName).Access(), TEXTURE_GROUP_VGUI, false );
@@ -770,7 +770,7 @@ void CEmbeddedItemModelPanel::Paint( void )
 			}
 			else
 			{
-				bool bForceHighRes = false;
+				bool bForceHighRes = true;
 				if ( m_iInventoryImageType != IMAGETYPE_SMALL || bForceHighRes )
 				{
 					// Normal is 128*128, large is 512x512

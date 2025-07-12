@@ -156,6 +156,7 @@ static const hitsound_params_t g_HitSounds[] =
 	hitsound_params_t( "Player.HitSoundBeepo",				1,			255 ),
 	hitsound_params_t( "Player.HitSoundVortex",				1,			255 ),
 	hitsound_params_t( "Player.HitSoundSquasher",			1,			255 ),
+	hitsound_params_t( "Player.HitSoundBubbleDing",			1,			255 ),
 };
 
 static const hitsound_params_t g_LastHitSounds[] =
@@ -169,6 +170,7 @@ static const hitsound_params_t g_LastHitSounds[] =
 	hitsound_params_t( "Player.KillSoundBeepo", 1, 255 ),
 	hitsound_params_t( "Player.KillSoundVortex", 1, 255 ),
 	hitsound_params_t( "Player.KillSoundSquasher", 1, 255 ),
+	hitsound_params_t( "Player.HitSoundBubbleDing", 1, 255 ),
 };
 
 ConVar tf_dingalingaling_effect( "tf_dingalingaling_effect", "0", FCVAR_ARCHIVE, "Which Dingalingaling sound is used", true, 0, true, ARRAYSIZE( g_HitSounds )-1 );

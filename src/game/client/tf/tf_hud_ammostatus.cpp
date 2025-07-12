@@ -42,6 +42,9 @@ DECLARE_HUDELEMENT( CTFHudWeaponAmmo );
 static ConVar hud_low_ammo_warning_threshold( "hud_lowammowarning_threshold", "0.40", FCVAR_CLIENTDLL | FCVAR_DEVELOPMENTONLY, "Percentage threshold at which the low ammo warning will become visible." );
 static ConVar hud_low_ammo_warning_max_pos_adjust( "hud_lowammowarning_maxposadjust", "5", FCVAR_CLIENTDLL | FCVAR_DEVELOPMENTONLY, "Maximum pixel amount to increase the low ammo warning image." );
 
+static ConVar tfgrub_ammobucket("tfgrub_ammobucket", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Show weapon icon in ammo panel if set to 1.");
+static ConVar tfgrub_melee_draw_ammo_status("tfgrub_melee_draw_ammo_status", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Show ammo status when an melee is active if set to 1.");
+
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
@@ -70,6 +73,8 @@ CTFHudWeaponAmmo::CTFHudWeaponAmmo( const char *pElementName ) : CHudElement( pE
 	m_flNextThink = 0.0f;
 
 	RegisterForRenderGroup( "inspect_panel" );
+
+	m_pWeaponBucket = nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -111,6 +116,12 @@ void CTFHudWeaponAmmo::ApplySchemeSettings( IScheme *pScheme )
 	m_hCurrentActiveWeapon = NULL;
 	m_flNextThink = 0.0f;
 
+	m_pWeaponBucket = dynamic_cast<ImagePanel*>(FindChildByName("WeaponIcon"));
+	if (m_pWeaponBucket)
+	{
+		m_pWeaponBucket->SetVisible(false);
+	}
+
 	UpdateAmmoLabels( false, false, false );
 }
 
@@ -140,7 +151,7 @@ bool CTFHudWeaponAmmo::ShouldDraw( void )
 	}
 
 	// Don't show for weapons that don't use any ammo
-	if ( !pWeapon->UsesPrimaryAmmo() )
+	if ( !pWeapon->UsesPrimaryAmmo() && !tfgrub_melee_draw_ammo_status.GetBool() )
 		return false;
 
 	// Don't show for weapons that use metal for their primary ammo
@@ -250,6 +261,43 @@ void CTFHudWeaponAmmo::OnThink()
 	// Get the player and active weapon.
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
 	C_BaseCombatWeapon *pWeapon = GetActiveWeapon();
+
+	if (tfgrub_ammobucket.GetBool() && pWeapon && m_pWeaponBucket)
+	{
+		const CEconItemView* pItemView = pWeapon->GetAttributeContainer()->GetItem();
+		if (pItemView)
+		{
+			const CEconItemDefinition* pItemDef = pItemView->GetStaticData();
+			if (pItemDef)
+			{
+				const char* pszInventoryImage = pItemDef->GetInventoryImage();
+				if (pszInventoryImage && pszInventoryImage[0])
+				{
+					char szImage[128];
+					Q_snprintf(szImage, sizeof(szImage), "../%s_large", pszInventoryImage);
+					m_pWeaponBucket->SetImage(szImage);
+					m_pWeaponBucket->SetVisible(true);
+				}
+				else
+				{
+					m_pWeaponBucket->SetVisible(false);
+				}
+			}
+			else
+			{
+				m_pWeaponBucket->SetVisible(false);
+			}
+		}
+		else
+		{
+			m_pWeaponBucket->SetVisible(false);
+		}
+	}
+	else if (m_pWeaponBucket)
+	{
+		m_pWeaponBucket->SetVisible(false);
+	}
+
 
 	if ( m_flNextThink < gpGlobals->curtime )
 	{

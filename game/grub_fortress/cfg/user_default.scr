@@ -78,6 +78,14 @@ DESCRIPTION INFO_OPTIONS
 		{ "0" }
 	}
 	
+	"tfgrub_ammobucket"
+	{
+		"#TFGrub_Ammobucket"
+		"#Tooltip_TFGrub_Ammobucket"
+		{ BOOL }
+		{ "0" }
+	}
+	
 	"hud_fastswitch"
 	{
 		"#GameUI_FastSwitchCheck"
@@ -115,6 +123,7 @@ DESCRIPTION INFO_OPTIONS
 			"#tf_dingalingaling_Beepo"					"6"
 			"#tf_dingalingaling_Vortex"					"7"
 			"#tf_dingalingaling_Squasher"				"8"
+			"#tfgrub_dingalingaling_bubble"				"9"
 		}
 		{ "-1" }
 	}
@@ -164,6 +173,7 @@ DESCRIPTION INFO_OPTIONS
 			"#tf_dingalingaling_Beepo"					"6"
 			"#tf_dingalingaling_Vortex"					"7"
 			"#tf_dingalingaling_Squasher"				"8"
+			"#tfgrub_dingalingaling_bubble"				"9"
 		}
 		{ "0" }
 	}

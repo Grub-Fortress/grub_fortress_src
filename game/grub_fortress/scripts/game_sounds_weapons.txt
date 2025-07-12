@@ -8204,3 +8204,15 @@
 	"wave"	")weapons/fx/nearmiss/dragons_fury_nearmiss.wav"
 
 }
+
+// TF Grub
+
+"Player.HitSoundBubbleDing"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  	"SNDLVL_NONE"	
+	"pitch"			"PITCH_NORM"
+
+	"wave"	")ui/hitsound_bubble.wav"
+}

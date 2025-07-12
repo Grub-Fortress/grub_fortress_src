@@ -32,7 +32,7 @@
 
 
 // Half-Life User Info Configuration Layout Script (stores last settings chosen, too)
-// File generated:  Thu Jul  3 01:22:21 AM
+// File generated:  Fri Jul 11 16:55:38 AM
 //
 //
 // Cvar	-	Setting
@@ -85,6 +85,14 @@ DESCRIPTION INFO_OPTIONS
 		{ "1" }
 	}
 
+	"tfgrub_ammobucket"
+	{
+		"#TFGrub_Ammobucket"
+		"#Tooltip_TFGrub_Ammobucket"
+		{ BOOL }
+		{ "0" }
+	}
+
 	"hud_fastswitch"
 	{
 		"#GameUI_FastSwitchCheck"
@@ -123,6 +131,7 @@ DESCRIPTION INFO_OPTIONS
 			"#tf_dingalingaling_Beepo" "6"
 			"#tf_dingalingaling_Vortex" "7"
 			"#tf_dingalingaling_Squasher" "8"
+			"#tfgrub_dingalingaling_bubble" "9"
 		}
 		{ "0" }
 	}
@@ -173,6 +182,7 @@ DESCRIPTION INFO_OPTIONS
 			"#tf_dingalingaling_Beepo" "6"
 			"#tf_dingalingaling_Vortex" "7"
 			"#tf_dingalingaling_Squasher" "8"
+			"#tfgrub_dingalingaling_bubble" "9"
 		}
 		{ "0" }
 	}
@@ -386,7 +396,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_viewmodelfov_option"
 		"#Tooltip_viewmodelfov_option"
 		{ SLIDER 54 70 }
-		{ "54" }
+		{ "70" }
 	}
 
 	"tf_spectator_target_location"
@@ -658,7 +668,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_use_min_viewmodels_option"
 		"#Tooltip_use_min_viewmodels_option"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"cl_spraydisable"
@@ -666,7 +676,7 @@ DESCRIPTION INFO_OPTIONS
 		"#GameUI_DisableSprays"
 		"#Tooltip_DisableSprays"
 		{ BOOL }
-		{ "1" }
+		{ "0" }
 	}
 
 	"tf_hide_custom_decals"

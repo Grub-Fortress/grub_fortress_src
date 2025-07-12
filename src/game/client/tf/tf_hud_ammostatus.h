@@ -19,6 +19,8 @@
 //-----------------------------------------------------------------------------
 class CTFHudWeaponAmmo : public CHudElement, public vgui::EditablePanel
 {
+	vgui::ImagePanel* m_pWeaponBucket;
+
 	DECLARE_CLASS_SIMPLE( CTFHudWeaponAmmo, vgui::EditablePanel );
 
 public:
