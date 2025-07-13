@@ -86,7 +86,7 @@
 	}
 	"cp_gorge"
 	{
-		"viewed"		"5"
+		"viewed"		"6"
 	}
 	"ctf_2bine_v1"
 	{
