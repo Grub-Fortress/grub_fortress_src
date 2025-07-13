@@ -26,7 +26,7 @@
 	}
 	"pl_upward"
 	{
-		"viewed"		"3"
+		"viewed"		"4"
 	}
 	"ctf_grufort"
 	{
@@ -86,7 +86,7 @@
 	}
 	"cp_gorge"
 	{
-		"viewed"		"4"
+		"viewed"		"5"
 	}
 	"ctf_2bine_v1"
 	{
@@ -114,13 +114,17 @@
 	}
 	"mvm_coaltown"
 	{
-		"viewed"		"2"
+		"viewed"		"3"
 	}
 	"cp_badlands"
 	{
 		"viewed"		"1"
 	}
 	"pl_coal_event"
+	{
+		"viewed"		"1"
+	}
+	"pl_badwater"
 	{
 		"viewed"		"1"
 	}
