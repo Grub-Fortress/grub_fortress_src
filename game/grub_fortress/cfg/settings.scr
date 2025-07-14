@@ -32,7 +32,7 @@
 
 
 // Half-Life Server Configuration Layout Script (stores last settings chosen, too)
-// File generated:  Sun Jul 13 02:23:00 PM
+// File generated:  Sun Jul 13 05:47:21 PM
 //
 //
 // Cvar	-	Setting
@@ -94,7 +94,7 @@ DESCRIPTION SERVER_OPTIONS
 	{
 		"Number of Bots"
 		{ NUMBER 0 100 }
-		{ "15" }
+		{ "14" }
 	}
 
 	"tf_bot_difficulty"
@@ -114,7 +114,7 @@ DESCRIPTION SERVER_OPTIONS
 	{
 		"Bots Join After Player"
 		{ BOOL }
-		{ "1" }
+		{ "0" }
 	}
 
 }

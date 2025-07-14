@@ -58,7 +58,7 @@
 	}
 	"pl_barnblitz"
 	{
-		"viewed"		"3"
+		"viewed"		"4"
 	}
 	"ctf_civfort"
 	{
@@ -70,11 +70,11 @@
 	}
 	"ctf_turbine"
 	{
-		"viewed"		"2"
+		"viewed"		"3"
 	}
 	"devtest"
 	{
-		"viewed"		"118"
+		"viewed"		"119"
 	}
 	"cp_convoy"
 	{
@@ -86,7 +86,7 @@
 	}
 	"cp_gorge"
 	{
-		"viewed"		"6"
+		"viewed"		"7"
 	}
 	"ctf_2bine_v1"
 	{
@@ -125,6 +125,22 @@
 		"viewed"		"1"
 	}
 	"pl_badwater"
+	{
+		"viewed"		"1"
+	}
+	"koth_viaduct"
+	{
+		"viewed"		"1"
+	}
+	"pl_borneo"
+	{
+		"viewed"		"1"
+	}
+	"cp_granary"
+	{
+		"viewed"		"1"
+	}
+	"cp_cloak"
 	{
 		"viewed"		"1"
 	}

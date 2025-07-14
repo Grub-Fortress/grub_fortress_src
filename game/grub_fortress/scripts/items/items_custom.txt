@@ -540,7 +540,7 @@ not sure if it should be used as a weapon"
 			"attach_to_hands"			"1"
 			"used_by_classes"
 			{
-				"heavy"				"1"
+				"heavy"					"1"
 			}
 			"attributes"
 			{
@@ -590,6 +590,40 @@ not sure if it should be used as a weapon"
 			}	
 			"mouse_pressed_sound"		"#ui/item_heavy_gun_pickup.wav"
 			"drop_sound"				"#ui/item_heavy_gun_drop.wav"
+		}
+		"32009"
+		{
+			"name"						"TF_WEAPON_BACKPACK_ENGINEER"
+			"item_class"				"tf_wearable"
+			"show_in_armory"			"1"
+			"moditem"					"0"
+			"item_type_name"			"#TF_Wearable_Backpack"
+			"item_name"					"Metal Backpack"
+			"item_description"			"#TF_CozyCamper_Desc"
+			"item_slot"					"secondary"
+			"equip_region"				"back"
+			"anim_slot"					"FORCE_NOT_USED"
+			"item_quality"				"unique"
+			"propername"				"1"
+			"image_inventory"			"backpack/workshop/player/items/sniper/xms_sniper_commandobackpack/xms_sniper_commandobackpack"
+			"image_inventory_size_w"	"128"
+			"image_inventory_size_h"	"82"
+			"model_player"				"models/workshop/player/items/sniper/xms_sniper_commandobackpack/xms_sniper_commandobackpack.mdl"
+			"extra_wearable"			"models/workshop/player/items/sniper/xms_sniper_commandobackpack/xms_sniper_commandobackpack.mdl"
+			"used_by_classes"
+			{
+				"engineer"				"1"
+			}
+			"attributes"
+			{
+				"maxammo metal increased"
+				{
+					"attribute_class"	"mult_maxammo_metal"
+					"value"				"1.25"
+				}
+			}
+			"mouse_pressed_sound"		"ui/item_pack_pickup.wav"
+			"drop_sound"				"ui/item_pack_drop.wav"
 		}
 	}
 }
