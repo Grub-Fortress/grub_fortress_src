@@ -87,4 +87,11 @@ DESCRIPTION INFO_OPTIONS
 		{ BOOL }
 		{ "1" }
 	}
+	"credit3_7"
+	{
+		"FlaminSarge - Class Team color changes in the loadout menu"
+		"github.com/ValveSoftware/source-sdk-2013/pull/1305"
+		{ BOOL }
+		{ "1" }
+	}
 }
