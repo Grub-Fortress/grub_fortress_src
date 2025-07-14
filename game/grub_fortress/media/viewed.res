@@ -74,7 +74,7 @@
 	}
 	"devtest"
 	{
-		"viewed"		"119"
+		"viewed"		"120"
 	}
 	"cp_convoy"
 	{
@@ -130,7 +130,7 @@
 	}
 	"koth_viaduct"
 	{
-		"viewed"		"2"
+		"viewed"		"3"
 	}
 	"pl_borneo"
 	{

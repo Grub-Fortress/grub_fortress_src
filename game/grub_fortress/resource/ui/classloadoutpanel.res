@@ -650,7 +650,7 @@
 		"visible"			"1"
 		"enabled"			"1"
 		"tabPosition"		"0"
-		"labelText"			"#TF_ScoreBoard_Red"
+		"labelText"			""
 		"textAlignment"		"center"
 		"scaleImage"		"1"
 		"Command"			"setteam2"
@@ -670,6 +670,21 @@
 		"sound_depressed"	"UI/buttonclick.wav"
 		"sound_released"	"UI/buttonclickrelease.wav"
 		"sound_armed"		"UI/buttonrollover.wav"
+		"SubImage"
+		{
+			"ControlName"	"ImagePanel"
+			"fieldName"		"SubImage"
+			"xpos"			"0"
+			"xpos"			"0"
+			"ypos"			"0"
+			"zpos"			"1"
+			"wide"			"24"
+			"tall"			"24"
+			"visible"		"1"
+			"enabled"		"1"
+			"image"			"glyph_red"
+			"scaleImage"	"1"
+		}	
 	}
 	"SkinBlue"
 	{
@@ -685,7 +700,7 @@
 		"visible"			"1"
 		"enabled"			"1"
 		"tabPosition"		"0"
-		"labelText"			"#TF_ScoreBoard_Blue"
+		"labelText"			""
 		"textAlignment"		"center"
 		"scaleImage"		"1"
 		"Command"			"setteam3"
@@ -705,5 +720,19 @@
 		"sound_depressed"	"UI/buttonclick.wav"
 		"sound_released"	"UI/buttonclickrelease.wav"
 		"sound_armed"		"UI/buttonrollover.wav"
+		"SubImage"
+		{
+			"ControlName"	"ImagePanel"
+			"fieldName"		"SubImage"
+			"xpos"			"0"
+			"ypos"			"0"
+			"zpos"			"1"
+			"wide"			"24"
+			"tall"			"24"
+			"visible"		"1"
+			"enabled"		"1"
+			"image"			"glyph_blue"
+			"scaleImage"	"1"
+		}	
 	}
 }
