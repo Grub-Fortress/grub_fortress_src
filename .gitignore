@@ -737,7 +737,6 @@ FodyWeavers.xsd
 /game/grub_fortress/downloadlists/tr_target.lst
 /game/grub_fortress/downloadlists/cp_coldfront.lst
 /game/grub_fortress/trainingprogress.txt
-/game/grub_fortress/bin.rar
 /game/grub_fortress/downloadlists/cp_gravelpit.lst
 /game/grub_fortress/downloadlists/free_2fort_invasion.lst
 /game/grub_fortress/downloadlists/pl_aquarius_proto.lst
@@ -755,8 +754,6 @@ FodyWeavers.xsd
 /game/grub_fortress/maps/graphs/ctf_pressure_b1.ain
 /game/grub_fortress/maps/graphs/ctf_pressure_b2.ain
 /game/grub_fortress/maps/graphs/ctf_pressure_b5.ain
-/game/grub_fortress/bin_discordlimit.rar
-/game/grub_fortress/bin_fuck.rar
 /game/grub_fortress/cfg/mtp.cfg
 /game/grub_fortress/downloadlists/cp_freight_final1.lst
 /game/grub_fortress/downloadlists/ctf_pressure_b6.lst
