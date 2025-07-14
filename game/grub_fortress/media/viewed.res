@@ -130,7 +130,7 @@
 	}
 	"koth_viaduct"
 	{
-		"viewed"		"1"
+		"viewed"		"2"
 	}
 	"pl_borneo"
 	{

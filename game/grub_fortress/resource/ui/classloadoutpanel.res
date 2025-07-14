@@ -636,12 +636,12 @@
 			}				
 		}		
 	}
-	"ToggleToRED"
+	"SkinRed"
 	{
 		"ControlName"		"CExImageButton"
-		"fieldName"			"ToggleToRED"
+		"fieldName"			"SkinRed"
 		"xpos"				"c122"
-		"ypos"				"c-50"
+		"ypos"				"c-180"
 		"zpos"				"12"
 		"wide"				"25"
 		"tall"				"25"
@@ -653,7 +653,7 @@
 		"labelText"			"#TF_ScoreBoard_Red"
 		"textAlignment"		"center"
 		"scaleImage"		"1"
-		"Command"			"r_skin 0"
+		"Command"			"setteam2"
 		"paintborder"				"0"
 		"paintbackground"			"1"
 		"paintbackgroundtype"		"2"
@@ -671,12 +671,12 @@
 		"sound_released"	"UI/buttonclickrelease.wav"
 		"sound_armed"		"UI/buttonrollover.wav"
 	}
-	"ToggleToBLU"
+	"SkinBlue"
 	{
 		"ControlName"		"CExImageButton"
-		"fieldName"			"ToggleToBLU"
+		"fieldName"			"SkinBlue"
 		"xpos"				"c122"
-		"ypos"				"c-32"
+		"ypos"				"c-152"
 		"zpos"				"12"
 		"wide"				"25"
 		"tall"				"25"
@@ -688,7 +688,7 @@
 		"labelText"			"#TF_ScoreBoard_Blue"
 		"textAlignment"		"center"
 		"scaleImage"		"1"
-		"Command"			"r_skin 1"
+		"Command"			"setteam3"
 		"paintborder"				"0"
 		"paintbackground"			"1"
 		"paintbackgroundtype"		"2"
