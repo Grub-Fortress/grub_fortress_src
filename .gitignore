@@ -512,12 +512,12 @@ FodyWeavers.xsd
 /game/grub_fortress/cfg/user.scr
 /game/grub_fortress/cfg/settings.scr
 /game/grub_fortress/cfg/local_loadout.txt
+/game/grub_fortress/download
 /game/steam_appid.txt
 /game/platform/config/Serverbrowser.vdf
 /game/platform/config/InGamedialogconfig.vdf
 /game/grub_fortress/tf2_playerstats.dmx
 /game/grub_fortress/ServerConfig.vdf
-/game/grub_fortress/screenshots/abuse_report.jpg
 /game/grub_fortress/media/viewed.res
 /game/grub_fortress/scripts/vice3.exe
 /game/English.lnk
@@ -529,5 +529,6 @@ FodyWeavers.xsd
 /game/grub_fortress/GameState.txt
 *.lst
 *.ain
+*.nav
 /game/grub_fortress/scripts/playerclasses/vice3.exe
 /game/grub_fortress/scripts/playerclasses/ztest.bat
