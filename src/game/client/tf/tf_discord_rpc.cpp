@@ -291,7 +291,7 @@ void CTFDiscordRPC::UpdateServerInfo()
 			pszGameTypeShort = "pass";
 			break;
 		default:
-			pszGameType = "Find out yourself, fuck you.";
+			pszGameType = "Gamemode Not Listed";
 			pszGameTypeShort = "unknown";
 			break;
 		}
