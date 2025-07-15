@@ -386,7 +386,7 @@ DESCRIPTION INFO_OPTIONS
 	{
 		"#TF_viewmodelfov_option"
 		"#Tooltip_viewmodelfov_option"
-		{ SLIDER 54 70 }
+		{ SLIDER 54 90 }
 		{ "1" }
 	}
 	
@@ -735,12 +735,20 @@ DESCRIPTION INFO_OPTIONS
 		{ "1" }
 	}
 
-	"cl_promotional_codes_button_show"
+	"tf_discord_rpc"
 	{
-		"#TF_ShowPromotionalCodesButton"
-		"#Tooltip_ShowPromotionalCodesButton"
+		"#TFGrub_DiscordRPC"
+		"#TFGrub_DiscordRPC"
 		{ BOOL }
 		{ "1" }
+	}
+	
+	"tf_discord_rpc_updaterate"
+	{
+		"#TFGrub_DiscordRPC_UpdateRate"
+		"#Tooltip_TFGrub_DiscordRPC_UpdateRate"
+		{ NUMBER 5 15}
+		{ "5" }
 	}
 
 	"category8"

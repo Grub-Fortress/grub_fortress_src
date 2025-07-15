@@ -51,7 +51,7 @@ DESCRIPTION SERVER_OPTIONS
 	"maxplayers"
 	{
 		"#Valve_Max_Players"
-		{ NUMBER 1 24 }
+		{ NUMBER 1 100 }
 		{ "24" }
 	}
 
