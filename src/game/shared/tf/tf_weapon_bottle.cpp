@@ -134,6 +134,12 @@ bool CTFBreakableMelee::DefaultDeploy( char *szViewModel, char *szWeaponModel, i
 		SwitchBodyGroups();
 	}
 
+	CTFPlayer* pOwner = ToTFPlayer(GetOwner());
+	if (pOwner && HasSpeedBoost())
+	{
+		SetContextThink(&CTFBreakableMelee::MoveSpeedThink, gpGlobals->curtime + 0.25f, "BOTTLE_SPEED_THINK");
+	}
+
 	return bRet;
 }
 
@@ -346,3 +352,57 @@ void RecvProxy_Detonated( const CRecvProxyData *pData, void *pStruct, void *pOut
 }
 
 #endif
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+float CTFBreakableMelee::GetSpeedMod(void)
+{
+	if (m_bHolstering || !HasSpeedBoost())
+		return 1.f;
+
+	CTFPlayer* pOwner = ToTFPlayer(GetOwner());
+	if (!pOwner)
+		return 0;
+
+	float flOwnerHealthRatio = (float)pOwner->GetHealth() / (float)pOwner->GetMaxHealth();
+	if (flOwnerHealthRatio > 0.8)
+		return 1.f;
+	else if (flOwnerHealthRatio > 0.6)
+		return 1.1f;
+	else if (flOwnerHealthRatio > 0.4)
+		return 1.2f;
+	else if (flOwnerHealthRatio > 0.2)
+		return 1.4f;
+	else
+		return 1.6f;
+}
+#ifndef CLIENT_DLL
+int CTFBreakableMelee::GetDamageCustom()
+{
+	if (GetBottleType() == BOTTLE_SPEED_BOOST)
+	{
+		return TF_DMG_CUSTOM_PICKAXE;
+	}
+	else
+	{
+		return BaseClass::GetDamageCustom();
+	}
+}
+#endif
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTFBreakableMelee::MoveSpeedThink(void)
+{
+	CTFPlayer* pOwner = ToTFPlayer(GetOwner());
+	if (!pOwner || !pOwner->IsAlive())
+		return;
+
+	if (this != pOwner->GetActiveWeapon())
+		return;
+
+	pOwner->TeamFortress_SetSpeed();
+
+	SetContextThink(&CTFBreakableMelee::MoveSpeedThink, gpGlobals->curtime + 0.25f, "BOTTLE_SPEED_THINK");
+}
