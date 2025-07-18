@@ -40,6 +40,13 @@ DESCRIPTION INFO_OPTIONS
 		{ BOOL }
 		{ "1" }
 	}
+	"credit_2_4"
+	{
+		"Pipebomb Launcher - Haau, Extra Ram"
+		"gamebanana.com/mods/418217"
+		{ BOOL }
+		{ "1" }
+	}
 	"category3"
 	{
 		"Community Help/Contributions"
