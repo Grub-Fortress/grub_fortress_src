@@ -47,7 +47,7 @@ Inside the cloned directory, navigate to `src`, run:
 ```bat
 creategameprojects.bat
 ```
-This will generate the Visual Studio project `grub_fortress.sln` which will be used to build TF2 Mirrored.
+This will generate the Visual Studio project `grub_fortress.sln` which will be used to build Grub Fortess.
 
 Then, on the menu bar, go to `Build > Build Solution`, and wait for everything to build.
 
