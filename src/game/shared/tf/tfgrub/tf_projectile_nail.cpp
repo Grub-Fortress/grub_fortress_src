@@ -127,7 +127,6 @@ void ClientsideProjectileNailCallback( const CEffectData &data )
 		{
 			CAttribute_String attrParticleName;
 			
-			pNail->m_nSkin = ( pPlayer->GetTeamNumber() == TF_TEAM_RED ) ? 0 : 1;
 			bool bCritical = ( ( data.m_nDamageType & DMG_CRITICAL ) != 0 );
 			GetNailTrailParticleName( pPlayer, &attrParticleName, bCritical );
 
