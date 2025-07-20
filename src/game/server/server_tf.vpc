@@ -305,8 +305,8 @@ $Project "Server (Grub Fortress)"
 			$File	"$SRCDIR\game\shared\tf\tf_point_manager.h"
 			$File	"$SRCDIR\game\shared\tf\tf_projectile_base.cpp"
 			$File	"$SRCDIR\game\shared\tf\tf_projectile_base.h"
-			$File	"$SRCDIR\game\shared\tf\tf_projectile_nail.cpp"
-			$File	"$SRCDIR\game\shared\tf\tf_projectile_nail.h"
+			$File	"$SRCDIR\game\shared\tf\tf_projectile_syringe.cpp"
+			$File	"$SRCDIR\game\shared\tf\tf_projectile_syringe.h"
 			$File	"$SRCDIR\game\shared\tf\tf_projectile_dragons_fury.cpp"
 			$File	"tf\tf_projectile_rocket.cpp"
 			$File	"tf\tf_projectile_rocket.h"
@@ -374,6 +374,12 @@ $Project "Server (Grub Fortress)"
 					}
 				}
 			}
+
+			// TFGrub
+			
+			$File	"$SRCDIR\game\shared\tf\tfgrub\tf_projectile_nail.cpp"
+			$File	"$SRCDIR\game\shared\tf\tfgrub\tf_projectile_nail.h"
+			
 
 			$Folder	"Weapon"
 			{
@@ -492,6 +498,8 @@ $Project "Server (Grub Fortress)"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_rocketpack.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_rocketpack.h"
 				
+				// TFGrub
+
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_nailgun.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_nailgun.h"
 			}

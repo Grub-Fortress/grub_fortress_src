@@ -3,8 +3,8 @@
 // TF Nail Projectile
 //
 //=============================================================================
-#ifndef TF_PROJECTILE_NAIL_H
-#define TF_PROJECTILE_NAIL_H
+#ifndef TF_PROJECTILE_SYRINGE_H
+#define TF_PROJECTILE_SYRINGE_H
 #ifdef _WIN32
 #pragma once
 #endif
@@ -29,18 +29,5 @@ public:
 	virtual float GetGravity( void );
 };
 
-class CTFProjectile_Nail : public CTFBaseProjectile
-{
-	DECLARE_CLASS(CTFProjectile_Nail, CTFBaseProjectile);
 
-public:
-	// Creation.
-	static CTFBaseProjectile* Create(const Vector& vecOrigin, const QAngle& vecAngles, CTFWeaponBaseGun* pLauncher = NULL, CBaseEntity* pOwner = NULL, CBaseEntity* pScorer = NULL, bool bCritical = false);
-
-	virtual unsigned int PhysicsSolidMaskForEntity(void) const;
-	virtual const char* GetProjectileModelName(void) { return "models/weapons/w_models/w_nail.mdl"; }
-	virtual float GetGravity(void);
-};
-
-
-#endif	//TF_PROJECTILE_NAIL_H
+#endif	//TF_PROJECTILE_SYRINGE_H
