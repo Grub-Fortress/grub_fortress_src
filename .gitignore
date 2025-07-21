@@ -538,3 +538,4 @@ FodyWeavers.xsd
 *.prt
 *.vmx
 /game/grub_fortress/mapsrc/koth_landfall.bsp
+/game/grub_fortress/mapsrc/koth_lumberyard.bsp
