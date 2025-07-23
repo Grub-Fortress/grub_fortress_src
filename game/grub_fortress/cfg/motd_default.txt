@@ -1,0 +1,11 @@
+Welcome to Grub Fortress Open Alpha
+
+TF:Grub weapon selection is:
+- Nailgun (Scout secondary)
+- RPG (Soldier primary)
+- Leadpipe (Heavy melee)
+- The Pipebomb Launcher (Demoman secondary)
+- The Under Pressure (Medic primary)
+- The Perforator (Heavy primary)
+- The Big Owen (Heavy primary)
+- Metal Backpack (Engineer secondary)
