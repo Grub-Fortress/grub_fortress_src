@@ -18,47 +18,6 @@
 	{
 		"weapon_crusaders_crossbow"
 		{
-			"enabled"	"1"
-			"item_class"	"tf_weapon_crossbow"
-			"craft_class"	"weapon"
-			"craft_material_type"	"weapon"
-			"capabilities"
-			{
-				"nameable"		"1"
-			}
-			"tags"
-			{
-				"can_deal_damage"			"1"
-				"can_deal_posthumous_damage"	"1"
-				"can_deal_critical_damage"	"1"
-				"can_deal_long_distance_damage"	"1"
-				"can_heal_allies"		"1"
-			}
-			"base_item_name"	"The Crusader's Crossbow"
-			"item_type_name"	"#TF_Weapon_Crossbow"
-			"item_name"	"#TF_CrusadersCrossbow"
-			"item_description"	"#TF_CrusadersCrossbow_desc"
-			"item_logname"	"crusaders_crossbow"
-			"item_iconname"	"crusaders_crossbow"
-			"item_slot"	"primary"
-			"item_quality"	"unique"
-			"min_ilevel"	"15"
-			"max_ilevel"	"15"
-			"image_inventory"	"backpack/workshop/weapons/c_models/c_crusaders_crossbow/c_crusaders_crossbow"
-			"image_inventory_size_w"		"128"
-			"image_inventory_size_h"		"82"
-			"model_player"	"models/workshop/weapons/c_models/c_crusaders_crossbow/c_crusaders_crossbow.mdl"
-			"attach_to_hands"	"1"
-			"inspect_panel_dist" "42"
-			"used_by_classes"
-			{
-				"medic"	"1"
-			}
-			"static_attrs"
-			{
-				"min_viewmodel_offset"				"10 0 -14"
-				"weapon_stattrak_module_scale"			"0.608"
-			}
 			"attributes"
 			{
 				"sniper no headshots"
@@ -82,14 +41,6 @@
 					"value"	"1"
 				}
 			}
-			"visuals"
-			{
-				"sound_single_shot"	"Weapon_CrusadersCrossbow.Single"
-				"sound_burst"	"Weapon_CrusadersCrossbow.SingleCrit"
-			}
-			"mouse_pressed_sound"	"ui/item_light_gun_pickup.wav"
-			"drop_sound"		"ui/item_light_gun_drop.wav"
-			"xifier_class_remap"	"crusaders_crossbow"
 		}
 		"weapon_ambassador"
 		{
