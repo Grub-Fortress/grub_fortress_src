@@ -124,6 +124,8 @@ extern ConVar cam_idealyaw;
 extern ConVar thirdperson_platformer;
 extern ConVar thirdperson_screenspace;
 
+extern ConVar tfgrub_mirrored;
+
 //-----------------------------------------------------------------
 // Purpose: Returns true if there's an active joystick connected.
 //-----------------------------------------------------------------
@@ -771,6 +773,14 @@ void CInput::JoyStickMove( float frametime, CUserCmd *cmd )
 	{
 		m_flPreviousJoystickPitch *= -1.0f;
 	}
+	// Later in your relevant function or method
+	if (tfgrub_mirrored.GetBool())
+	{
+		// Invert the yaw rotation and strafing movement of the joystick (mirroring movement)
+		m_flPreviousJoystickYaw *= -1.0f;
+		m_flPreviousJoystickSide *= -1.0f;
+	}
+
 
 	// drive yaw, pitch and move like a screen relative platformer game
 	if ( CAM_IsThirdPerson() && thirdperson_platformer.GetInt() )

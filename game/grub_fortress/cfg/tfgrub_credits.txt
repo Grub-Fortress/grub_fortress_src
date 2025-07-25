@@ -55,35 +55,35 @@ DESCRIPTION INFO_OPTIONS
 	"credit3_1"
 	{
 		"BetaM - Custom Items, Credits menu, misc. fixes"
-		"https://www.youtube.com/BetaM"
+		"www.youtube.com/BetaM"
 		{ BOOL }
 		{ "1" }
 	}	
 	"credit3_2"
 	{
 		"Better Fortress 2 - The mod Grub Fortress is a fork of"
-		"https://github.com/ALIEN31ITA/Better-Fortress-2"
+		"github.com/ALIEN31ITA/Better-Fortress-2"
 		{ BOOL }
 		{ "1" }
 	}	
 	"credit3_3"
 	{
 		"Team Fortress 2 Classic - Rocket Gravity Attribute"
-		"https://www.tf2classic.com"
+		"www.tf2classic.com"
 		{ BOOL }
 		{ "1" }
 	}	
 	"credit3_4"
 	{
 		"Team Fortress 2 Goldrush - Removed MYM Hud, And V_Model Support"
-		"https://www.tf2goldrush.com/"
+		"www.tf2goldrush.com/"
 		{ BOOL }
 		{ "1" }
 	}
 	"credit3_5"
 	{
 		"Toru the Red Fox - Old TF2 Main menu"
-		"https://github.com/TorutheRedFox/source-sdk-2013"
+		"github.com/TorutheRedFox/source-sdk-2013"
 		{ BOOL }
 		{ "1" }
 	}
@@ -98,6 +98,13 @@ DESCRIPTION INFO_OPTIONS
 	{
 		"FlaminSarge - Class Team color changes in the loadout menu"
 		"github.com/ValveSoftware/source-sdk-2013/pull/1305"
+		{ BOOL }
+		{ "1" }
+	}
+	"credit3_8"
+	{
+		"NvC-DmN-CH - HL2 Mirrored code"
+		"github.com/NvC-DmN-CH/Half-Life-2-Mirrored"
 		{ BOOL }
 		{ "1" }
 	}

@@ -318,6 +318,12 @@ void CViewRender::Init( void )
 	m_flLastFOV = default_fov.GetFloat();
 #endif
 
+	// Load the mirror materials
+	m_ScreenFlipMaterial.Init(materials->FindMaterial("engine/mirror_screen", TEXTURE_GROUP_VGUI));
+	m_ScreenFlipMaterial->IncrementReferenceCount();
+
+	m_CameraFlipMaterial.Init(materials->FindMaterial("engine/mirror_camera", TEXTURE_GROUP_VGUI));
+	m_CameraFlipMaterial->IncrementReferenceCount();
 }
 
 //-----------------------------------------------------------------------------
@@ -780,9 +786,12 @@ void CViewRender::SetUpViews()
 		&g_vecVForward, &g_vecVRight, &g_vecVUp, &g_matCamInverse );
 
 	// set up the hearing origin...
+	QAngle view_angles_before = QAngle(viewEye.angles.x, viewEye.angles.y, viewEye.angles.z);
 	AudioState_t audioState;
 	audioState.m_Origin = viewEye.origin;
-	audioState.m_Angles = viewEye.angles;
+
+	QAngle audioStateAngles = QAngle(viewEye.angles.x, viewEye.angles.y + 180, viewEye.angles.z);
+	audioState.m_Angles = audioStateAngles;
 	audioState.m_bIsUnderwater = pPlayer && pPlayer->AudioStateIsUnderwater( viewEye.origin );
 
 	ToolFramework_SetupAudioState( audioState );
@@ -791,7 +800,7 @@ void CViewRender::SetUpViews()
     Assert ( viewEye.origin == audioState.m_Origin );
     Assert ( viewEye.angles == audioState.m_Angles );
 	viewEye.origin = audioState.m_Origin;
-	viewEye.angles = audioState.m_Angles;
+	viewEye.angles = view_angles_before;
 
 	engine->SetAudioState( audioState );
 
@@ -1301,4 +1310,3 @@ CON_COMMAND( getpos, "dump position and angles to the console" )
 	Warning( "%s %f %f %f;", pCommand1, vecOrigin.x, vecOrigin.y, vecOrigin.z );
 	Warning( "%s %f %f %f\n", pCommand2, angles.x, angles.y, angles.z );
 }
-

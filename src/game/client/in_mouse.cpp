@@ -50,6 +50,8 @@ extern ConVar cl_pitchdown;
 extern ConVar cl_pitchup;
 extern const ConVar *sv_cheats;
 
+extern ConVar tfgrub_mirrored;
+
 class ConVar_m_pitch : public ConVar_ServerBounded
 {
 public:
@@ -728,6 +730,10 @@ void CInput::MouseMove( CUserCmd *cmd )
 		GetMouseDelta( mx, my, &mouse_x, &mouse_y );
 
 		// Apply scaling factor
+		if (tfgrub_mirrored.GetBool())
+		{
+			mouse_x *= -1;
+		}
 		ScaleMouse( &mouse_x, &mouse_y );
 
 		// Let the client mode at the mouse input before it's used

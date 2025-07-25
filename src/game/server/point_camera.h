@@ -53,6 +53,10 @@ private:
 	CNetworkVar( bool, m_bActive );
 	CNetworkVar( bool, m_bUseScreenAspectRatio );
 
+	CNetworkVar(bool, m_bMirrored);
+	CNetworkVar(float, m_fOffsetX);
+	CNetworkVar(float, m_fOffsetY);
+
 	// Allows the mapmaker to control whether a camera is active or not
 	bool	m_bIsOn;
 

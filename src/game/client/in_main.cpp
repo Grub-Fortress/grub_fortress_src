@@ -91,6 +91,8 @@ extern ConVar cl_mouselook;
 
 #define UsingMouselook() cl_mouselook.GetBool()
 
+extern ConVar tfgrub_mirrored;
+
 /*
 ===============================================================================
 
@@ -460,10 +462,6 @@ void IN_LookupDown( const CCommand &args ) {KeyDown(&in_lookup, args[1] );}
 void IN_LookupUp( const CCommand &args ) {KeyUp(&in_lookup, args[1] );}
 void IN_LookdownDown( const CCommand &args ) {KeyDown(&in_lookdown, args[1] );}
 void IN_LookdownUp( const CCommand &args ) {KeyUp(&in_lookdown, args[1] );}
-void IN_MoveleftDown( const CCommand &args ) {KeyDown(&in_moveleft, args[1] );}
-void IN_MoveleftUp( const CCommand &args ) {KeyUp(&in_moveleft, args[1] );}
-void IN_MoverightDown( const CCommand &args ) {KeyDown(&in_moveright, args[1] );}
-void IN_MoverightUp( const CCommand &args ) {KeyUp(&in_moveright, args[1] );}
 void IN_WalkDown( const CCommand &args ) {KeyDown(&in_walk, args[1] );}
 void IN_WalkUp( const CCommand &args ) {KeyUp(&in_walk, args[1] );}
 void IN_SpeedDown( const CCommand &args ) {KeyDown(&in_speed, args[1] );}
@@ -547,6 +545,40 @@ void IN_ScoreUp( const CCommand &args )
 		gViewPortInterface->ShowPanel( PANEL_SCOREBOARD, false );
 		GetClientVoiceMgr()->StopSquelchMode();
 	}
+}
+
+// Mirrored stuff
+
+void IN_MoveleftDown(const CCommand& args)
+{
+	if (tfgrub_mirrored.GetBool())
+		KeyDown(&in_moveright, args[1]);
+	else
+		KeyDown(&in_moveleft, args[1]);
+}
+
+void IN_MoveleftUp(const CCommand& args)
+{
+	if (tfgrub_mirrored.GetBool())
+		KeyUp(&in_moveright, args[1]);
+	else
+		KeyUp(&in_moveleft, args[1]);
+}
+
+void IN_MoverightDown(const CCommand& args)
+{
+	if (tfgrub_mirrored.GetBool())
+		KeyDown(&in_moveleft, args[1]);
+	else
+		KeyDown(&in_moveright, args[1]);
+}
+
+void IN_MoverightUp(const CCommand& args)
+{
+	if (tfgrub_mirrored.GetBool())
+		KeyUp(&in_moveleft, args[1]);
+	else
+		KeyUp(&in_moveright, args[1]);
 }
 
 

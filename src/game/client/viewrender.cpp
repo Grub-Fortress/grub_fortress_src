@@ -167,6 +167,7 @@ static ConVar r_screenfademinsize( "r_screenfademinsize", "0" );
 static ConVar r_screenfademaxsize( "r_screenfademaxsize", "0" );
 static ConVar cl_drawmonitors( "cl_drawmonitors", "1" );
 static ConVar r_eyewaterepsilon( "r_eyewaterepsilon", "10.0f", FCVAR_CHEAT );
+extern ConVar tfgrub_mirrored("tfgrub_mirrored", "0", FCVAR_ARCHIVE, "Flips the screen");
 
 #ifdef TF_CLIENT_DLL
 static ConVar pyro_dof( "pyro_dof", "1", FCVAR_ARCHIVE );
@@ -1357,6 +1358,121 @@ void CViewRender::PerformScreenOverlay( int x, int y, int w, int h )
 	}
 }
 
+void CViewRender::DrawQuad(IMaterial* pMat, int width, int height)
+{
+	float halfPixelWidth = -0.5f / width;
+	float halfPixelHeight = -0.5f / height;
+
+	CMatRenderContextPtr pRenderContext(materials);
+
+	// MUST bind material before building a mesh
+	// this will tell the mesh builder what vertex format the shader wants
+	pRenderContext->Bind(pMat);
+
+	pRenderContext->MatrixMode(MATERIAL_PROJECTION);
+	pRenderContext->PushMatrix();
+	pRenderContext->LoadIdentity();
+
+	pRenderContext->MatrixMode(MATERIAL_VIEW);
+	pRenderContext->PushMatrix();
+	pRenderContext->LoadIdentity();
+
+	CMeshBuilder meshBuilder;
+	IMesh* pMesh = pRenderContext->GetDynamicMesh(false);
+	meshBuilder.Begin(pMesh, MATERIAL_QUADS, 1);
+
+	//	meshBuilder.Position3f(halfPixelWidth - 1, halfPixelHeight + 1, 0);
+	//	meshBuilder.TexCoord2f(0, 1, 0);
+	//	meshBuilder.AdvanceVertex();
+	//
+	//	meshBuilder.Position3f(halfPixelWidth + 1, halfPixelHeight + 1, 0);
+	//	meshBuilder.TexCoord2f(0, 0, 0);
+	//	meshBuilder.AdvanceVertex();
+	//
+	//	meshBuilder.Position3f(halfPixelWidth + 1, halfPixelHeight - 1, 0);
+	//	meshBuilder.TexCoord2f(0, 0, 1);
+	//	meshBuilder.AdvanceVertex();
+	//
+	//	meshBuilder.Position3f(halfPixelWidth - 1, halfPixelHeight - 1, 0);
+	//	meshBuilder.TexCoord2f(0, 1, 1);
+	//	meshBuilder.AdvanceVertex();
+
+	meshBuilder.Position3f(-1, 1, 0.5f);
+	meshBuilder.TexCoord2f(0, 1 + halfPixelWidth, 0 + halfPixelHeight);
+	meshBuilder.AdvanceVertex();
+
+	meshBuilder.Position3f(1, 1, 0.5f);
+	meshBuilder.TexCoord2f(0, 0 + halfPixelWidth, 0 + halfPixelHeight);
+	meshBuilder.AdvanceVertex();
+
+	meshBuilder.Position3f(1, -1, 0.5f);
+	meshBuilder.TexCoord2f(0, 0 + halfPixelWidth, 1 + halfPixelHeight);
+	meshBuilder.AdvanceVertex();
+
+	meshBuilder.Position3f(-1, -1, 0.5f);
+	meshBuilder.TexCoord2f(0, 1 + halfPixelWidth, 1 + halfPixelHeight);
+	meshBuilder.AdvanceVertex();
+
+	meshBuilder.End();
+
+	pMesh->Draw();
+
+	pRenderContext->MatrixMode(MATERIAL_PROJECTION);
+	pRenderContext->PopMatrix();
+
+	pRenderContext->MatrixMode(MATERIAL_VIEW);
+	pRenderContext->PopMatrix();
+}
+void CViewRender::DrawQuadOffsetUV(IMaterial* pMat, int width, int height, float du, float dv)
+{
+	float halfPixelWidth = -0.5f / width;
+	float halfPixelHeight = -0.5f / height;
+
+	CMatRenderContextPtr pRenderContext(materials);
+
+	// MUST bind material before building a mesh
+	// this will tell the mesh builder what vertex format the shader wants
+	pRenderContext->Bind(pMat);
+
+	pRenderContext->MatrixMode(MATERIAL_PROJECTION);
+	pRenderContext->PushMatrix();
+	pRenderContext->LoadIdentity();
+
+	pRenderContext->MatrixMode(MATERIAL_VIEW);
+	pRenderContext->PushMatrix();
+	pRenderContext->LoadIdentity();
+
+	CMeshBuilder meshBuilder;
+	IMesh* pMesh = pRenderContext->GetDynamicMesh(false);
+	meshBuilder.Begin(pMesh, MATERIAL_QUADS, 1);
+
+	meshBuilder.Position3f(-1, 1, 0.5f);
+	meshBuilder.TexCoord2f(0, 1 + halfPixelWidth + du, 0 + halfPixelHeight + dv);
+	meshBuilder.AdvanceVertex();
+
+	meshBuilder.Position3f(1, 1, 0.5f);
+	meshBuilder.TexCoord2f(0, 0 + halfPixelWidth + du, 0 + halfPixelHeight + dv);
+	meshBuilder.AdvanceVertex();
+
+	meshBuilder.Position3f(1, -1, 0.5f);
+	meshBuilder.TexCoord2f(0, 0 + halfPixelWidth + du, 1 + halfPixelHeight + dv);
+	meshBuilder.AdvanceVertex();
+
+	meshBuilder.Position3f(-1, -1, 0.5f);
+	meshBuilder.TexCoord2f(0, 1 + halfPixelWidth + du, 1 + halfPixelHeight + dv);
+	meshBuilder.AdvanceVertex();
+
+	meshBuilder.End();
+
+	pMesh->Draw();
+
+	pRenderContext->MatrixMode(MATERIAL_PROJECTION);
+	pRenderContext->PopMatrix();
+
+	pRenderContext->MatrixMode(MATERIAL_VIEW);
+	pRenderContext->PopMatrix();
+}
+
 void CViewRender::DrawUnderwaterOverlay( void )
 {
 	IMaterial *pOverlayMat = m_UnderWaterOverlayMaterial;
@@ -2235,6 +2351,13 @@ void CViewRender::RenderView( const CViewSetup &viewRender, int nClearFlags, int
 		IMaterial* pMaterial = blend ? m_ModulateSingleColor : m_TranslucentSingleColor;
 		render->ViewDrawFade( color, pMaterial );
 		PerformScreenOverlay( viewRender.x, viewRender.y, viewRender.width, viewRender.height );
+
+		// Mirror the screen
+		if (tfgrub_mirrored.GetInt() != 0) {
+			UpdateScreenEffectTexture();
+			DrawQuad(m_ScreenFlipMaterial, viewRender.width, viewRender.height);
+		}
+
 
 		// Prevent sound stutter if going slow
 		engine->Sound_ExtraUpdate();	
@@ -3280,7 +3403,30 @@ bool CViewRender::DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_Poin
 
 	// @MULTICORE (toml 8/11/2006): this should be a renderer....
 	Frustum frustum;
- 	render->Push3DView( monitorView, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, pRenderTarget, (VPlane *)frustum );
+	if (pCameraEnt->IsMirrored())
+	{
+		// render to _rt_Camera_PreFlip
+		ITexture* pCameraTargetPreFlip = GetCameraPreFlipTexture();
+
+		render->Push3DView(monitorView, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, pCameraTargetPreFlip, (VPlane*)frustum);
+		ViewDrawScene(false, SKYBOX_2DSKYBOX_VISIBLE, monitorView, 0, VIEW_MONITOR);
+		render->PopView(frustum);
+
+		// debug offsetx
+		//float timeVar = gpGlobals->curtime;
+		//timeVar -= (int)timeVar;
+		//Msg(">>> Time variable: %f\n", timeVar);
+		//DrawQuadOffsetUV(m_CameraFlipMaterial, width, height, timeVar, pCameraEnt->GetOffsetY());
+
+		render->PopView(frustum);
+	}
+	else
+	{
+		render->Push3DView(monitorView, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, pRenderTarget, (VPlane*)frustum);
+		ViewDrawScene(false, SKYBOX_2DSKYBOX_VISIBLE, monitorView, 0, VIEW_MONITOR);
+		render->PopView(frustum);
+	}
+
 	ViewDrawScene( false, SKYBOX_2DSKYBOX_VISIBLE, monitorView, 0, VIEW_MONITOR );
  	render->PopView( frustum );
 
@@ -3321,7 +3467,8 @@ void CViewRender::DrawMonitors( const CViewSetup &cameraView )
 	int height = pCameraTarget->GetActualHeight();
 
 	C_BasePlayer *player = C_BasePlayer::GetLocalPlayer();
-	
+
+	C_PointCamera *pCameraEnt_check = pCameraEnt;
 
 #ifdef TF_CLIENT_DLL
 	CTFPlayer* pLocalTFPlayer = CTFPlayer::GetLocalTFPlayer();
@@ -3335,6 +3482,8 @@ void CViewRender::DrawMonitors( const CViewSetup &cameraView )
 	{
 		if ( !pCameraEnt->IsActive() || pCameraEnt->IsDormant() )
 			continue;
+
+		pCameraEnt_check = pCameraEnt;
 
 #ifdef TF_CLIENT_DLL
 		if ( bNeedToToggleForceDraw && pLocalTFPlayer )

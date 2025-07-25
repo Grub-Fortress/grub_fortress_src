@@ -647,6 +647,14 @@ DESCRIPTION INFO_OPTIONS
 		{ BOOL }
 		{ "0" }
 	}
+
+	"tfgrub_mirrored"
+	{
+		"#TFGrub_Mirrored"
+		"#Tooltip_TFGrub_Mirrored"
+		{ BOOL }
+		{ "0" }
+	}
 	
 	"tf_use_min_viewmodels"
 	{
