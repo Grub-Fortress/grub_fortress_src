@@ -888,9 +888,10 @@ ConVar tf_mvm_buybacks_method( "tf_mvm_buybacks_method", "0", FCVAR_REPLICATED |
 ConVar tf_mvm_buybacks_per_wave( "tf_mvm_buybacks_per_wave", "3", FCVAR_REPLICATED | FCVAR_HIDDEN, "The fixed number of buybacks players can use per-wave." );
 
 //MVM Versus - Convars
-ConVar tf_gamemode_mvmvs( "tf_gamemode_mvmvs", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Enable versus in MvM");
-ConVar tf_mvmvs_robot_stations( "tf_mvmvs_robot_stations", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "Allow Robots to use upgrade stations");
-ConVar tf_mvmvs_use_loadout( "tf_mvmvs_use_loadout", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Robot players will spawn with their loadout items, if not, will be picked from the robot selection list file");
+//added FCVAR_DEVELOPMENTONLY to all the mvm versus Cvars, we dont need any mann's fighting mann's controling machines around these grubby parts
+ConVar tf_gamemode_mvmvs( "tf_gamemode_mvmvs", "0", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "Enable versus in MvM");
+ConVar tf_mvmvs_robot_stations( "tf_mvmvs_robot_stations", "0", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "Allow Robots to use upgrade stations");
+ConVar tf_mvmvs_use_loadout( "tf_mvmvs_use_loadout", "1", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "Robot players will spawn with their loadout items, if not, will be picked from the robot selection list file");
 
 #ifdef GAME_DLL
 enum { kMVM_CurrencyPackMinSize = 1, };
