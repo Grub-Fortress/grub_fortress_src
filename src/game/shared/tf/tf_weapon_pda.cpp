@@ -408,7 +408,8 @@ void CTFWeaponPDA::Detach(void)
 		// In MvM mode, leave engineer's buildings after he dies
 		if (TFGameRules() && TFGameRules()->IsMannVsMachineMode())
 		{
-			if (pPlayer->GetTeamNumber() != TF_TEAM_PVE_DEFENDERS)
+			// In Versus, we detonate objects on blue if you're not a bot.
+			if (pPlayer->GetTeamNumber() != TF_TEAM_PVE_DEFENDERS && pPlayer->IsBot())
 			{
 				bDetonateObjects = false;
 			}

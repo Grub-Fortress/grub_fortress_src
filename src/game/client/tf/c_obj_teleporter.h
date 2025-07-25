@@ -52,6 +52,9 @@ public:
 	void StartBuildingEffects( void );
 	void StopBuildingEffects( void );
 
+	void StartBeamEffects( void );
+	void StopBeamEffects( void );
+
 	virtual void SetInvisibilityLevel( float flValue );
 	void UpdateTeleporterEffects( void );
 
@@ -72,6 +75,7 @@ private:
 	int m_iTimesUsed;
 	float m_flYawToExit;
 	bool m_bMatchBuilding;
+	bool m_bIsMVMTeleporter;
 	bool m_bOldMatchBuilding;
 
 	int m_iDirectionArrowPoseParam;
@@ -84,6 +88,7 @@ private:
 
 	HPARTICLEFFECT	m_hBuildingLeftArmEffect;
 	HPARTICLEFFECT	m_hBuildingRightArmEffect;
+	HPARTICLEFFECT	m_hBuildingBeamEffect;
 
 	CSoundPatch		*m_pSpinSound;
 

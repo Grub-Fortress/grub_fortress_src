@@ -1884,7 +1884,7 @@ void CTFPlayer::TFPlayerThink()
 	SetContextThink( &CTFPlayer::TFPlayerThink, gpGlobals->curtime, "TFPlayerThink" );
 	//MVM Versus - Spawn Protection 
 	// TODO: why does this function get called effectively twice? (one here and in MvMDeployBombThink) - main_thing
-	if( TFGameRules()->IsMannVsMachineMode() && tf_mvm_forceversus.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsBot() )
+	if( TFGameRules()->IsMannVsMachineMode() && tf_gamemode_mvmvs.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsBot() )
 	{
 		bool bInRespawnRoom = PointInRespawnRoom(this, WorldSpaceCenter(), true);
 		if( bInRespawnRoom )
@@ -1897,7 +1897,7 @@ void CTFPlayer::TFPlayerThink()
 				AddCustomAttribute( "no_attack", 1, 1.0f );
 		}
 	}
-	if( TFGameRules()->IsMannVsMachineMode() && tf_mvm_forceversus.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsBot() && !TFGameRules()->InSetup() )
+	if( TFGameRules()->IsMannVsMachineMode() && tf_gamemode_mvmvs.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsBot() && !TFGameRules()->InSetup() )
 	{
 		SetContextThink( &CTFPlayer::MvMDeployBombThink, gpGlobals->curtime, "MvMDeployBombThink" );
 	}
@@ -3234,6 +3234,7 @@ void CTFPlayer::PrecacheMvM()
 	PrecacheScriptSound( "Spy.MVM_TeaseVictim" );
 	PrecacheScriptSound( "MVM.Robot_Engineer_Spawn" );
 	PrecacheScriptSound( "MVM.Robot_Teleporter_Deliver" );
+	PrecacheScriptSound( "MVM.Robot_Teleporter_Activate" );
 	PrecacheScriptSound( "MVM.MoneyPickup" );
 
 	PrecacheMaterial( "effects/circle_nocull" );
@@ -3302,6 +3303,7 @@ void CTFPlayer::PrecachePlayerModels( void )
 */
 	}
 
+	// MVM Versus - CTrigger_Hurt badass viewmodels.
 	for ( int i = TF_FIRST_NORMAL_CLASS; i < TF_LAST_NORMAL_CLASS; ++i )
 	{
 		COMPILE_TIME_ASSERT( ARRAYSIZE( g_szBotViewmodels ) == TF_LAST_NORMAL_CLASS );
@@ -4163,19 +4165,34 @@ void CTFPlayer::Spawn()
 			{
 
 				//Spawn the player as Gatebot | 50% chance
-				if(random->RandomInt(0,1) == 1)
+				if( tf_mvmvs_use_loadout.GetBool() )
 				{
-					AddTag("bot_gatebot");
-					const char *name = g_aRawPlayerClassNamesRandom[nRobotClassIndex];
-					GiveItemString( CFmtStr( "MvM GateBot Light %s",name) );
+					if(random->RandomInt(0,1) == 1)
+					{
+						AddTag("bot_gatebot");
+						const char *name = g_aRawPlayerClassNamesRandom[nRobotClassIndex];
+						GiveItemString( CFmtStr( "MvM GateBot Light %s",name) );
+					}
+					//Spawn the player as Miniboss | 50% chance
+					if(random->RandomInt(0,1) == 1)
+					{
+						MVM_SetMinibossType();
+						MVM_StartIdleSound();
+						TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed(MP_CONCEPT_MVM_GIANT_CALLOUT,TF_TEAM_PVE_DEFENDERS);
+					}
 				}
-				//Spawn the player as Miniboss | 50% chance
-				if(random->RandomInt(0,1) == 1)
+				else
 				{
-					MVM_SetMinibossType();
-					MVM_StartIdleSound();
-					TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed(MP_CONCEPT_MVM_GIANT_CALLOUT,TF_TEAM_PVE_DEFENDERS);
+					// TODO: Move this keyvalue to tf_population_manager
+					KeyValues *pRobotInfo = new KeyValues( "data" );
+					if (!pRobotInfo->LoadFromFile(g_pFullFileSystem, "scripts/robots_standard.txt", "MOD"))
+						return;
+
+					DevMsg( "(VERSUS) Parsing robot keyvalues...\n" );
+					ParseRobotKeyvalues( pRobotInfo );
+					pRobotInfo->deleteThis();
 				}
+
 				if( g_pPopulationManager->IsPopFileEventType(MVM_EVENT_POPFILE_HALLOWEEN) )
 				{
 					// zombies use the original player models
@@ -4187,6 +4204,7 @@ void CTFPlayer::Spawn()
 				{
 					MVM_TurnIntoRobot();
 				}
+
 			}
 			//MVM Versus - Keep the robot costume if user has it on
 			if ( GetTeamNumber() == TF_TEAM_PVE_DEFENDERS && !IsMVMRobot() )
@@ -4672,8 +4690,17 @@ void CTFPlayer::InitClass( void )
 	m_PlayerAnimState->SetWalkSpeed( GetPlayerClass()->GetMaxSpeed() * 0.5 );
 
 	// Give default items for class.
-	GiveDefaultItems();
-
+	// We want to prevent giving items in versus.
+	if( !( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && tf_gamemode_mvmvs.GetBool() && !tf_mvmvs_use_loadout.GetBool() ) || IsFakeClient() )
+	{
+		DevMsg( "Giving items...\n" );
+		GiveDefaultItems();
+	}
+	else if( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && tf_gamemode_mvmvs.GetBool() && !tf_mvmvs_use_loadout.GetBool() )
+	{
+		DevMsg( "Removing items...\n" );
+		RemoveAllItems();
+	}
 	// Set initial health and armor based on class.
 	// Do it after items have been delivered, so items can modify it
 	SetMaxHealth( GetMaxHealth() );
@@ -6631,7 +6658,7 @@ int CTFPlayer::GetAutoTeam( int nPreferedTeam /*= TF_TEAM_AUTOASSIGN*/ )
 						}
 					}
 				}
-					return TFGameRules()->GetTeamAssignmentOverride( this, tf_mvm_forceversus.GetBool() ? TF_TEAM_PVE_DEFENDERS : nPreferedTeam );
+					return TFGameRules()->GetTeamAssignmentOverride( this, tf_gamemode_mvmvs.GetBool() ? TF_TEAM_PVE_DEFENDERS : nPreferedTeam );
 			}
 		}
 
@@ -6754,7 +6781,7 @@ bool CTFPlayer::ShouldForceAutoTeam( void )
 	if ( mp_forceautoteam.GetBool() )
 		return true;
 
-	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && !tf_mvm_forceversus.GetBool() )
+	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && !tf_gamemode_mvmvs.GetBool() )
 		return true;
 
 	if ( TFGameRules() && TFGameRules()->IsCompetitiveMode() )
@@ -8202,6 +8229,9 @@ bool CTFPlayer::ClientCommand( const CCommand &args )
 
 			if ( bArgsChecked )
 			{
+				if ( TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && tf_gamemode_mvmvs.GetBool() && iBuilding == OBJ_TELEPORTER && iMode == MODE_TELEPORTER_ENTRANCE )
+					return true;
+
 				StartBuildingObjectOfType( iBuilding, iMode );
 			}
 			else
@@ -14002,7 +14032,8 @@ void CTFPlayer::RemoveAllOwnedEntitiesFromWorld( bool bExplodeBuildings /* = fal
 {
 	RemoveOwnedProjectiles();
 
-	if ( TFGameRules()->IsMannVsMachineMode() && ( GetTeamNumber() == TF_TEAM_PVE_INVADERS ) )
+	// In Versus, we detonate objects on blue if you're not a bot.
+	if ( TFGameRules()->IsMannVsMachineMode() && ( GetTeamNumber() == TF_TEAM_PVE_INVADERS ) && IsBot() )
 	{
 		// MvM engineer bots leave their sentries behind when they die
 		return;
@@ -20451,7 +20482,7 @@ bool CTFPlayer::CanHearAndReadChatFrom( CBasePlayer *pPlayer )
 		if ( IsHLTV() || IsReplay() )
 			return true;
 		
-		return ( GetTeamNumber() == pPlayer->GetTeamNumber() || tf_mvm_forceversus.GetBool() );
+		return ( GetTeamNumber() == pPlayer->GetTeamNumber() || tf_gamemode_mvmvs.GetBool() );
 	}
 
 	if ( pPlayer->m_lifeState != LIFE_ALIVE && m_lifeState == LIFE_ALIVE )
@@ -21325,6 +21356,253 @@ bool CTFPlayer::HasTag(const char* tag)
 
 	return false;
 }
+
+void CTFPlayer::ModifyMaxHealth( int nNewMaxHealth )
+{
+	if ( GetMaxHealth() != nNewMaxHealth )
+	{
+		static CSchemaAttributeDefHandle pAttrDef_HiddenMaxHealthNonBuffed( "hidden maxhealth non buffed" );
+		if ( !pAttrDef_HiddenMaxHealthNonBuffed )
+		{
+			Warning( "(VERSUS) TFBotSpawner: Invalid attribute 'hidden maxhealth non buffed'\n" );
+		}
+		else
+		{
+			CAttributeList *pAttrList = GetAttributeList();
+			if ( pAttrList )
+			{
+				pAttrList->SetRuntimeAttributeValue( pAttrDef_HiddenMaxHealthNonBuffed, nNewMaxHealth - GetMaxHealth() );
+			}
+		}
+	}
+	SetHealth( nNewMaxHealth );
+}
+
+void CTFPlayer::ParseRobotCharacterAttributes( KeyValues *data )
+{
+	FOR_EACH_SUBKEY( data, pKVAttribute )
+	{
+		const CEconItemAttributeDefinition *pDef = GetItemSchema()->GetAttributeDefinitionByName( pKVAttribute->GetName() );
+		if ( !pDef )
+			return;
+
+		DevMsg("(VERSUS) attribute name: '%s' attribute value: %f\n", pKVAttribute->GetName(), pKVAttribute->GetFloat());
+		AddCustomAttribute( pKVAttribute->GetName(), pKVAttribute->GetFloat(), -1);
+	}
+}
+
+void CTFPlayer::ParseRobotAttributes(KeyValues* data)
+{
+	FOR_EACH_SUBKEY( data, pKVAttribute )
+	{
+		const char *name = pKVAttribute->GetName();
+		const char *value = pKVAttribute->GetString();
+
+		if ( !Q_stricmp( name, "Attributes" ) )
+		{
+			//TODO: Implement the commented out attributes
+			if ( !Q_stricmp( value, "SuppressFire" ) )
+			{
+				//event.m_attributeFlags |= CTFBot::SUPPRESS_FIRE;
+			}
+			else if ( !Q_stricmp( value, "RetainBuildings" ) )
+			{
+				//event.m_attributeFlags |= CTFBot::RETAIN_BUILDINGS;
+			}
+			else if ( !Q_stricmp( value, "SpawnWithFullCharge" ) )
+			{
+				CWeaponMedigun *medigun = dynamic_cast< CWeaponMedigun * >( Weapon_GetSlot( TF_WPN_TYPE_SECONDARY ) );
+				if ( medigun )
+				{
+					medigun->AddCharge( 1.0f );
+				}
+				m_Shared.SetRageMeter( 100.0f );
+			}
+			else if ( !Q_stricmp( value, "AlwaysCrit" ) )
+			{
+				m_Shared.AddCond( TF_COND_CRITBOOSTED_USER_BUFF );
+			}
+			else if ( !Q_stricmp( value, "HoldFireUntilFullReload" ) )
+			{
+				//event.m_attributeFlags |= CTFBot::HOLD_FIRE_UNTIL_FULL_RELOAD;
+			}
+			else if ( !Q_stricmp( value, "AlwaysFireWeapon" ) )
+			{
+				//event.m_attributeFlags |= CTFBot::ALWAYS_FIRE_WEAPON;
+			}
+			else if ( !Q_stricmp( value, "TeleportToHint" ) )
+			{
+				//event.m_attributeFlags |= CTFBot::TELEPORT_TO_HINT;
+			}
+			else if ( !Q_stricmp( value, "MiniBoss" ) )
+			{
+				SetIsMiniBoss( true );
+			}
+			else if ( !Q_stricmp( value, "UseBossHealthBar" ) )
+			{
+				SetUseBossHealthBar( true );
+			}
+			else if ( !Q_stricmp( value, "IgnoreFlag" ) )
+			{
+				//event.m_attributeFlags |= CTFBot::IGNORE_FLAG;
+			}
+			else if ( !Q_stricmp( value, "AutoJump" ) )
+			{
+				//event.m_attributeFlags |= CTFBot::AUTO_JUMP;
+			}
+			else if ( !Q_stricmp( value, "AirChargeOnly" ) )
+			{
+				//event.m_attributeFlags |= CTFBot::AIR_CHARGE_ONLY;
+			}
+			else if( !Q_stricmp( value, "BulletImmune" ) )
+			{
+				m_Shared.AddCond( TF_COND_BULLET_IMMUNE );
+			}
+			else if( !Q_stricmp( value, "BlastImmune" ) )
+			{
+				m_Shared.AddCond( TF_COND_BLAST_IMMUNE );
+			}
+			else if( !Q_stricmp( value, "FireImmune" ) )
+			{
+				m_Shared.AddCond( TF_COND_FIRE_IMMUNE );
+			}
+			else
+			{
+				Warning( "(Versus) TFBotSpawner: Invalid attribute '%s'\n", value );
+				return;
+			}
+		}
+	}
+}
+
+void CTFPlayer::ParseRobotItemAttributes( KeyValues *data )
+{
+	// Avert your eyes, this code is horrible.
+	const char *itemName = NULL;
+	CEconEntity *pItem;
+
+	FOR_EACH_SUBKEY( data, pKVAttribute )
+	{
+		//DevMsg( "%s\n", pKVAttribute->GetName());
+		if( !Q_stricmp( pKVAttribute->GetName(), "ItemName" ) )
+			itemName = pKVAttribute->GetString();
+	}
+
+	if( !itemName )
+	{
+		DevMsg("CTFPlayer::ParseRobotItemAttributes: No item name specified.\n");
+		return;
+	}
+
+	for ( int i = 0; i < MAX_WEAPONS; i++ )
+	{
+		CTFWeaponBase *pWeaponTemp = (CTFWeaponBase *)GetWeapon(i);
+		if ( !pWeaponTemp )
+			continue;
+
+		pItem = pWeaponTemp;
+	}
+
+	for ( int wbl = m_hMyWearables.Count()-1; wbl >= 0; wbl-- )
+	{
+		CEconWearable *pWearableTemp = m_hMyWearables[wbl];
+		Assert( pWearableTemp );
+		if ( !pWearableTemp )
+			continue;
+
+		pItem = pWearableTemp;
+	}
+
+	FOR_EACH_SUBKEY( data, pKVAttribute )
+	{
+		if( !Q_stricmp( pKVAttribute->GetName(), "ItemName" ) )
+			continue;
+
+		const CEconItemAttributeDefinition *pDef = GetItemSchema()->GetAttributeDefinitionByName( pKVAttribute->GetName() );
+		if ( !pDef )
+			return;
+
+		if( pItem )
+		{ 
+			const char *strName = pItem->GetAttributeContainer()->GetItem()->GetItemDefinition()->GetItemBaseName();
+			DevMsg( "(VERSUS) Adding Attribute: '%s' attribute value: %f to '%s'.\n", pKVAttribute->GetName(), pKVAttribute->GetFloat(), strName );
+			pItem->GetAttributeContainer()->GetItem()->GetAttributeList()->SetRuntimeAttributeValue(pDef, pKVAttribute->GetFloat());
+		}
+	}
+}
+
+void CTFPlayer::ParseRobotKeyvalues( KeyValues *kvClass )
+{
+	
+	CUtlVector< KeyValues* > botList;
+	FOR_EACH_SUBKEY( kvClass, data )
+	{
+		FOR_EACH_SUBKEY( data, classdata )
+		{
+			const char *name = classdata->GetName();
+			const char *value = classdata->GetString();
+			DevMsg( "CTFPlayer::ParseRobotKeyvalues: Reading Key %s\n", name );
+
+			if( !Q_stricmp( name, "Class" ) && !Q_stricmp( value, g_aRawPlayerClassNames[GetPlayerClass()->GetClassIndex()] ) )
+			{
+				botList.AddToTail( data );
+			}
+		}
+	}
+
+	if( botList.Count() == 0 )
+	{ 
+		GiveDefaultItems();
+		DevMsg( "CTFPlayer::ParseRobotKeyvalues: No valid values found for this class. Using Default items.\n" );
+		return;
+	}
+
+	// Not best practice but it would have to do for now.
+	FOR_EACH_SUBKEY( botList[ RandomInt( 0, botList.Count() - 1 ) ], data )
+	{
+		const char *name = data->GetName();
+		const char *value = data->GetString();
+		DevMsg( "CTFPlayer::ParseRobotKeyvalues: Reading Key %s\n", name );
+
+		if ( !Q_stricmp( name, "Health" ) )
+		{
+			int nHealth = data->GetInt();
+			if ( nHealth <= 0.0f )
+			{
+				nHealth = GetMaxHealth();
+			}
+			nHealth *= g_pPopulationManager->GetHealthMultiplier( false );
+			ModifyMaxHealth( nHealth );
+		}
+		else if ( !Q_stricmp( name, "Scale" ) )
+		{
+			SetModelScale( data->GetFloat() );
+		}
+		else if ( !Q_stricmp( name, "Item" ) )
+		{
+			DevMsg( "(VERSUS) Giving Item: %s\n", value);
+			GiveItemString( value );
+		}
+		else if ( !Q_stricmp( name, "ItemAttributes" ) )
+		{
+			ParseRobotItemAttributes( data );
+		}
+		else if ( !Q_stricmp( name, "CharacterAttributes" ) )
+		{
+			ParseRobotCharacterAttributes( data );
+		}
+		else if ( !Q_stricmp( name, "Attributes" ) )
+		{
+			ParseRobotAttributes( data );
+		}
+		else if ( !Q_stricmp( name, "Classicon" ) )
+		{
+			GetPlayerClass()->SetClassIconName( AllocPooledString( value ) );
+		}
+
+	}
+}
+
 void CTFPlayer::MVM_TurnIntoRobot(void)
 {
 	int nRobotClassIndex = (GetPlayerClass() ? GetPlayerClass()->GetClassIndex() : TF_CLASS_UNDEFINED);
@@ -21692,7 +21970,7 @@ void CTFPlayer::GiveItemString( const char* pszItemName )
 	criteria.SetQuality( AE_USE_SCRIPT_VALUE );
 	criteria.BAddCondition( "name", k_EOperator_String_EQ, pszItemName, true );
 
-	CBaseEntity *pItem = ItemGeneration()->GenerateRandomItem( &criteria, WorldSpaceCenter(), vec3_angle );
+	CBaseEntity *pItem = ItemGeneration()->GenerateRandomItem( &criteria, WorldSpaceCenter(), vec3_angle, TranslateWeaponEntForClass( pszItemName, GetPlayerClass()->GetClassIndex() ) );
 	if ( pItem )
 	{
 		CEconItemView *pScriptItem = static_cast< CBaseCombatWeapon * >( pItem )->GetAttributeContainer()->GetItem();
@@ -21731,6 +22009,7 @@ void CTFPlayer::GiveItemString( const char* pszItemName )
 				CBaseCombatWeapon *pWpn = dynamic_cast< CBaseCombatWeapon * >( pEntity );
 				Weapon_Detach( pWpn );
 				UTIL_Remove( pEntity );
+				DevMsg( "CTFPlayer::GiveItemString: Discarding Weapon...\n" );
 			}
 		}
 
@@ -21751,7 +22030,7 @@ void CTFPlayer::GiveItemString( const char* pszItemName )
 	{
 		if ( pszItemName && pszItemName[0] )
 		{
-			DevMsg( "CTFBotSpawner::AddItemToBot: Invalid item %s.\n", pszItemName );
+			DevMsg( "CTFPlayer::GiveItemString: Invalid item %s.\n", pszItemName );
 		}
 	}
 }

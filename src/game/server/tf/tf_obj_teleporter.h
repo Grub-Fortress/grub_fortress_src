@@ -136,6 +136,7 @@ protected:
 	CNetworkVar( int, m_iTimesUsed );
 	CNetworkVar( float, m_flYawToExit );
 	CNetworkVar( bool, m_bMatchBuilding );
+	CNetworkVar( bool, m_bIsMVMTeleporter );
 
 	CHandle<CObjectTeleporter> m_hMatchingTeleporter;
 

@@ -51,6 +51,9 @@ ActionResult< CTFBot > CTFBotFetchFlag::Update( CTFBot *me, float interval )
 
 	if ( TFGameRules()->IsMannVsMachineMode() && flag->IsHome() )
 	{
+		//MVM Versus - Give the flag to a Robot player, so he can feel like a leader!
+		//bool flFlagChance = !me->HasTheFlag() && RandomFloat( 0.0f, 100.0f ) <= tf_bot_taunt_victim_chance.GetFloat();
+
 		if ( gpGlobals->curtime - me->GetSpawnTime() < 1.0f && me->GetTeamNumber() != TEAM_SPECTATOR )
 		{
 			// we just spawned - give us the flag

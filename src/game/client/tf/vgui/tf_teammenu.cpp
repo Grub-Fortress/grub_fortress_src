@@ -822,7 +822,7 @@ void CTFTeamMenu::OnTick()
 	if ( ( bUnbalanced && iHeavyTeam == TF_TEAM_BLUE ) || 
 		 ( pRules->WouldChangeUnbalanceTeams( TF_TEAM_BLUE, iCurrentTeam ) ) ||
 		 ( bHighlander && GetGlobalTeam( TF_TEAM_BLUE )->GetNumPlayers() >= TF_LAST_NORMAL_CLASS - 1 ) ||
-		 ( pRules->IsMannVsMachineMode() && !tf_mvm_forceversus.GetBool()  ) )
+		 ( pRules->IsMannVsMachineMode() && !tf_gamemode_mvmvs.GetBool()  ) )
 	{
 		m_bBlueDisabled = true;
 	}

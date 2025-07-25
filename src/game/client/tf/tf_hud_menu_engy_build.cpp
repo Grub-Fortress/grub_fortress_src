@@ -454,6 +454,7 @@ void CHudMenuEngyBuild::SendBuildMessage( int iSlot )
 
 	if ( CanBuild( iSlot ) == false )
 	{
+		pLocalPlayer->EmitSound( "Player.DenyWeaponSelection" );
 		return;
 	}
 
@@ -818,6 +819,20 @@ void CHudMenuEngyBuild::ReplaceBuildings( EngyConstructBuilding_t (&targetBuildi
 bool CHudMenuEngyBuild::CanBuild( int iSlot )
 {
 	bool bInTraining = TFGameRules() && TFGameRules()->IsInTraining();
+	bool bInMVMVS = ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && tf_gamemode_mvmvs.GetBool() );
+
+	if ( bInMVMVS )
+	{
+		C_TFPlayer *pLocalPlayer = C_TFPlayer::GetLocalTFPlayer();
+		if( !pLocalPlayer )
+			return true;
+
+		if ( pLocalPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+		{
+			return iSlot != 3;
+		}
+	}
+
 	if ( bInTraining == false )
 	{
 		int slot = iSlot - 1;

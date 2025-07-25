@@ -6150,7 +6150,14 @@ void CTFPlayerShared::OnAddShieldCharge( void )
 	m_pOuter->TeamFortress_SetSpeed();
 
 #ifdef CLIENT_DLL
-	m_pOuter->EmitSound( "DemoCharge.Charging" );
+	//MvM Versus - Robots scream with their filter!
+	bool bMvM = TFGameRules()->IsMannVsMachineMode() && m_pOuter->GetTeamNumber() == TF_TEAM_PVE_INVADERS || m_pOuter->IsRobot();
+	if ( bMvM && TFObjectiveResource()->GetMvMEventPopfileType() != MVM_EVENT_POPFILE_HALLOWEEN )
+	{
+		m_pOuter->EmitSound( m_pOuter->IsMiniBoss() ? "Demo_MVM_M_Charge.Charging" : "Demo_MVM_Charge.Charging" );
+	}
+	else
+		m_pOuter->EmitSound( "DemoCharge.Charging" );
 #else
 	m_hPlayersVisibleAtChargeStart.Purge();
 

@@ -648,8 +648,13 @@ public:
 	//MVM Versus - Ported bot exclusive stuff
 	void MVM_StartIdleSound(void);
 	void MVM_SetMinibossType(void);
+	void ParseRobotKeyvalues( KeyValues *kvClass );
+	void ParseRobotCharacterAttributes( KeyValues *data );
+	void ParseRobotItemAttributes( KeyValues *data );
+	void ParseRobotAttributes( KeyValues *data );
 	void MVM_TurnIntoRobot(void);
 	void MVM_StopIdleSound(void);
+	void ModifyMaxHealth( int nNewMaxHealth );
 	CSoundPatch* m_pGiantIdleSound;
 
 	void ClearTags(void);

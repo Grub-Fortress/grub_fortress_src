@@ -749,3 +749,23 @@ void HandleFlagCapturedInDetectionZone( CBasePlayer *pPlayer )
 		}
 	}
 }
+
+bool PointInFlagDetectionZone( const Vector &vecBuildOrigin, const CBaseObject* pObj )
+{
+	Assert( pObj );
+	if ( !pObj )
+	return false;
+
+	for ( int i = 0; i < IFlagDetectionZoneAutoList::AutoList().Count(); ++i )
+	{
+		CFlagDetectionZone *pNoBuild = static_cast< CFlagDetectionZone* >( IFlagDetectionZoneAutoList::AutoList()[i] );
+
+		// Are we within this no build?
+		if ( pNoBuild->PointIsWithin( vecBuildOrigin ) && !pNoBuild->IsDisabled() )
+		{
+			return true;
+		}
+	}
+
+	return false; // Building should be ok.
+}
