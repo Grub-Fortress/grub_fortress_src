@@ -289,9 +289,9 @@ extern ConVar sv_vote_allow_spectators;
 ConVar sv_vote_late_join_time( "sv_vote_late_join_time", "90", FCVAR_NONE, "Grace period after the match starts before players who join the match receive a vote-creation cooldown" );
 ConVar sv_vote_late_join_cooldown( "sv_vote_late_join_cooldown", "300", FCVAR_NONE, "Length of the vote-creation cooldown when joining the server after the grace period has expired" );
 
-// GF
-
+// Taunt Cvars
 ConVar tf_disable_taunt_kills("tf_disable_taunt_kills", "0", FCVAR_NOTIFY, "If set to 1, disables taunt kills.");
+ConVar tf_disable_taunts("tf_disable_taunts", "0", FCVAR_NOTIFY, "If set to 1, disables taunts.");
 
 extern ConVar tf_voice_command_suspension_mode;
 extern ConVar tf_feign_death_duration;
@@ -18953,9 +18953,12 @@ float CTFPlayer::PlayTauntOutroScene()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CTFPlayer::HandleTauntCommand( int iTauntSlot )
+void CTFPlayer::HandleTauntCommand(int iTauntSlot)
 {
-	if ( !IsAllowedToTaunt() )
+	if (!IsAllowedToTaunt())
+		return;
+
+	if (tf_disable_taunts.GetBool())
 		return;
 
 	m_nActiveTauntSlot = LOADOUT_POSITION_INVALID;
