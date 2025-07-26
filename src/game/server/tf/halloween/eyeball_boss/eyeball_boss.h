@@ -172,6 +172,7 @@ class CEyeballBoss : public CHalloweenBaseBoss, public IEyeballBossAutoList
 public:
 	DECLARE_CLASS( CEyeballBoss, CHalloweenBaseBoss );
 	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
 
 	CEyeballBoss();
 	virtual ~CEyeballBoss();
@@ -190,6 +191,8 @@ public:
 	virtual CEyeballBossLocomotion	*GetLocomotionInterface( void ) const	{ return m_locomotor; }
 	virtual CEyeballBossBody *GetBodyInterface( void ) const				{ return m_body; }
 	virtual CDisableVision *GetVisionInterface( void ) const				{ return m_vision; }
+
+	void InputEnrage( inputdata_t &inputdata );
 
 	virtual void Update( void );
 

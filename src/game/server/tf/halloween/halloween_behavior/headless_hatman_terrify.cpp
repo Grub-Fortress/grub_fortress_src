@@ -42,8 +42,21 @@ ActionResult< CHeadlessHatman >	CHeadlessHatmanTerrify::Update( CHeadlessHatman 
 	if ( m_scareTimer.IsElapsed() )
 	{
 		CUtlVector< CTFPlayer * > playerVector;
-		CollectPlayers( &playerVector, TF_TEAM_RED, COLLECT_ONLY_LIVING_PLAYERS );
-		CollectPlayers( &playerVector, TF_TEAM_BLUE, COLLECT_ONLY_LIVING_PLAYERS, APPEND_PLAYERS );
+
+		//Team support
+		if ( me->GetTeamNumber() == TF_TEAM_HALLOWEEN)
+		{ 
+			CollectPlayers( &playerVector, TF_TEAM_RED, COLLECT_ONLY_LIVING_PLAYERS );
+			CollectPlayers( &playerVector, TF_TEAM_BLUE, COLLECT_ONLY_LIVING_PLAYERS, APPEND_PLAYERS );
+		}
+		else if ( me->GetTeamNumber() == TF_TEAM_RED )
+		{
+			CollectPlayers( &playerVector, TF_TEAM_BLUE, COLLECT_ONLY_LIVING_PLAYERS );
+		}
+		else if ( me->GetTeamNumber() == TF_TEAM_BLUE )
+		{
+			CollectPlayers( &playerVector, TF_TEAM_RED, COLLECT_ONLY_LIVING_PLAYERS );
+		}
 
 		for( int i=0; i<playerVector.Count(); ++i )
 		{

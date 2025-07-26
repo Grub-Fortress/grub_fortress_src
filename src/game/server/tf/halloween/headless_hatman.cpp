@@ -169,6 +169,12 @@ int CHeadlessHatman::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	DispatchParticleEffect( "halloween_boss_injured", info.GetDamagePosition(), GetAbsAngles() );
 
+	// critz hurt me :(
+	if ( info.GetDamageType() & DMG_CRITICAL )
+	{
+		EmitSound( "Halloween.HeadlessBossPain" );
+	}
+
 	return BaseClass::OnTakeDamage_Alive( info );
 }
 

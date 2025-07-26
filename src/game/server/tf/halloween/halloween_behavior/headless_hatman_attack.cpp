@@ -146,9 +146,21 @@ void CHeadlessHatmanAttack::SelectVictim( CHeadlessHatman *me )
 		CTFPlayer *newVictim = NULL;
 		CUtlVector< CTFPlayer * > playerVector;
 
-		// collect everyone
-		CollectPlayers( &playerVector, TF_TEAM_RED, COLLECT_ONLY_LIVING_PLAYERS );
-		CollectPlayers( &playerVector, TF_TEAM_BLUE, COLLECT_ONLY_LIVING_PLAYERS, APPEND_PLAYERS );
+		// collect everyone if we are Spooky
+		// But if we got hired, respect our team members... who the fuck hires a pumpkin?
+		if ( me->GetTeamNumber() == TF_TEAM_HALLOWEEN)
+		{ 
+			CollectPlayers( &playerVector, TF_TEAM_RED, COLLECT_ONLY_LIVING_PLAYERS );
+			CollectPlayers( &playerVector, TF_TEAM_BLUE, COLLECT_ONLY_LIVING_PLAYERS, APPEND_PLAYERS );
+		}
+		else if ( me->GetTeamNumber() == TF_TEAM_RED )
+		{
+			CollectPlayers( &playerVector, TF_TEAM_BLUE, COLLECT_ONLY_LIVING_PLAYERS );
+		}
+		else if ( me->GetTeamNumber() == TF_TEAM_BLUE )
+		{
+			CollectPlayers( &playerVector, TF_TEAM_RED, COLLECT_ONLY_LIVING_PLAYERS );
+		}
 
 		float victimRangeSq = FLT_MAX;
 		float visibleVictimRangeSq = FLT_MAX;
@@ -209,6 +221,10 @@ void CHeadlessHatmanAttack::AttackTarget( CHeadlessHatman *me, CBaseCombatCharac
 {
 	// out of range? don't do anything
 	if ( !me->IsRangeLessThan( pTarget, flAttackRange ) )
+		return;
+
+	// We are Red or Blu? respect our teammates
+	if ( me->GetTeamNumber() == pTarget->GetTeamNumber() && me->GetTeamNumber() != TF_TEAM_HALLOWEEN )
 		return;
 
 	Vector forward;
@@ -290,7 +306,9 @@ void CHeadlessHatmanAttack::UpdateAxeSwing( CHeadlessHatman *me )
 			}
 			else if ( m_attackTarget != NULL )
 			{
-				AttackTarget( me, m_attackTarget, tf_halloween_bot_attack_range.GetFloat() );
+				//No friendly fire
+				if ( me->GetTeamNumber() != m_attackTarget->GetTeamNumber() && !friendlyfire.GetBool() )
+					AttackTarget( me, m_attackTarget, tf_halloween_bot_attack_range.GetFloat() );
 			}
 
 			// always playe the axe-hit-world impact sound, since it carries through the world better
@@ -392,6 +410,10 @@ ActionResult< CHeadlessHatman >	CHeadlessHatmanAttack::Update( CHeadlessHatman *
 	// swing our axe at our attack target if they are in range
 	if ( m_attackTarget != NULL && m_attackTarget->IsAlive() )
 	{
+		// We are Red or Blu? respect our teammates
+		if ( me->GetTeamNumber() == m_attackTarget->GetTeamNumber() )
+			return Continue();
+
 		if ( me->IsRangeLessThan( m_attackTarget, tf_halloween_bot_attack_range.GetFloat() ) )
 		{
 			if ( m_scareTimer.IsElapsed() && m_attackTarget->IsPlayer() )

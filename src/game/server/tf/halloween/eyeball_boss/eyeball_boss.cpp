@@ -53,6 +53,10 @@ ConVar tf_eyeball_boss_health_per_level( "tf_eyeball_boss_health_per_level", "30
 
 LINK_ENTITY_TO_CLASS( eyeball_boss, CEyeballBoss );
 
+BEGIN_DATADESC(CEyeballBoss)
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "Enrage", InputEnrage ),
+END_DATADESC();
+
 IMPLEMENT_SERVERCLASS_ST( CEyeballBoss, DT_EyeballBoss )
 
 	SendPropExclude( "DT_BaseEntity", "m_angRotation" ),	// client has its own orientation logic
@@ -609,6 +613,11 @@ const Vector &CEyeballBoss::PickNewSpawnSpot( void ) const
 	}
 
 	return spot;
+}
+//--------------------------------------------------------------------------------------
+void CEyeballBoss::InputEnrage( inputdata_t &inputdata )
+{
+	BecomeEnraged( inputdata.value.Float() );
 }
 
 

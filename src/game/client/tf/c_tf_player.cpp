@@ -1302,7 +1302,8 @@ bool C_TFRagdoll::IsDecapitation()
 		|| (m_iDamageCustom == TF_DMG_CUSTOM_TAUNTATK_BARBARIAN_SWING)
 		|| (m_iDamageCustom == TF_DMG_CUSTOM_DECAPITATION_BOSS) 
 		|| (m_iDamageCustom == TF_DMG_CUSTOM_HEADSHOT_DECAPITATION)
-		|| (m_iDamageCustom == TF_DMG_CUSTOM_MERASMUS_DECAPITATION) );
+		|| (m_iDamageCustom == TF_DMG_CUSTOM_MERASMUS_DECAPITATION)
+		|| (m_iDamageCustom == TF_DMG_CUSTOM_DECAPITATION_BOSS_HAMMER) );
 }
 
 //-----------------------------------------------------------------------------
@@ -10167,7 +10168,8 @@ static bool IsDecapitationCustomDamageType( int iCustomDamageType )
 	return iCustomDamageType == TF_DMG_CUSTOM_DECAPITATION
 		|| iCustomDamageType == TF_DMG_CUSTOM_TAUNTATK_BARBARIAN_SWING
 		|| iCustomDamageType == TF_DMG_CUSTOM_DECAPITATION_BOSS
-		|| iCustomDamageType == TF_DMG_CUSTOM_MERASMUS_DECAPITATION;
+		|| iCustomDamageType == TF_DMG_CUSTOM_MERASMUS_DECAPITATION
+		|| iCustomDamageType == TF_DMG_CUSTOM_DECAPITATION_BOSS_HAMMER;
 }
 
 void C_TFPlayer::CreateBoneAttachmentsFromWearables( C_TFRagdoll *pRagdoll, bool bDisguised )

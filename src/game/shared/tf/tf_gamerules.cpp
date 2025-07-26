@@ -841,6 +841,9 @@ ConVar tf_arena_change_limit( "tf_arena_change_limit", "1", FCVAR_REPLICATED | F
 ConVar tf_arena_override_cap_enable_time( "tf_arena_override_cap_enable_time", "-1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Overrides the time (in seconds) it takes for the capture point to become enable, -1 uses the level designer specified time." );
 ConVar tf_arena_override_team_size( "tf_arena_override_team_size", "0", FCVAR_REPLICATED, "Overrides the maximum team size in arena mode. Set to zero to keep the default behavior of 1/3 maxplayers.");
 ConVar tf_arena_first_blood( "tf_arena_first_blood", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Rewards the first player to get a kill each round." );
+ConVar tf_arena_first_blood_time( "tf_arena_first_blood_time", "5.0", FCVAR_REPLICATED );	
+ConVar tf_arena_first_blood_fast_time( "tf_arena_first_blood_fast_time", "20.0", FCVAR_REPLICATED );	
+ConVar tf_arena_first_blood_slow_time( "tf_arena_first_blood_slow_time", "50.0", FCVAR_REPLICATED );	
 extern ConVar tf_arena_preround_time;
 extern ConVar tf_arena_max_streak;
 #if defined( _DEBUG ) || defined( STAGING_ONLY )
@@ -858,9 +861,6 @@ ConVar tf_training_client_message( "tf_training_client_message", "0", FCVAR_REPL
 // HPE_END
 //=============================================================================
 
-#define TF_ARENA_MODE_FIRST_BLOOD_CRIT_TIME 5.0f
-#define TF_ARENA_MODE_FAST_FIRST_BLOOD_TIME 20.0f
-#define TF_ARENA_MODE_SLOW_FIRST_BLOOD_TIME 50.0f
 
 #ifdef TF_RAID_MODE
 // Raid mode
@@ -12318,11 +12318,11 @@ const char *CTFGameRules::GetKillingWeaponName( const CTakeDamageInfo &info, CTF
 	{
 		killer_weapon_name = "headtaker";
 	}
-	else if (info.GetDamageCustom() == TF_DMG_CUSTOM_DECAPITATION_BOSS_HAMMER)
+	else if ( info.GetDamageCustom() == TF_DMG_CUSTOM_DECAPITATION_BOSS_HAMMER )
 	{
 		killer_weapon_name = "necro_smasher";
 	}
-	else if (info.GetDamageCustom() == TF_DMG_CUSTOM_MVM_BOSS_TANK)
+	else if ( info.GetDamageCustom() == TF_DMG_CUSTOM_MVM_BOSS_TANK )
 	{
 		killer_weapon_name = "boss_tank";
 	}
@@ -12945,8 +12945,8 @@ void CTFGameRules::DeathNotice( CBasePlayer *pVictim, const CTakeDamageInfo &inf
 				if ( GetGlobalTeam( pVictim->GetTeamNumber() ) && GetGlobalTeam( pVictim->GetTeamNumber() )->GetNumPlayers() > 1 )
 #endif // !DEBUG
 				{
-					float flFastTime = IsCompetitiveMode() ? 120.f : TF_ARENA_MODE_FAST_FIRST_BLOOD_TIME;
-					float flSlowTime = IsCompetitiveMode() ? 300.f : TF_ARENA_MODE_SLOW_FIRST_BLOOD_TIME;
+					float flFastTime = IsCompetitiveMode() ? 120.f : tf_arena_first_blood_fast_time.GetFloat();
+					float flSlowTime = IsCompetitiveMode() ? 300.f : tf_arena_first_blood_slow_time.GetFloat();
 
 					if ( ( gpGlobals->curtime - m_flRoundStartTime ) <= flFastTime )
 					{
@@ -12983,7 +12983,7 @@ void CTFGameRules::DeathNotice( CBasePlayer *pVictim, const CTakeDamageInfo &inf
 					}
 					else
 					{
-						pScorer->m_Shared.AddCond( TF_COND_CRITBOOSTED_FIRST_BLOOD, TF_ARENA_MODE_FIRST_BLOOD_CRIT_TIME );
+						pScorer->m_Shared.AddCond( TF_COND_CRITBOOSTED_FIRST_BLOOD, tf_arena_first_blood_time.GetFloat() );
 					}
 				}
 			}
