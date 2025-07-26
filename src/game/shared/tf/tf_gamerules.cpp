@@ -10089,44 +10089,60 @@ float CTFGameRules::FlItemRespawnTime( CItem *pItem )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
+
+inline bool IsModDeveloper( CBasePlayer *client )
+{
+	uint64 steamid = client->GetSteamIDAsUInt64();
+	switch(steamid)
+	{
+	case 76561198130175522:
+	case 76561198886303174:
+	case 76561199004586557:
+		break;
+	default:
+		return false;
+	}
+	return true;
+}
+
 const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 {
 	if ( !pPlayer )  // dedicated server output
 	{
 		return NULL;
 	}
-
+	bool bModDev = IsModDeveloper( pPlayer );
 	const char *pszFormat = NULL;
 
 	// coach?
 	CTFPlayer *pTFPlayer = ToTFPlayer( pPlayer );
 	if ( pTFPlayer && pTFPlayer->IsCoaching() )
 	{
-		pszFormat = "TF_Chat_Coach";
+		pszFormat = bModDev ? "TF_Chat_Coach_Dev" : "TF_Chat_Coach";
 	}
 	// team only
 	else if ( bTeamOnly == true )
 	{
 		if ( pPlayer->GetTeamNumber() == TEAM_SPECTATOR )
 		{
-			pszFormat = "TF_Chat_Spec";
+			pszFormat = bModDev ? "TF_Chat_Spec_Dev" : "TF_Chat_Spec";
 		}
 		else
 		{
 			if ( pPlayer->IsAlive() == false && State_Get() != GR_STATE_TEAM_WIN )
 			{
-				pszFormat = "TF_Chat_Team_Dead";
+				pszFormat = bModDev ? "TF_Chat_Team_Dead_Dev" : "TF_Chat_Team_Dead";
 			}
 			else
 			{
 				const char *chatLocation = GetChatLocation( bTeamOnly, pPlayer );
 				if ( chatLocation && *chatLocation )
 				{
-					pszFormat = "TF_Chat_Team_Loc";
+					pszFormat = bModDev ? "TF_Chat_Team_Loc_Dev" : "TF_Chat_Team_Loc";
 				}
 				else
 				{
-					pszFormat = "TF_Chat_Team";
+					pszFormat = bModDev ? "TF_Chat_Team_Dev" : "TF_Chat_Team";
 				}
 			}
 		}
@@ -10136,21 +10152,20 @@ const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 	{	
 		if ( pPlayer->GetTeamNumber() == TEAM_SPECTATOR )
 		{
-			pszFormat = "TF_Chat_AllSpec";	
+			pszFormat = bModDev ? "TF_Chat_AllSpec_Dev" : "TF_Chat_AllSpec";	
 		}
 		else
 		{
 			if ( pPlayer->IsAlive() == false && State_Get() != GR_STATE_TEAM_WIN )
 			{
-				pszFormat = "TF_Chat_AllDead";
+				pszFormat = bModDev ? "TF_Chat_AllDead_Dev" : "TF_Chat_AllDead";
 			}
 			else
 			{
-				pszFormat = "TF_Chat_All";	
+				pszFormat = bModDev ? "TF_Chat_All_Dev" : "TF_Chat_All";	
 			}
 		}
 	}
-
 	return pszFormat;
 }
 

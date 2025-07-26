@@ -220,6 +220,7 @@ ConVar tf_taunt_first_person( "tf_taunt_first_person", "0", FCVAR_NONE, "1 = tau
 ConVar tf_romevision_opt_in( "tf_romevision_opt_in", "0", FCVAR_ARCHIVE, "Enable Romevision in Mann vs. Machine mode when available." );
 ConVar tf_romevision_skip_prompt( "tf_romevision_skip_prompt", "0", FCVAR_ARCHIVE, "If nonzero, skip the prompt about sharing Romevision." );
 
+ConVar tf_robot_cosmetic_opt_in( "tf_robot_cosmetic_opt_in", "1", FCVAR_USERINFO | FCVAR_ARCHIVE, "When set to 0, Robot models will not be used." );
 
 #define BDAY_HAT_MODEL		"models/effects/bday_hat.mdl"
 #define BOMB_HAT_MODEL		"models/props_lakeside_event/bomb_temp_hat.mdl"
@@ -8999,10 +9000,26 @@ void C_TFPlayer::ValidateModelIndex( void )
 	}
 	else
 	{
+		int usingRobotCosmetic = 0;
+		CALL_ATTRIB_HOOK_INT( usingRobotCosmetic, robotrobotrobotrobot );
 		C_TFPlayerClass *pClass = GetPlayerClass();
-		if ( pClass )
+
+		// MVM Versus - doing this here so it can be disabled clientside as a ConVar.
+		if ( usingRobotCosmetic && tf_robot_cosmetic_opt_in.GetBool() )
 		{
-			m_nModelIndex = modelinfo->GetModelIndex( pClass->GetModelName() );
+			if ( pClass )
+			{
+				int nRobotClassIndex = GetPlayerClass()->GetClassIndex();
+				m_nModelIndex = modelinfo->GetModelIndex( g_szBotModels[ nRobotClassIndex ] );
+				SetBloodColor( DONT_BLEED );
+			}
+		}
+		else
+		{
+			if ( pClass )
+			{
+				m_nModelIndex = modelinfo->GetModelIndex( pClass->GetModelName() );
+			}
 		}
 	}
 
@@ -10600,10 +10617,9 @@ void C_TFPlayer::UpdateMVMEyeGlowEffect( bool bVisible )
 {
 	int usingRobotCosmetic = 0;
 	CALL_ATTRIB_HOOK_INT( usingRobotCosmetic, robotrobotrobotrobot );
-	if ( !TFGameRules() || !TFGameRules()->IsMannVsMachineMode() || GetTeamNumber() != TF_TEAM_PVE_INVADERS )
+	if ( !( ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS ) || ( usingRobotCosmetic && tf_robot_cosmetic_opt_in.GetBool() ) ) )
 	{
-		if( usingRobotCosmetic == 0 )
-			return;
+		return;
 	}
 	
 	// Remove the eye glows

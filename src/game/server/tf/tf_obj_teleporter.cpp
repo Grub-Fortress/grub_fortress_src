@@ -1565,7 +1565,7 @@ void CObjectTeleporter::SpawnBread( const CTFPlayer* pTeleportingPlayer )
 				QAngle qSpawnAngles = GetAbsAngles();
 
 				int nClassBread = RandomInt( TF_FIRST_NORMAL_CLASS, TF_LAST_NORMAL_CLASS - 1 );
-				const char *name = g_aRawPlayerClassNamesRandom[nClassBread];
+				const char *name = g_aRawPlayerClassNamesShort[nClassBread];
 
 				//Spawn Bread Dummy
 				CItemSelectionCriteria criteria;
@@ -1576,16 +1576,23 @@ void CObjectTeleporter::SpawnBread( const CTFPlayer* pTeleportingPlayer )
 				Assert( pDummyWeapon );
 
 				CBaseCombatWeapon *pWeapon = static_cast< CBaseCombatWeapon * >( pDummyWeapon );
-				CEconItemView *pItem = pWeapon->GetAttributeContainer()->GetItem();
-				CTFDroppedWeapon *pDroppedWeapon = CTFDroppedWeapon::Create( NULL, vecSpawn, qSpawnAngles, pWeapon->GetWorldModel(), pItem);
-				if ( pDroppedWeapon )
+				if (pWeapon)
 				{
-					pDroppedWeapon->InitDroppedWeapon( NULL, static_cast< CTFThrowable* >( pDummyWeapon ) ,  false, false );
-					AngularImpulse angImpulse( RandomFloat( -100, 100 ), RandomFloat( -100, 100 ), RandomFloat( -100, 100 ) );
-					Vector vForward;
-					AngleVectors( qSpawnAngles, &vForward );
-					Vector vecVel = ( vForward * 100 ) + Vector( 0, 0, 200 ) + RandomVector( -50, 50 );
-					pDroppedWeapon->VPhysicsGetObject()->SetVelocityInstantaneous( &vecVel, &angImpulse );
+					CEconItemView *pItem = pWeapon->GetAttributeContainer()->GetItem();
+					CTFDroppedWeapon *pDroppedWeapon = CTFDroppedWeapon::Create( NULL, vecSpawn, qSpawnAngles, pWeapon->GetWorldModel(), pItem);
+					if ( pDroppedWeapon )
+					{
+						pDroppedWeapon->InitDroppedWeapon( NULL, static_cast< CTFThrowable* >( pDummyWeapon ) ,  false, false );
+						AngularImpulse angImpulse( RandomFloat( -100, 100 ), RandomFloat( -100, 100 ), RandomFloat( -100, 100 ) );
+						Vector vForward;
+						AngleVectors( qSpawnAngles, &vForward );
+						Vector vecVel = ( vForward * 100 ) + Vector( 0, 0, 200 ) + RandomVector( -50, 50 );
+						pDroppedWeapon->VPhysicsGetObject()->SetVelocityInstantaneous( &vecVel, &angImpulse );
+					}
+				}
+				else
+				{
+					Msg( "FIXME: Caught a crash caused by %s's bread", name);
 				}
 			}
 		}

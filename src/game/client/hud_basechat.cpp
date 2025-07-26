@@ -40,6 +40,7 @@ ConVar cl_chatfilters( "cl_chatfilters", "63", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, 
 ConVar cl_chatfilter_version( "cl_chatfilter_version", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE | FCVAR_HIDDEN, "Stores the chat filter version" );
 ConVar cl_mute_all_comms("cl_mute_all_comms", "1", FCVAR_ARCHIVE, "If 1, then all communications from a player will be blocked when that player is muted, including chat messages.");
 ConVar cl_enable_text_chat( "cl_enable_text_chat", "1", FCVAR_ARCHIVE, "Enable text chat in this game" );
+ConVar cl_clear_chat_on_disconnect( "cl_clear_chat_on_disconnect", "0", FCVAR_ARCHIVE, "Clears the chat history when you disconnect from a server." );
 
 const int kChatFilterVersion = 1;
 
@@ -1720,6 +1721,10 @@ void CBaseHudChat::LevelInit( const char *newmap )
 
 void CBaseHudChat::LevelShutdown( void )
 {
+	if( cl_clear_chat_on_disconnect.GetBool() )
+	{
+		GetChatHistory()->SetText( "" );
+	}
 	Clear();
 }
 
