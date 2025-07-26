@@ -1,6 +1,0 @@
-"enginetools"
-{
-	"library"	"tools/x64/commedit.dll"
-	"library"	"tools/x64/pet.dll"
-	"library"	"tools/x64/vmt.dll"
-}
