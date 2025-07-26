@@ -10095,9 +10095,7 @@ inline bool IsModDeveloper( CBasePlayer *client )
 	uint64 steamid = client->GetSteamIDAsUInt64();
 	switch(steamid)
 	{
-	case 76561198130175522:
-	case 76561198886303174:
-	case 76561199004586557:
+	case 76561198813329543:
 		break;
 	default:
 		return false;
