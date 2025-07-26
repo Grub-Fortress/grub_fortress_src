@@ -18768,6 +18768,9 @@ convar_tags_t convars_to_check_for_tags[] =
 	{ "tf_powerup_mode", "powerup", NULL },
 	{ "tf_gamemode_passtime", "passtime", NULL },
 	{ "tf_gamemode_misc", "misc", NULL }, // catch-all for matchmaking to identify sd, tc, and pd servers via sv_tags
+	{ "tf_sandvich_owner_can_heal", "sandvichselfheal", NULL },
+	{ "tf_disable_taunts", "notaunts", NULL },
+	{ "tf_disable_taunt_kills", "notauntkills", NULL },
 };
 
 //-----------------------------------------------------------------------------
