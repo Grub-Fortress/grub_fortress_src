@@ -10095,7 +10095,7 @@ inline bool IsModDeveloper( CBasePlayer *client )
 	uint64 steamid = client->GetSteamIDAsUInt64();
 	switch(steamid)
 	{
-	case 76561198813329543:
+	case 76561198813329543: // Grub
 		break;
 	default:
 		return false;
