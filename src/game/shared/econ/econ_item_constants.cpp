@@ -286,6 +286,8 @@ CSchemaColorDefHandle g_AttribColorDefs[] =
 
 	CSchemaColorDefHandle( "desc_strange" ),			// ATTRIB_COL_STRANGE
 	CSchemaColorDefHandle( "desc_unusual" ),			// ATTRIB_COL_UNUSUAL
+	CSchemaColorDefHandle( "desc_community" ),			// ATTRIB_COL_COMMUNITY
+	CSchemaColorDefHandle( "desc_scrapped" ),			// ATTRIB_COL_COMMUNITY
 };
 
 COMPILE_TIME_ASSERT( ARRAYSIZE( g_AttribColorDefs ) == NUM_ATTRIB_COLORS );

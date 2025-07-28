@@ -2619,7 +2619,7 @@ void CItemModelPanel::UpdateDescription( bool bIsToolTip /* = false */ )
 				// m_bSpecialAttributesOnly, only show purple and orange text, ignore rest
 				if ( m_bSpecialAttributesOnly )
 				{
-					if ( line.eColor == ATTRIB_COL_UNUSUAL || line.eColor == ATTRIB_COL_STRANGE )
+					if ( line.eColor == ATTRIB_COL_UNUSUAL || line.eColor == ATTRIB_COL_STRANGE || line.eColor == ATTRIB_COL_COMMUNITY || line.eColor == ATTRIB_COL_SCRAPPED )
 					{
 						V_wcscat_safe( wszAttribBuffer, unWrittenLines++ == 0 ? L"" : L"\n" );					// add empty lines everywhere except before the first line
 						V_wcscat_safe( wszAttribBuffer, line.sText.Get() );
@@ -2799,7 +2799,7 @@ void CItemModelPanel::UpdateDescription( bool bIsToolTip /* = false */ )
 				// m_bSpecialAttributesOnly, only show purple and orange text, ignore rest
 				if ( m_bSpecialAttributesOnly )
 				{
-					if ( ( line.eColor != ATTRIB_COL_UNUSUAL && line.eColor != ATTRIB_COL_STRANGE ) )
+					if ( ( line.eColor != ATTRIB_COL_UNUSUAL && line.eColor != ATTRIB_COL_STRANGE && line.eColor != ATTRIB_COL_COMMUNITY && line.eColor != ATTRIB_COL_SCRAPPED ) )
 					{
 						continue;
 					}

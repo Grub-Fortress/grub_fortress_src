@@ -104,10 +104,10 @@ PRECACHE_WEAPON_REGISTER( tf_projectile_stun_ball );
 #define TF_WEAPON_STUNBALL_MODEL			"models/weapons/w_models/w_baseball.mdl"
 
 #if defined( GAME_DLL )
-ConVar tf_scout_stunball_base_duration( "tf_scout_stunball_base_duration", "6.0", FCVAR_DEVELOPMENTONLY );
-ConVar tf_scout_stunball_base_speed( "tf_scout_stunball_base_speed", "3000", FCVAR_DEVELOPMENTONLY );
-ConVar tf_scout_stunball_old_stun( "tf_scout_stunball_old_stun", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Force loserstate to true." );
-ConVar sv_proj_stunball_damage( "sv_proj_stunball_damage", "15", FCVAR_DEVELOPMENTONLY );
+ConVar tf_scout_stunball_base_duration( "tf_scout_stunball_base_duration", "6.0", FCVAR_REPLICATED );
+ConVar tf_scout_stunball_base_speed( "tf_scout_stunball_base_speed", "3000", FCVAR_REPLICATED );
+ConVar tf_scout_stunball_old_stun( "tf_scout_stunball_old_stun", "0", FCVAR_REPLICATED, "Old sandman stun." );
+ConVar sv_proj_stunball_damage( "sv_proj_stunball_damage", "15", FCVAR_REPLICATED );
 #endif
 // -- TFStunBall
 

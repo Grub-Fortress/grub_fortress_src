@@ -227,6 +227,8 @@ ConVar tf_mvm_allow_abandon_below_players( "tf_mvm_allow_abandon_below_players",
 
 ConVar tf_allow_server_hibernation( "tf_allow_server_hibernation", "1", FCVAR_NONE, "Allow the server to hibernate when empty." );
 
+extern ConVar tf_respawn_on_loadoutchanges;
+
 
 //DEFINE_LOGGING_CHANNEL_NO_TAGS( LOG_CONSOLE, "Console" );
 
@@ -4048,6 +4050,7 @@ bool CTFGCServerSystem::WebapiEquipmentState_t::IsBackingOff()
 	return m_rtNextRequest != 0 && CRTime::RTime32TimeCur() <= m_rtNextRequest;
 }
 */
+
 CTFGCServerSystem::WebapiEquipmentState_t& CTFGCServerSystem::FindOrCreateWebapiEquipmentState( CSteamID steamID )
 {
 	TMapEquipmentRequests::IndexType_t unEquipmentRequest = m_mapEquipmentRequests.Find( steamID );
@@ -4074,8 +4077,8 @@ void CTFGCServerSystem::WebapiEquipmentThinkRequest( CSteamID steamID, WebapiEqu
 	WebapiEquipmentState_t& state = *pState;
 
 	// If we are waiting on timer/rate limit, don't do anything
-//	if ( state.IsBackingOff() )
-//		return;
+	//if ( state.IsBackingOff() )
+	//	return;
 
 	switch( state.m_eState )
 	{
@@ -4162,7 +4165,7 @@ void CTFGCServerSystem::WebapiEquipmentThinkRequest( CSteamID steamID, WebapiEqu
 		SteamAPICall_t callResult;
 		if ( !SteamHTTP()->SendHTTPRequest( state.m_hEquipmentRequest, &callResult ) )
 		{
-//			state.Backoff();
+			//state.Backoff();
 			return;
 		}
 
@@ -4184,8 +4187,8 @@ void CTFGCServerSystem::WebapiEquipmentThinkRequest( CSteamID steamID, WebapiEqu
 		}
 
 		// Don't allow spamming this api -- wait 20 seconds before we ask gc for items again
-//		state.RequestSucceeded();
-//		state.Backoff();
+		//state.RequestSucceeded();
+		//state.Backoff();
 		state.m_eState = kWebapiEquipmentState_WaitingForClientRequest;
 		break;
 
@@ -4226,7 +4229,7 @@ void CTFGCServerSystem::OnWebapiEquipmentReceived( CSteamID steamID, HTTPRequest
 		return;
 
 	// Assume failure, we'll correct this change if we succeeded
-//	state.Backoff();
+	//state.Backoff();
 	state.m_eState = kWebapiEquipmentState_RequestInventory;
 
 	if ( !SteamHTTP() )
@@ -4332,7 +4335,7 @@ void CTFGCServerSystem::OnWebapiEquipmentReceived( CSteamID steamID, HTTPRequest
 	}
 
 	// We were successful, clear backoff timers
-//	state.RequestSucceeded();
+	//state.RequestSucceeded();
 	state.m_eState = kWebapiEquipmentState_InventoryReceived;
 }
 
@@ -4400,6 +4403,12 @@ void CTFGCServerSystem::SDK_ApplyLocalLoadout(CGCClientSharedObjectCache* pCache
 			}*/
 		}
 	}
+	//BetaM patch + My for bools
+	//if ( CTFPlayer* pPlayer = ToTFPlayer( UTIL_PlayerBySteamID(pCache->GetOwner() ) ) )
+	//{
+	//	if ( tf_respawn_on_loadoutchanges.GetBool() )
+	//		pPlayer->CheckInstantLoadoutRespawn();
+	//}
 }
 
 #endif // #ifdef ENABLE_GC_MATCHMAKING
