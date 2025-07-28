@@ -13,7 +13,14 @@ DESCRIPTION INFO_OPTIONS
 		NOTICE :If I Forgot to credit someone in here, reach out to me"
 		{ BOOL }
 		{ "1" }
-	}	
+	}
+	"credit1_2"
+	{
+		"YourLocalMoon - The linux compiler person"
+		"github.com/ThePixelMoon"
+		{ BOOL }
+		{ "1" }
+	}		
 	"category2"
 	{
 		"Weapon Models"
