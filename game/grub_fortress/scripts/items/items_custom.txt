@@ -549,11 +549,11 @@ not sure if it should be used as a weapon"
 			}
 			"attributes"
 			{
-//				"damage bonus"
-//				{
-//					"attribute_class"	"mult_dmg"
-//					"value"				"1.25"
-//				}
+				"damage bonus"
+				{
+					"attribute_class"	"mult_dmg"
+					"value"				"1.15"
+				}
 				"weapon spread bonus"
 				{
 					"attribute_class"	"mult_spread_scale"
@@ -574,15 +574,15 @@ not sure if it should be used as a weapon"
 					"attribute_class"	"mult_maxammo_primary"
 					"value"				"0.25"
 				}
-//				"bullets per shot bonus"
-//				{
-//					"attribute_class"	"mult_bullets_per_shot"
-//					"value"				"0.25"
-//				}
 				"minigun no spin sounds"
 				{
 					"attribute_class"	"minigun_no_spin_sounds"
 					"value" "1"
+				}
+				"dmg penalty vs buildings"
+				{
+					"attribute_class"	"mult_dmg_vs_buildings"
+					"value" "0.50"
 				}
 			}
 			"visuals"
