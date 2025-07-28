@@ -1060,7 +1060,6 @@ bool lootlist_attrib_t::BInitFromKV( const char *pszContext, KeyValues *pKVKey, 
 {
 	SCHEMA_INIT_SUBSTEP( m_staticAttrib.BInitFromKV_MultiLine( pszContext, pKVKey, pVecErrors ) );
 
-
 	m_flWeight = pKVKey->GetFloat( "weight" );
 
 	return SCHEMA_INIT_SUCCESS();
@@ -3337,10 +3336,13 @@ bool CEconItemDefinition::BInitFromKV( KeyValues *pKVItem, CUtlVector<CUtlString
 				static_attrib_t staticAttrib;
 
 				SCHEMA_INIT_SUBSTEP( staticAttrib.BInitFromKV_SingleLine( GetDefinitionName(), pKVKey, pVecErrors, false ) );
-				m_vecStaticAttributes.AddToTail( staticAttrib );
+				if (!staticAttrib.bShouldDelete) // Thanks Kepler
+				{
+					m_vecStaticAttributes.AddToTail(staticAttrib);
 
-				// Does this attribute specify a tag to apply to this item definition?
-				Assert( staticAttrib.GetAttributeDefinition() );
+					// Does this attribute specify a tag to apply to this item definition?
+					Assert(staticAttrib.GetAttributeDefinition());
+				}
 			}
 		}
 	}
@@ -3354,10 +3356,15 @@ bool CEconItemDefinition::BInitFromKV( KeyValues *pKVItem, CUtlVector<CUtlString
 			static_attrib_t staticAttrib;
 
 			SCHEMA_INIT_SUBSTEP( staticAttrib.BInitFromKV_MultiLine( GetDefinitionName(), pKVKey, pVecErrors ) );
-			m_vecStaticAttributes.AddToTail( staticAttrib );
 
-			// Does this attribute specify a tag to apply to this item definition?
-			Assert( staticAttrib.GetAttributeDefinition() );
+			// Only add if we shouldn't delete the attribute // Thanks Kepler
+			if (!staticAttrib.bShouldDelete)
+			{
+				m_vecStaticAttributes.AddToTail(staticAttrib);
+
+				// Does this attribute specify a tag to apply to this item definition?
+				Assert(staticAttrib.GetAttributeDefinition());
+			}
 		}
 	}
 
@@ -3433,6 +3440,13 @@ bool static_attrib_t::BInitFromKV_MultiLine( const char *pszContext, KeyValues *
 		pAttrType->InitializeNewEconAttributeValue( &m_value );
 
 		const char *pszValue = pKVAttribute->GetString( "value", NULL );
+
+		// Found an attribute to delete // Thanks Kepler
+		if ( strcmp(pszValue, "delete") == 0 )
+		{
+			bShouldDelete = true;
+		}
+
 		const bool bSuccessfullyLoadedValue = pAttrType->BConvertStringToEconAttributeValue( pAttrDef, pszValue, &m_value, true );
 
 		SCHEMA_INIT_CHECK(
@@ -3465,6 +3479,13 @@ bool static_attrib_t::BInitFromKV_SingleLine( const char *pszContext, KeyValues 
 		pAttrType->InitializeNewEconAttributeValue( &m_value );
 
 		const char *pszValue = pKVAttribute->GetString();
+
+		// Found an attribute to delete // Thanks Kepler
+		if (strcmp(pszValue, "delete") == 0)
+		{
+			bShouldDelete = true;
+		}
+
 		const bool bSuccessfullyLoadedValue = pAttrType->BConvertStringToEconAttributeValue( pAttrDef, pszValue, &m_value, bEnableTerribleBackwardsCompatibilitySchemaParsingCode );
 
 		SCHEMA_INIT_CHECK(
@@ -4423,7 +4444,7 @@ bool CEconItemSchema::BInitTextBuffer( CUtlBuffer &buffer, CUtlVector<CUtlString
 	Reset();
 	m_pKVRawDefinition = new KeyValues( "CEconItemSchema" );
 	//if ( m_pKVRawDefinition->LoadFromBuffer( NULL, buffer ) )
-	if (m_pKVRawDefinition->LoadFromFile(g_pFullFileSystem, "scripts/items/items_custom.txt", "GAME"))
+	if ( m_pKVRawDefinition->LoadFromFile( g_pFullFileSystem, "scripts/items/items_custom.txt", "GAME" ) )
 	{
 		return BInitSchema( m_pKVRawDefinition, pVecErrors )
 			&& BPostSchemaInit( pVecErrors );
@@ -7199,4 +7220,3 @@ const CEconItemCollectionDefinition *CEconItemSchema::GetPaintKitCollectionFromI
 
 	return pCollection;
 }
-

@@ -1,4 +1,4 @@
-#base items_game_live.txt
+#base items_game.txt
 "items_game"
 {
     "attributes"
@@ -16,186 +16,34 @@
     }
 	"prefabs"
 	{
-		"weapon_crusaders_crossbow"
+		"weapon_crusaders_crossbow" // The Crusader's Crossbow
 		{
 			"attributes"
 			{
-				"sniper no headshots"
-				{
-					"attribute_class" "set_weapon_mode"
-					"value" "1"
-				}
-				"maxammo primary reduced"
-				{
-					"attribute_class"	"mult_maxammo_primary"
-					"value"	"0.25"
-				}
 				"reload time increased"
 				{
 					"attribute_class"	"mult_reload_time"
 					"value"	"1.5"
 				}
-				"allowed in medieval mode"
-				{
-					"attribute_class"	"allowed_in_medieval_mode"
-					"value"	"1"
-				}
 			}
 		}
-		"weapon_ambassador"
+		"weapon_ambassador" // The Ambassador
 		{
- 			"enabled"	"1"
-			"item_class"	"tf_weapon_revolver"
-			"craft_class"	"weapon"
-			"craft_material_type"	"weapon"
-			"capabilities"
-			{
-				"nameable"		"1"
-			}
-			"tags"
-			{
-				"can_deal_damage"		"1"
-				"can_headshot"			"1"
-				"can_deal_critical_damage"	"1"
-				"can_deal_mvm_penetration_damage"	"1"
-				"can_deal_long_distance_damage"	"1"
-			}
-			"base_item_name"	"The Ambassador"
-			"show_in_armory"	"1"
-			"item_type_name"	"#TF_Weapon_Revolver"
-			"item_name"	"#TF_Unique_Achievement_Revolver"
-			"item_slot"	"secondary"
-			"item_quality"	"unique"
-			"propername"	"1"
-			"item_logname"	"ambassador"
-			"item_iconname"	"ambassador"
-			"min_ilevel"	"5"
-			"max_ilevel"	"5"
-			"image_inventory"	"backpack/weapons/c_models/c_ambassador/parts/c_ambassador_opt"
-			"image_inventory_size_w"		"128"
-			"image_inventory_size_h"		"82"
-			"model_player"	"models/weapons/c_models/c_ambassador/c_ambassador.mdl"
-			"attach_to_hands" "1"
-			"inspect_panel_dist" "32"
-			"used_by_classes"
-			{
-				"spy"	"1"
-			}
 			"static_attrs"
 			{
-				"min_viewmodel_offset"		"10 0 -6"
+				"crit_dmg_falloff"			"delete"
 			}
-			"attributes"
-			{
-				"revolver use hit locations"
-				{
-					"attribute_class"	"set_weapon_mode"
-					"value"	"1"
-				}
-				"damage penalty"
-				{
-					"attribute_class"	"mult_dmg"
-					"value" "0.85"
-				}
-				"fire rate penalty"
-				{
-					"attribute_class"	"mult_postfiredelay"
-					"value"	"1.2"
-				}
-				"crit mod disabled"
-				{
-					"attribute_class"	"mult_crit_chance"
-					"value"	"0"
-				}
-			}
-			"visuals"
-			{
-				"sound_single_shot" "Weapon_Ambassador.Single"
-				"sound_burst" "Weapon_Ambassador.SingleCrit"
-			}
-			"mouse_pressed_sound"	"ui/item_light_gun_pickup.wav"
-			"drop_sound"		"ui/item_light_gun_drop.wav"
 		}
-		"weapon_axtinguisher"
+		"weapon_axtinguisher" // The Axtinguisher
 		{
-			"enabled"	"1"
-			"item_class"	"tf_weapon_fireaxe"
-			"craft_class"	"weapon"
-			"craft_material_type"	"weapon"
-			"capabilities"
-			{
-				"nameable"		"1"
-			}
-			"tags"
-			{
-				"can_deal_damage"			"1"
-				"can_deal_critical_damage"	"1"
-			}
-			"base_item_name"	"The Axtinguisher"
-			"item_logname"	"axtinguisher"
-			"item_iconname"	"axtinguisher"
-			"show_in_armory"	"1"
-			"item_type_name"	"#TF_Weapon_FireAxe"
-			"item_name"	"#TF_Unique_Achievement_FireAxe1"
-			"item_slot"	"melee"
-			"image_inventory"	"backpack/weapons/c_models/c_axtinguisher/c_axtinguisher_pyro"
-			"image_inventory_size_w"		"128"
-			"image_inventory_size_h"		"82"
-			"model_player"	"models/weapons/c_models/c_axtinguisher/c_axtinguisher_pyro.mdl"
-			"attach_to_hands"	"1"
-			"inspect_panel_dist" "55"
-			"item_quality"	"unique"
-			"propername"	"1"
-			"min_ilevel"	"10"
-			"max_ilevel"	"10"
-			"used_by_classes"
-			{
-				"pyro"	"1"
-			}
 			"static_attrs"
 			{
+				"attack_minicrits_and_consumes_burning"	"delete"
 				"crit vs burning players"				"1"
-				"damage penalty"						"0.67"
-				"single wep holster time increased"		"1.35"
-				"crit mod disabled"						"0"
 			}
-			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
-			"drop_sound"		"ui/item_metal_weapon_drop.wav"
 		}
-		"weapon_russian_riot"
+		"weapon_russian_riot" // The Family Business
 		{
-			"enabled"	"1"
-			"item_class"	"tf_weapon_shotgun"
-			"craft_class"	"weapon"
-			"craft_material_type"	"weapon"
-			"capabilities"
-			{
-				"nameable"		"1"
-				"can_craft_count"	"1"
-			}
-			"tags"
-			{
-				"can_deal_damage"			"1"
-				"can_deal_critical_damage"	"1"
-				"can_deal_mvm_penetration_damage"	"1"
-				"can_deal_long_distance_damage"	"1"
-			}
-			"item_type_name"	"#TF_Weapon_Shotgun"
-			"item_logname" "family_business"
-			"item_iconname" "family_business"
-			"item_name"	"#TF_RussianRiot"
-			"item_slot"	"secondary"
-			"show_in_armory"	"1"
-			"item_quality"	"unique"
-			"propername"	"1"
-			"min_ilevel"	"10"
-			"max_ilevel"	"10"
-			"image_inventory"	"backpack/workshop/weapons/c_models/c_russian_riot/c_russian_riot"
-			"image_inventory_size_w"		"128"
-			"image_inventory_size_h"		"82"
-			"model_player"	"models/workshop/weapons/c_models/c_russian_riot/c_russian_riot.mdl"
-			"attach_to_hands" "1"
-			"inspect_panel_dist" "45"
 			"used_by_classes"
 			{
 				"engineer"	"primary"
@@ -203,123 +51,21 @@
 				"heavy"	"secondary"
 				"soldier"	"secondary"
 			}
-			"static_attrs"
-			{
-				"min_viewmodel_offset"				"10 0 -10"
-				"weapon_stattrak_module_scale"			"0.608"
-			}
-			"attributes"
-			{
-				"damage penalty"
-				{
-					"attribute_class"	"mult_dmg"
-					"value" "0.85"
-				}
-				"clip size bonus"
-				{
-					"attribute_class"	"mult_clipsize"
-					"value" "1.33"
-				}
-				"fire rate bonus"
-				{
-					"attribute_class"	"mult_postfiredelay"
-					"value" "0.85"
-				}
-			}
-			"visuals"
-			{
-				"sound_single_shot"	"Weapon_FamilyBusiness.Single"
-				"sound_burst"	"Weapon_FamilyBusiness.SingleCrit"
-			}
-			"mouse_pressed_sound"	"ui/item_heavy_gun_pickup.wav"
-			"drop_sound"		"ui/item_heavy_gun_drop.wav"
 		}
 	}
 	"items"
 	{
 		// Rebalances 
-		"133"
+		"133" // The Gunboats
 		{
-			"name"			"The Gunboats"
-			"prefab"	"valve weapon_gunboats"
-			"first_sale_date"	"2010/09/29"
-			"item_class"		"tf_wearable"
-			"craft_class"	"weapon"
-			"craft_material_type"	"weapon"
-			"loadondemand" "1"
-			"capabilities"
-			{
-				"nameable"		"1"
-			}
-			"show_in_armory"	"1"
-			"item_type_name" 	"#TF_Wearable_Boots"
-			"item_name"		"#TF_Unique_Blast_Boots"
-			"item_slot"		"secondary"
-			"equip_region"	"feet"
-			"anim_slot"		"FORCE_NOT_USED"
-			"item_quality"		"unique"
-			"propername"	"1"
-			"min_ilevel"		"10"
-			"max_ilevel"		"10"
-			"image_inventory"	"backpack/weapons/c_models/c_rocketboots_soldier"
-			"image_inventory_size_w"		"128"
-			"image_inventory_size_h"		"82"
-			"model_player"		"models/weapons/c_models/c_rocketboots_soldier.mdl"
-			"act_as_wearable" "1"
 			"used_by_classes"
 			{
 				"soldier"	"secondary"
 				"demoman"	"primary"
 			}
-			"attributes"
-			{
-				"rocket jump damage reduction"
-				{
-					"attribute_class"	"rocket_jump_dmg_reduction"
-					"value" "0.4"
-				}
-				"allowed in medieval mode"
-				{
-					"attribute_class"	"allowed_in_medieval_mode"
-					"value"	"1"
-				}
-			}
-			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
-			"drop_sound"		"ui/item_metal_weapon_drop.wav"
 		}
-		"264"
+		"264" // Frying Pan (yes)
 		{
-			"name"	"Frying Pan"
-			"item_class"	"saxxy"
-			"prefab"	"weapon_melee_allclass"
-			"capabilities"
-			{
-				"nameable"		"1"
-			}
-			"tags"
-			{
-				"can_deal_damage"			"1"
-				"can_deal_critical_damage"	"1"
-				"can_be_equipped_by_soldier_or_demo"	"1"
-			}
-			"item_logname"	"fryingpan"
-			"item_iconname"	"fryingpan"
-			"show_in_armory"	"1"
-			"item_type_name"	"#TF_Weapon_FryingPan"
-			"item_name"	"#TF_Unique_FryingPan"
-			"item_slot"	"melee"
-			"image_inventory"	"backpack/player/items/all_class/all_pan"
-			"image_inventory_size_w"		"128"
-			"image_inventory_size_h"		"82"
-			"model_player"	"models/weapons/c_models/c_frying_pan/c_frying_pan.mdl"
-			"attach_to_hands"	"1"
-			"inspect_panel_dist" "40"
-			"item_quality"	"unique"
-			"propername"	"1"
-			"min_ilevel"	"5"
-			"max_ilevel"	"5"
-			"anim_slot" "MELEE_ALLCLASS"
-			"xifier_class_remap"	"Frying Pan"
 			"used_by_classes"
 			{
 				"scout"	"1"
@@ -332,79 +78,45 @@
 				"sniper"	"1"
 				"spy"	"1"
 			}
-			"static_attrs"
-			{
-				"min_viewmodel_offset"		"10 0 -7"
-			}
-			"attributes"
-			{
-				"always tradable"
-				{
-					"attribute_class"	"always_tradable"
-					"value"				"1"
-				}
-			}
-			"visuals"
-			{
-				"sound_melee_hit"		"FryingPan.HitFlesh"
-				"sound_melee_hit_world"	"FryingPan.HitWorld"
-				"sound_melee_miss"	"Weapon_Machete.Miss"
-				"sound_burst"		"Weapon_Machete.MissCrit"
-			}
-			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
-			"drop_sound"		"ui/item_metal_weapon_drop.wav"
 		}
-		"772"
+		"772" // Baby Face's Blaster
 		{
-			"name"	"Baby Face's Blaster"
-			"prefab"		"weapon_scattergun"
-			"first_sale_date"	"2012/06/27"
-			"item_class"	"tf_weapon_pep_brawler_blaster"
-			"capabilities"
-			{
-				"can_craft_count"	"1"
-			}
-			"tags"
-			{
-				"can_deal_damage"			"1"
-				"can_deal_critical_damage"	"1"
-				"can_deal_mvm_penetration_damage"	"1"
-				"can_deal_long_distance_damage"	"1"
-			}
-			"show_in_armory"	"1"
-			"item_type_name"	"#TF_Weapon_Scattergun"
-			"item_name"	"#TF_Weapon_PEP_Scattergun"
-			"item_description"	"#TF_Weapon_PEP_Scattergun_Desc"
-			"item_logname"	"pep_brawlerblaster"
-			"item_iconname"	"pep_brawlerblaster"
-			"item_quality"	"unique"
-			"baseitem" "0"
-			"min_ilevel"	"10"
-			"max_ilevel"	"10"
-			"inspect_panel_dist" "38"
-			"image_inventory"	"backpack/workshop/weapons/c_models/c_pep_scattergun/c_pep_scattergun"
-			"model_player"	"models/workshop/weapons/c_models/c_pep_scattergun/c_pep_scattergun.mdl"
-			"attach_to_hands" "1"
-			"static_attrs"
-			{
-				"min_viewmodel_offset"					"10 0 -12"
-			}
 			"attributes"
 			{
 				"move speed penalty"
 				{
+					"value"				"delete"
+				}
+				"boost on damage"
+				{
+					"value"				"delete"
+				}
+				"hype resets on jump"
+				{
+					"value"				"delete"
+				}
+				"lose hype on take damage"
+				{
+					"value"				"delete"
+				}
+				"clip size penalty"
+				{
+					"value"				"delete"
+				}
+				"move speed penalty"
+				{
 					"attribute_class"	"mult_player_movespeed"
-					"value"	"0.90"
+					"value"				"0.90"
 				}
 				"boost on damage"
 				{
 					"attribute_class"	"boost_on_damage"
-					"value"	"1"
+					"value"				"1"
 				}
 				"hype resets on jump"
 				{
 					"attribute_class"	"hype_resets_on_jump"
-					"value"	"25"
+					"value"				"25"
 				}
 				"clip size penalty"
 				{
@@ -412,62 +124,11 @@
 					"value"				"0.66"
 				}
 			}
-			"visuals"
-			{
-				"sound_single_shot"	"Weapon_Brawler_Blaster.Single"
-				"sound_burst"		"Weapon_Brawler_Blaster.SingleCrit"
-			}
 		}
-		"609"
+		"609" // The Scottish Handshake
 		{
-			"name"	"The Scottish Handshake"
-			"first_sale_date"	"2011/09/07"
-			"item_class"	"tf_weapon_bottle"
-			"craft_class"	"weapon"
-			"craft_material_type"	"weapon"
-			"capabilities"
-			{
-				"nameable"		"1"
-				"can_craft_count"	"1"
-			}
-			"tags"
-			{
-				"can_deal_damage"			"1"
-				"can_be_equipped_by_soldier_or_demo"	"1"
-				"can_deal_critical_damage"	"1"
-			}
-			"show_in_armory"	"1"
-			"item_type_name"	"#TF_Weapon_Bottle"
-			"item_name"	"#TF_ScottishHandshake"
-			"item_description"	"#TF_ScottishHandshake_Desc"
-			"item_logname"	"scotland_shard"
-			"item_iconname"	"scotland_shard"
-			"item_slot"	"melee"
-			"item_quality"	"unique"
-			"propername"	"1"
-			"min_ilevel"	"10"
-			"max_ilevel"	"10"
-			"image_inventory" "backpack/workshop/weapons/c_models/c_scotland_shard/c_scotland_shard"
-			"image_inventory_size_w"		"128"
-			"image_inventory_size_h"		"82"
-			"inspect_panel_dist" 				"30"			
-			"model_player"	"models/workshop/weapons/c_models/c_scotland_shard/c_scotland_shard.mdl"
-			"attach_to_hands" "1"
-			"used_by_classes"
-			{
-				"demoman"	"1"
-			}
-			"static_attrs"
-			{
-				"min_viewmodel_offset"					"10 0 -14"
-			}
 			"attributes"
 			{
-				"allowed in medieval mode"
-				{
-					"attribute_class"	"allowed_in_medieval_mode"
-					"value"	"1"
-				}
 				"provide on active"
 				{
 					"attribute_class"	"provide_on_active"
@@ -494,8 +155,6 @@
 					"value" "1"
 				}
 			}
-			"mouse_pressed_sound"	"ui/item_bottle_pickup.wav"
-			"drop_sound"		"ui/item_bottle_drop.wav"
 		}
 	}
 }
