@@ -1813,3 +1813,89 @@ const char *CPauseGameIssue::GetDetailsString( void )
 	return (m_sRetString.String());
 }
 
+ConVar sv_vote_issue_toggle_versus_allowed( "sv_vote_issue_toggle_versus_allowed", "0", FCVAR_NONE, "Can players call votes to toggle versus mode?" );
+ConVar sv_vote_issue_toggle_versus_cooldown( "sv_vote_issue_toggle_versus_cooldown", "300", FCVAR_NONE, "Minimum time before another toggle versus vote can occur (in seconds)." );
+
+
+void CToggleVersusIssue::ExecuteCommand( void )
+{
+	if ( sv_vote_issue_toggle_versus_cooldown.GetInt() )
+	{
+		SetIssueCooldownDuration( sv_vote_issue_toggle_versus_cooldown.GetFloat() );
+	}
+	if ( tf_gamemode_mvmvs.GetBool() )
+	{ 
+		engine->ServerCommand( "tf_gamemode_mvmvs 0;" );
+	}
+	else
+	{
+		engine->ServerCommand( "tf_gamemode_mvmvs 1;" );
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CToggleVersusIssue::IsEnabled( void )
+{
+	if ( TFGameRules() )
+	{
+		if ( TFGameRules()->IsMannVsMachineMode() )
+			return sv_vote_issue_toggle_versus_allowed.GetBool();
+	}
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CToggleVersusIssue::RequestCallVote( int iEntIndex, const char *pszDetails, vote_create_failed_t &nFailCode, int &nTime )
+{
+	if( !CBaseTFIssue::RequestCallVote( iEntIndex, pszDetails, nFailCode, nTime ) )
+		return false;
+
+	if( !IsEnabled() )
+	{
+		nFailCode = VOTE_FAILED_ISSUE_DISABLED;
+		return false;
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+const char *CToggleVersusIssue::GetDisplayString( void )
+{
+	// Disable
+	if ( tf_gamemode_mvmvs.GetBool() )
+		return "#TF_vote_versus_disable";
+
+	// Enable
+	return "#TF_vote_versus_enable";
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+const char *CToggleVersusIssue::GetVotePassedString( void )
+{
+	// Disable
+	if ( tf_gamemode_mvmvs.GetBool() )
+		return "#TF_vote_passed_versus_disable";
+
+	// Enable
+	return "#TF_vote_passed_versus_enable";
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CToggleVersusIssue::ListIssueDetails( CBasePlayer *pForWhom )
+{
+	if( !sv_vote_issue_toggle_versus_allowed.GetBool() )
+		return;
+
+	ListStandardNoArgCommand( pForWhom, GetTypeString() );
+}

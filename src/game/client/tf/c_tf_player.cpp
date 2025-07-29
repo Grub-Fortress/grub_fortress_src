@@ -4845,8 +4845,8 @@ void C_TFPlayer::UpdateTauntItem()
 	else
 	{
 		int iClass = GetPlayerClass()->GetClassIndex();
-
-		CEconItemView *pMiscItemView = Inventory() ? Inventory()->GetCacheServerItemInLoadout( iClass, m_nActiveTauntSlot ) : NULL;
+		//Better Fortress 2 - CUSTOM TAUNTS FIX
+		CEconItemView *pMiscItemView = Inventory() ? Inventory()->GetItemInLoadout( iClass, m_nActiveTauntSlot ) : NULL;
 		if ( pMiscItemView )
 		{
 			m_TauntEconItemView = *pMiscItemView;

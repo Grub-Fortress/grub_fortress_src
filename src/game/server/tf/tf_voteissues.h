@@ -270,4 +270,20 @@ private:
 
 static const char* g_pszVoteKickString = "#TF_Vote_kicked";
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+class CToggleVersusIssue : public CBaseTFIssue
+{
+public:
+	CToggleVersusIssue( CVoteController *pVoteController ) : CBaseTFIssue( "ToggleVersus", pVoteController ) { } // This string will have "Vote_" glued onto the front for localization (i.e. "#Vote_RestartGame")
+
+	virtual void		ExecuteCommand( void ) OVERRIDE;
+	virtual bool		IsEnabled( void ) OVERRIDE;
+	virtual bool		RequestCallVote( int iEntIndex, const char *pszDetails, vote_create_failed_t &nFailCode, int &nTime ) OVERRIDE;
+	virtual const char *GetDisplayString( void ) OVERRIDE;
+	virtual void		ListIssueDetails( CBasePlayer *forWhom ) OVERRIDE;
+	virtual const char *GetVotePassedString( void ) OVERRIDE;
+};
+
 #endif // TF_VOTEISSUES_H

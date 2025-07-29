@@ -888,10 +888,9 @@ ConVar tf_mvm_buybacks_method( "tf_mvm_buybacks_method", "0", FCVAR_REPLICATED |
 ConVar tf_mvm_buybacks_per_wave( "tf_mvm_buybacks_per_wave", "3", FCVAR_REPLICATED | FCVAR_HIDDEN, "The fixed number of buybacks players can use per-wave." );
 
 //MVM Versus - Convars
-//added FCVAR_DEVELOPMENTONLY to all the mvm versus Cvars, we dont need any mann's fighting mann's controling machines around these grubby parts
-ConVar tf_gamemode_mvmvs( "tf_gamemode_mvmvs", "0", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "Enable versus in MvM");
-ConVar tf_mvmvs_robot_stations( "tf_mvmvs_robot_stations", "0", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "Allow Robots to use upgrade stations");
-ConVar tf_mvmvs_use_loadout( "tf_mvmvs_use_loadout", "1", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "Robot players will spawn with their loadout items, if not, will be picked from the robot selection list file");
+ConVar tf_gamemode_mvmvs( "tf_gamemode_mvmvs", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Enable versus in MvM");
+ConVar tf_mvmvs_robot_stations( "tf_mvmvs_robot_stations", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "Allow Robots to use upgrade stations");
+ConVar tf_mvmvs_use_loadout( "tf_mvmvs_use_loadout", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Robot players will spawn with their loadout items, if not, will be picked from the robot selection list file");
 
 #ifdef GAME_DLL
 enum { kMVM_CurrencyPackMinSize = 1, };
@@ -10087,20 +10086,28 @@ float CTFGameRules::FlItemRespawnTime( CItem *pItem )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose: Better Fortress Dev recognition
 //-----------------------------------------------------------------------------
 
-inline bool IsModDeveloper( CBasePlayer *client )
+inline int IsModDeveloper( CBasePlayer *client )
 {
 	uint64 steamid = client->GetSteamIDAsUInt64();
 	switch(steamid)
 	{
-	case 76561198813329543: // Grub
+		case 76561198130175522: // Alien31
+		case 76561198886303174: // main_thing
+		case 76561199004586557: // Vvis
+			return 1;
 		break;
-	default:
-		return false;
+
+		case 76561198087658491: // MixerRules
+			return 2;
+		break;
+
+		default:
+			return 0;
+		break;
 	}
-	return true;
 }
 
 const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
@@ -10109,38 +10116,93 @@ const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 	{
 		return NULL;
 	}
-	bool bModDev = IsModDeveloper( pPlayer );
+	int bModDev = IsModDeveloper( pPlayer );
 	const char *pszFormat = NULL;
 
 	// coach?
 	CTFPlayer *pTFPlayer = ToTFPlayer( pPlayer );
 	if ( pTFPlayer && pTFPlayer->IsCoaching() )
 	{
-		pszFormat = bModDev ? "TF_Chat_Coach_Dev" : "TF_Chat_Coach";
+		switch(bModDev)
+		{
+			case 0:
+				pszFormat = "TF_Chat_Coach";
+				break;
+			case 1:
+				pszFormat = "TF_Chat_Coach_Dev";
+				break;
+			case 2:
+				pszFormat = "TF_Chat_Coach_Publisher";
+				break;
+		}
 	}
 	// team only
 	else if ( bTeamOnly == true )
 	{
 		if ( pPlayer->GetTeamNumber() == TEAM_SPECTATOR )
 		{
-			pszFormat = bModDev ? "TF_Chat_Spec_Dev" : "TF_Chat_Spec";
+			switch(bModDev)
+			{
+				case 0:
+					pszFormat = "TF_Chat_Spec";
+					break;
+				case 1:
+					pszFormat = "TF_Chat_Spec_Dev";
+					break;
+				case 2:
+					pszFormat = "TF_Chat_Spec_Publisher";
+					break;
+			}
 		}
 		else
 		{
 			if ( pPlayer->IsAlive() == false && State_Get() != GR_STATE_TEAM_WIN )
 			{
-				pszFormat = bModDev ? "TF_Chat_Team_Dead_Dev" : "TF_Chat_Team_Dead";
+				switch(bModDev)
+				{
+					case 0:
+						pszFormat = "TF_Chat_Team_Dead";
+						break;
+					case 1:
+						pszFormat = "TF_Chat_Team_Dead_Dev";
+						break;
+					case 2:
+						pszFormat = "TF_Chat_Team_Dead_Publisher";
+						break;
+				}
 			}
 			else
 			{
 				const char *chatLocation = GetChatLocation( bTeamOnly, pPlayer );
 				if ( chatLocation && *chatLocation )
 				{
-					pszFormat = bModDev ? "TF_Chat_Team_Loc_Dev" : "TF_Chat_Team_Loc";
+					switch(bModDev)
+					{
+						case 0:
+							pszFormat = "TF_Chat_Team_Loc";
+							break;
+						case 1:
+							pszFormat = "TF_Chat_Team_Loc_Dev";
+							break;
+						case 2:
+							pszFormat = "TF_Chat_Team_Loc_Publisher";
+							break;
+					}
 				}
 				else
 				{
-					pszFormat = bModDev ? "TF_Chat_Team_Dev" : "TF_Chat_Team";
+					switch(bModDev)
+					{
+						case 0:
+							pszFormat = "TF_Chat_Team";
+							break;
+						case 1:
+							pszFormat = "TF_Chat_Team_Dev";
+							break;
+						case 2:
+							pszFormat = "TF_Chat_Team_Publisher";
+							break;
+					}
 				}
 			}
 		}
@@ -10150,17 +10212,50 @@ const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 	{	
 		if ( pPlayer->GetTeamNumber() == TEAM_SPECTATOR )
 		{
-			pszFormat = bModDev ? "TF_Chat_AllSpec_Dev" : "TF_Chat_AllSpec";	
+			switch(bModDev)
+			{
+				case 0:
+					pszFormat = "TF_Chat_AllSpec";
+					break;
+				case 1:
+					pszFormat = "TF_Chat_AllSpec_Dev";
+					break;
+				case 2:
+					pszFormat = "TF_Chat_AllSpec_Publisher";
+					break;
+			}
 		}
 		else
 		{
 			if ( pPlayer->IsAlive() == false && State_Get() != GR_STATE_TEAM_WIN )
 			{
-				pszFormat = bModDev ? "TF_Chat_AllDead_Dev" : "TF_Chat_AllDead";
+				switch(bModDev)
+				{
+					case 0:
+						pszFormat = "TF_Chat_AllDead";
+						break;
+					case 1:
+						pszFormat = "TF_Chat_AllDead_Dev";
+						break;
+					case 2:
+						pszFormat = "TF_Chat_AllDead_Publisher";
+						break;
+				}
 			}
 			else
 			{
-				pszFormat = bModDev ? "TF_Chat_All_Dev" : "TF_Chat_All";	
+				switch(bModDev)
+				{
+					case 0:
+						pszFormat = "TF_Chat_All";
+						break;
+					case 1:
+						pszFormat = "TF_Chat_All_Dev";
+						break;
+					case 2:
+						pszFormat = "TF_Chat_All_Publisher";
+						break;
+				}
 			}
 		}
 	}
@@ -12104,6 +12199,7 @@ void CTFGameRules::CreateStandardEntities()
 	NewGlobalIssue< CTeamAutoBalanceIssue >();
 	NewGlobalIssue< CClassLimitsIssue >();
 	NewGlobalIssue< CPauseGameIssue >();
+	NewGlobalIssue< CToggleVersusIssue >();
 }
 
 //-----------------------------------------------------------------------------
@@ -18781,9 +18877,6 @@ convar_tags_t convars_to_check_for_tags[] =
 	{ "tf_powerup_mode", "powerup", NULL },
 	{ "tf_gamemode_passtime", "passtime", NULL },
 	{ "tf_gamemode_misc", "misc", NULL }, // catch-all for matchmaking to identify sd, tc, and pd servers via sv_tags
-	{ "tf_sandvich_owner_can_heal", "sandvichselfheal", NULL },
-	{ "tf_disable_taunts", "notaunts", NULL },
-	{ "tf_disable_taunt_kills", "notauntkills", NULL },
 };
 
 //-----------------------------------------------------------------------------
