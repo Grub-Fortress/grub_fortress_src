@@ -5009,6 +5009,12 @@ bool CTFPlayer::ItemIsAllowed( CEconItemView *pItem )
 	{
 		static CSchemaAttributeDefHandle pAttrib_RobotSkin("robotrobotrobotrobot" );
 		static CSchemaAttributeDefHandle pAttrib_ZombieSkin("zombiezombiezombiezombie" );
+		static CSchemaAttributeDefHandle pAttrib_Blacklisted_MVM("is blacklisted in mvm" );
+
+		//Blacklist specific items
+		if ( pItem->FindAttribute(pAttrib_Blacklisted_MVM) )
+			return false;
+
 		if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS )
 		{
 			//If you are wearing the Cursed Soul, or the Robot Armor == Delete

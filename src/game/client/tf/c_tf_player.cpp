@@ -4859,6 +4859,15 @@ void C_TFPlayer::UpdateTauntItem()
 		{
 			pMiscItemView = bModItem ? Inventory()->GetItemInLoadout(iClass, m_nActiveTauntSlot) : Inventory()->GetCacheServerItemInLoadout(iClass, m_nActiveTauntSlot) ;
 		}
+		else
+		{
+			pMiscItemView = NULL;
+		}
+
+		if ( pMiscItemView )
+		{
+			m_TauntEconItemView = *pMiscItemView;
+		}
 
 	}
 
