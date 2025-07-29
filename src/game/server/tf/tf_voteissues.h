@@ -269,3 +269,5 @@ private:
 
 
 static const char* g_pszVoteKickString = "#TF_Vote_kicked";
+
+#endif // TF_VOTEISSUES_H
