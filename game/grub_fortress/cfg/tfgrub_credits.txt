@@ -14,13 +14,13 @@ DESCRIPTION INFO_OPTIONS
 		{ BOOL }
 		{ "1" }
 	}
-	"credit1_2"
-	{
-		"YourLocalMoon - The linux compiler person"
-		"github.com/ThePixelMoon"
-		{ BOOL }
-		{ "1" }
-	}		
+//	"credit1_2"
+//	{
+//		"YourLocalMoon - The linux compiler person"
+//		"github.com/ThePixelMoon"
+//		{ BOOL }
+//		{ "1" }
+//	}		
 	"category2"
 	{
 		"Weapon Models"

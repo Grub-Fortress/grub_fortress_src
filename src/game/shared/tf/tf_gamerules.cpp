@@ -10098,9 +10098,9 @@ inline int IsModDeveloper( CBasePlayer *client )
 			return 1; // Devs
 		break;
 
-		case 76561199500159028: // Moon - The Linux Guy
-			return 2; // Contributors
-		break;
+//		case 76561199500159028: // Moon - The Linux Guy
+//			return 2; // Contributors
+//		break;
 
 		default:
 			return 0;
