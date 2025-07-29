@@ -4846,11 +4846,20 @@ void C_TFPlayer::UpdateTauntItem()
 	{
 		int iClass = GetPlayerClass()->GetClassIndex();
 		//Better Fortress 2 - CUSTOM TAUNTS FIX
+		/*
 		CEconItemView *pMiscItemView = Inventory() ? Inventory()->GetItemInLoadout( iClass, m_nActiveTauntSlot ) : NULL;
 		if ( pMiscItemView )
 		{
 			m_TauntEconItemView = *pMiscItemView;
 		}
+		*/
+		bool bModItem = TFInventoryManager()->GetModItem(m_nActiveTauntSlot );
+		CEconItemView *pMiscItemView = NULL;
+		if ( Inventory() )
+		{
+			pMiscItemView = bModItem ? Inventory()->GetItemInLoadout(iClass, m_nActiveTauntSlot) : Inventory()->GetCacheServerItemInLoadout(iClass, m_nActiveTauntSlot) ;
+		}
+
 	}
 
 	if ( m_TauntEconItemView.IsValid() )
