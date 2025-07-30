@@ -1566,6 +1566,7 @@ CEconItemView *CTFPlayerInventory::GetItemInLoadout( int iClass, int iSlot )
 					CEconItemView* pItem = TFInventoryManager()->GetModItem(i);
 					if (pItem && pItem->GetItemDefIndex() == m_LoadoutItems[iClass][iSlot])
 					{
+						//DevMsg( "Using mod item: %d\n", m_LoadoutItems[iClass][iSlot] );
 						if (pItem && AreSlotsConsideredIdentical(pItem->GetStaticData()->GetEquipType(), pItem->GetStaticData()->GetLoadoutSlot(iClass), iSlot))
 							return pItem;
 					}
@@ -1595,6 +1596,22 @@ CEconItemView *CTFPlayerInventory::GetCacheServerItemInLoadout( int iClass, int 
 		// we need to validate their position on the server when we retrieve them.
 		if ( pItem && AreSlotsConsideredIdentical( pItem->GetStaticData()->GetEquipType(), pItem->GetStaticData()->GetLoadoutSlot( iClass ), iSlot ) )
 			return pItem;
+
+		if (m_CachedServerLoadoutItems[iClass][iSlot] < 100000)
+		{
+			int count = TFInventoryManager()->GetModItemCount();
+			for (int i = 0; i < count; i++)
+			{
+				CEconItemView* pItem = TFInventoryManager()->GetModItem(i);
+				if (pItem && pItem->GetItemDefIndex() == m_CachedServerLoadoutItems[iClass][iSlot])
+				{
+					//DevMsg( "Using cached mod item: %d\n", m_CachedServerLoadoutItems[iClass][iSlot] );
+					if (pItem && AreSlotsConsideredIdentical(pItem->GetStaticData()->GetEquipType(), pItem->GetStaticData()->GetLoadoutSlot(iClass), iSlot))
+						return pItem;
+				}
+			}
+			return TFInventoryManager()->AddModItem( m_CachedServerLoadoutItems[iClass][iSlot] );
+		}
 	}
 
 	return TFInventoryManager()->GetBaseItemForClass( iClass, iSlot );
@@ -2052,7 +2069,7 @@ CON_COMMAND_F( item_dumpinv_other, "Dumps the contents of a specified client inv
 #endif
 #endif // _DEBUG
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 #if defined(CLIENT_DLL)
 CON_COMMAND_F( item_dumpinv, "Dumps the contents of a specified client inventory. Format: item_dumpinv", FCVAR_CHEAT )
 #else
@@ -2076,7 +2093,7 @@ CON_COMMAND_F( item_dumpinv_sv, "Dumps the contents of a specified server invent
 
 	pInventory->DumpInventoryToConsole( true );
 }
-#endif
+//#endif
 
 #ifdef _DEBUG
 #if defined(CLIENT_DLL)

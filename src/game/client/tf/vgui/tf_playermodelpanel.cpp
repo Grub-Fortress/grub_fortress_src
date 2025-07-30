@@ -18,6 +18,7 @@
 #include "choreoevent.h"
 #include "choreoactor.h"
 #include "choreochannel.h"
+#include "filesystem.h"
 #include "scenefilecache/ISceneFileCache.h"
 #include "c_sceneentity.h"
 #include "c_baseflex.h"
@@ -404,39 +405,47 @@ CChoreoScene *LoadSceneForModel( const char *filename, IChoreoEventCallback *pCa
 	V_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );
 	V_FixSlashes( loadfile );
 
-	char *pBuffer = NULL;
+	void *pBuffer = NULL;
 	size_t bufsize = scenefilecache->GetSceneBufferSize( loadfile );
-	if ( bufsize <= 0 )
-		return NULL;
-
-	pBuffer = new char[ bufsize ];
-	if ( !scenefilecache->GetSceneData( filename, (byte *)pBuffer, bufsize ) )
+	CChoreoScene *pScene = NULL;
+	if ( bufsize > 0 )
 	{
-		delete[] pBuffer;
-		return NULL;
+		// Definitely in scenes.image
+		pBuffer = new char[ bufsize ];
+		if ( !scenefilecache->GetSceneData( filename, (byte *)pBuffer, bufsize ) )
+		{
+			delete[] pBuffer;
+			return NULL;
+		}
+
+		if ( IsBufferBinaryVCD( (char*)pBuffer, bufsize ) )
+		{
+			pScene = new CChoreoScene( pCallback );
+			CUtlBuffer buf( pBuffer, bufsize, CUtlBuffer::READ_ONLY );
+			if ( !pScene->RestoreFromBinaryBuffer( buf, loadfile, &g_ChoreoStringPool ) )
+			{
+				Warning( "Unable to restore binary scene '%s'\n", loadfile );
+				delete pScene;
+				pScene = NULL;
+			}
+		}
 	}
-
-	CChoreoScene *pScene;
-	if ( IsBufferBinaryVCD( pBuffer, bufsize ) )
+	else if (filesystem->ReadFileEx( loadfile, "MOD", &pBuffer, true ))
 	{
-		pScene = new CChoreoScene( pCallback );
-		CUtlBuffer buf( pBuffer, bufsize, CUtlBuffer::READ_ONLY );
-		if ( !pScene->RestoreFromBinaryBuffer( buf, loadfile, &g_ChoreoStringPool ) )
-		{
-			Warning( "Unable to restore binary scene '%s'\n", loadfile );
-			delete pScene;
-			pScene = NULL;
-		}
-		else
-		{
-			pScene->SetPrintFunc( Scene_Printf );
-			pScene->SetEventCallbackInterface( pCallback );
-		}
+		// Not in scenes.image, but it's a raw file
+		g_TokenProcessor.SetBuffer((char*)pBuffer);
+		pScene = ChoreoLoadScene( loadfile, pCallback, &g_TokenProcessor, Scene_Printf );
 	}
 	else
 	{
-		g_TokenProcessor.SetBuffer( pBuffer );
-		pScene = ChoreoLoadScene( loadfile, pCallback, &g_TokenProcessor, Scene_Printf );
+		// Abandon ship
+		return NULL;
+	}
+
+	if(pScene)
+	{
+		pScene->SetPrintFunc( Scene_Printf );
+		pScene->SetEventCallbackInterface( pCallback );
 	}
 
 	delete[] pBuffer;

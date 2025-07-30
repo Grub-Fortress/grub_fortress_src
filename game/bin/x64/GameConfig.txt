@@ -1,0 +1,30 @@
+"Configs"
+{
+	"Games"
+	{
+		"Half-Life 2"
+		{
+			"GameDir"		"D:\SteamLibrary\steamapps\common\Deathmatch Classic Refragged\hl2"
+			"Hammer"
+			{
+				"GameData0"		"D:\SteamLibrary\steamapps\common\Deathmatch Classic Refragged\bin\halflife2.fgd"
+				"TextureFormat"		"5"
+				"MapFormat"		"4"
+				"DefaultTextureScale"		"0.250000"
+				"DefaultLightmapScale"		"16"
+				"GameExe"		"D:\SteamLibrary\steamapps\common\Deathmatch Classic Refragged\hl2.exe"
+				"DefaultSolidEntity"		"func_detail"
+				"DefaultPointEntity"		"info_player_start"
+				"BSP"		"D:\SteamLibrary\steamapps\common\Deathmatch Classic Refragged\bin\x64\vbsp.exe"
+				"Vis"		"D:\SteamLibrary\steamapps\common\Deathmatch Classic Refragged\bin\x64\vvis.exe"
+				"Light"		"D:\SteamLibrary\steamapps\common\Deathmatch Classic Refragged\bin\x64\vrad.exe"
+				"GameExeDir"		"D:\SteamLibrary\steamapps\common\Deathmatch Classic Refragged"
+				"MapDir"		"D:\SteamLibrary\steamapps\common\Deathmatch Classic Refragged\sourcesdk_content\hl2\mapsrc"
+				"BSPDir"		"D:\SteamLibrary\steamapps\common\Deathmatch Classic Refragged\hl2\maps"
+				"CordonTexture"		"tools\toolsskybox"
+				"MaterialExcludeCount"		"0"
+			}
+		}
+	}
+	"SDKVersion"		"5"
+}
