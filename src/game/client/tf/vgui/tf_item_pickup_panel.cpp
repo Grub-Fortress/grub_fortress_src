@@ -29,7 +29,7 @@
 #include "character_info_panel.h"
 #include "tf_matchmaking_dashboard_parent_manager.h"
 
-ConVar tf_explanations_discardpanel( "tf_explanations_discardpanel", "0", FCVAR_ARCHIVE, "Whether the user has seen explanations for this panel." );
+ConVar tf_explanations_discardpanel( "tf_explanations_discardpanel", "1", FCVAR_ARCHIVE, "Whether the user has seen explanations for this panel." );
 
 //-----------------------------------------------------------------------------
 // Purpose: 

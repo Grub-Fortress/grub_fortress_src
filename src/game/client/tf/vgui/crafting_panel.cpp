@@ -40,7 +40,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
-ConVar tf_explanations_craftingpanel( "tf_explanations_craftingpanel", "0", FCVAR_ARCHIVE, "Whether the user has seen explanations for this panel." );
+ConVar tf_explanations_craftingpanel( "tf_explanations_craftingpanel", "1", FCVAR_ARCHIVE, "Whether the user has seen explanations for this panel." );
 
 struct recipefilter_data_t
 {

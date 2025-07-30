@@ -35,7 +35,7 @@ const char *g_szClassFilterStrings[] =
 
 DECLARE_BUILD_FACTORY( CStorePreviewClassIcon );
 
-ConVar tf_explanations_store( "tf_explanations_store", "0", FCVAR_ARCHIVE, "Whether the user has seen explanations for this panel." );
+ConVar tf_explanations_store( "tf_explanations_store", "1", FCVAR_ARCHIVE, "Whether the user has seen explanations for this panel." );
 
 //-----------------------------------------------------------------------------
 // Purpose: 
