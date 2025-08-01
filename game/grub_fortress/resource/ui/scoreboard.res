@@ -24,6 +24,7 @@
 		"ping_width"		"20"
 		"killstreak_width"	"18"
 		"killstreak_image_width" "15"
+		"serverhost_width"	"15"
 	}
 	"BlueScoreBG"
 	{

@@ -141,6 +141,9 @@ private:
 	int							m_iImagePing[SCOREBOARD_PING_ICONS];
 	int							m_iImagePingDead[SCOREBOARD_PING_ICONS];
 
+	int							m_iImageServerHost;
+	int							m_iImageServerHostDead;
+
 	int							m_iTextureCamera;
 
 	bool						m_bIsPVEMode;
@@ -155,6 +158,7 @@ private:
 	CPanelAnimationVarAliasType( int, m_iMedalColumnWidth, "medal_column_width", "15", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iKillstreakWidth, "killstreak_width", "20", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iKillstreakImageWidth, "killstreak_image_width", "20", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iServerHostWidth, "serverhost_width", "15", "proportional_int" );
 
 	CTFPlayerModelPanel			*m_pPlayerModelPanel;
 	int							m_nPlayerModelPanelIndex;

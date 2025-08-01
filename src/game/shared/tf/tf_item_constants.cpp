@@ -24,6 +24,9 @@ static const char *s_loadout_position_names[] =
 	
 	// other
 	"LOADOUT_POSITION_ACTION",
+
+	// Special skin slot for whole body cosmetics
+	"LOADOUT_POSITION_SKIN",
 	
 	// More wearables, yay!
 	"LOADOUT_POSITION_MISC2",
