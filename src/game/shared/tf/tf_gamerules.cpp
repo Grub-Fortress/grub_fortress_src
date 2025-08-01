@@ -12173,7 +12173,6 @@ void CTFGameRules::CreateStandardEntities()
 	NewGlobalIssue< CTeamAutoBalanceIssue >();
 	NewGlobalIssue< CClassLimitsIssue >();
 	NewGlobalIssue< CPauseGameIssue >();
-	NewGlobalIssue< CToggleVersusIssue >();
 }
 
 //-----------------------------------------------------------------------------
