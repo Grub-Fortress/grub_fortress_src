@@ -207,6 +207,7 @@ ConVar sv_massreport( "sv_massreport", "0" );
 ConVar sv_force_transmit_ents( "sv_force_transmit_ents", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Will transmit all entities to client, regardless of PVS conditions (will still skip based on transmit flags, however)." );
 
 ConVar sv_autosave( "sv_autosave", "1", 0, "Set to 1 to autosave game on level transition. Does not affect autosave triggers." );
+ConVar sv_cheats_server_owner( "sv_cheats_server_owner", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "The server owner is using cheats." );
 ConVar *sv_maxreplay = NULL;
 static ConVar  *g_pcv_commentary = NULL;
 static ConVar *g_pcv_ThreadMode = NULL;
@@ -304,6 +305,78 @@ CBasePlayer *UTIL_GetCommandClient( void )
 }
 
 //-----------------------------------------------------------------------------
+// Purpose: Check if the player is part of the mod Dev Team
+// Output : CBasePlayer
+//-----------------------------------------------------------------------------
+
+int UTIL_PlayerIsModDev( CBasePlayer *client )
+{
+	uint64 steamid = client->GetSteamIDAsUInt64();
+	switch(steamid)
+	{
+		//Main Devs
+		case 76561198130175522: // Alien31
+		case 76561198886303174: // main_thing
+		case 76561199004586557: // Vvis
+			return 1;
+		break;
+		//Publishers
+		case 76561198087658491: // MixerRules
+			return 2;
+		break;
+		//None
+		default:
+			return 0;
+		break;
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Check if the player is the Server owner or Author of the mod
+// Output : CBasePlayer
+//-----------------------------------------------------------------------------
+bool UTIL_HandleCheatCmdForPlayer( CBasePlayer *client )
+{
+	//No player - Backout
+	if ( !client )
+	{
+		return false;
+	}
+	//Mod makers have priority to cheat when needed!
+	//I made the Mod so, why not? besides, it's not going to be abused.
+	if ( !UTIL_PlayerIsModDev(client) )
+	{ 
+		//Back out with cheats
+		if ( sv_cheats->GetBool() )
+		{
+			return true;
+		}
+
+		if ( client != UTIL_GetLocalPlayerOrListenServerHost() )
+		{
+			//Back out without cheats 
+			if ( !sv_cheats->GetBool() )
+			{
+				ClientPrint( client, HUD_PRINTCONSOLE, "Can't use this cheat command, unless the server has sv_cheats set to 1.\n" );
+				return false;
+			}
+		}
+		else 
+		{
+			//Server owner
+			//The reason for this cvar is, so if it's active, users will know the owner is cheating
+			if ( !sv_cheats_server_owner.GetBool() )
+			{ 
+				ClientPrint( client, HUD_PRINTCONSOLE, "Can't use this cheat command, unless the server has sv_cheats set to 1.\n" );
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: Retrieves the MOD directory for the active game (ie. "hl2")
 //-----------------------------------------------------------------------------
 
@@ -342,6 +415,7 @@ void			DrawMessageEntities();
 
 // For now just using one big AI network
 extern ConVar think_limit;
+extern ConVar sv_cheats_server_owner;
 
 
 #if 0

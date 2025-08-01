@@ -10084,37 +10084,13 @@ float CTFGameRules::FlItemRespawnTime( CItem *pItem )
 	return ITEM_RESPAWN_TIME;
 }
 
-
-//-----------------------------------------------------------------------------
-// Purpose: Better Fortress Dev recognition
-//-----------------------------------------------------------------------------
-
-inline int IsModDeveloper( CBasePlayer *client )
-{
-	uint64 steamid = client->GetSteamIDAsUInt64();
-	switch(steamid)
-	{
-		case 76561198813329543: // Grub
-			return 1; // Devs
-		break;
-
-//		case 76561199500159028: // Moon - The Linux Guy
-//			return 2; // Contributors
-//		break;
-
-		default:
-			return 0;
-		break;
-	}
-}
-
 const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 {
 	if ( !pPlayer )  // dedicated server output
 	{
 		return NULL;
 	}
-	int bModDev = IsModDeveloper( pPlayer );
+	int bModDev = UTIL_PlayerIsModDev( pPlayer );
 	const char *pszFormat = NULL;
 
 	// coach?
@@ -10130,7 +10106,7 @@ const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 				pszFormat = "TF_Chat_Coach_Dev";
 				break;
 			case 2:
-				pszFormat = "TF_Chat_Coach_Contributor";
+				pszFormat = "TF_Chat_Coach_Publisher";
 				break;
 		}
 	}
@@ -10148,7 +10124,7 @@ const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 					pszFormat = "TF_Chat_Spec_Dev";
 					break;
 				case 2:
-					pszFormat = "TF_Chat_Spec_Contributor";
+					pszFormat = "TF_Chat_Spec_Publisher";
 					break;
 			}
 		}
@@ -10165,7 +10141,7 @@ const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 						pszFormat = "TF_Chat_Team_Dead_Dev";
 						break;
 					case 2:
-						pszFormat = "TF_Chat_Team_Dead_Contributor";
+						pszFormat = "TF_Chat_Team_Dead_Publisher";
 						break;
 				}
 			}
@@ -10183,7 +10159,7 @@ const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 							pszFormat = "TF_Chat_Team_Loc_Dev";
 							break;
 						case 2:
-							pszFormat = "TF_Chat_Team_Loc_Contributor";
+							pszFormat = "TF_Chat_Team_Loc_Publisher";
 							break;
 					}
 				}
@@ -10198,7 +10174,7 @@ const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 							pszFormat = "TF_Chat_Team_Dev";
 							break;
 						case 2:
-							pszFormat = "TF_Chat_Team_Contributor";
+							pszFormat = "TF_Chat_Team_Publisher";
 							break;
 					}
 				}
@@ -10219,7 +10195,7 @@ const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 					pszFormat = "TF_Chat_AllSpec_Dev";
 					break;
 				case 2:
-					pszFormat = "TF_Chat_AllSpec_Contributor";
+					pszFormat = "TF_Chat_AllSpec_Publisher";
 					break;
 			}
 		}
@@ -10236,7 +10212,7 @@ const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 						pszFormat = "TF_Chat_AllDead_Dev";
 						break;
 					case 2:
-						pszFormat = "TF_Chat_AllDead_Contributor";
+						pszFormat = "TF_Chat_AllDead_Publisher";
 						break;
 				}
 			}
@@ -10251,7 +10227,7 @@ const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 						pszFormat = "TF_Chat_All_Dev";
 						break;
 					case 2:
-						pszFormat = "TF_Chat_All_Contributor";
+						pszFormat = "TF_Chat_All_Publisher";
 						break;
 				}
 			}
@@ -12197,6 +12173,7 @@ void CTFGameRules::CreateStandardEntities()
 	NewGlobalIssue< CTeamAutoBalanceIssue >();
 	NewGlobalIssue< CClassLimitsIssue >();
 	NewGlobalIssue< CPauseGameIssue >();
+	NewGlobalIssue< CToggleVersusIssue >();
 }
 
 //-----------------------------------------------------------------------------

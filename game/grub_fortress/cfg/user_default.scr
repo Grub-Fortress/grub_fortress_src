@@ -99,7 +99,7 @@ DESCRIPTION INFO_OPTIONS
 		"#TF_Hitbeeps"
 		"#Tooltip_Hitbeeps"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"tf_dingaling_volume"
