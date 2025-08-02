@@ -22,6 +22,7 @@
 #include "tier0/memdbgon.h"
 
 #define PARTICLES_MANIFEST_FILE				"particles/particles_manifest.txt"
+#define BF_PARTICLES_MANIFEST_FILE			"particles/particles_manifest_bf.txt"
 
 // How many particle manifests can your map reference.  Was being used to drop bogus manifests into download directory
 // to DoS rival community maps because we can't just be cool.
@@ -84,7 +85,28 @@ void GetParticleManifest( CUtlVector<CUtlString>& list )
 		Warning( "PARTICLE SYSTEM: Unable to load manifest file '%s'\n", PARTICLES_MANIFEST_FILE );
 	}
 
+	// Open our manifest file too! so if the game updates, we are up to date
+	KeyValues *manifest_bf = new KeyValues( BF_PARTICLES_MANIFEST_FILE );
+	if ( manifest_bf->LoadFromFile( filesystem, BF_PARTICLES_MANIFEST_FILE, "GAME" ) )
+	{
+		for ( KeyValues *sub = manifest_bf->GetFirstSubKey(); sub != NULL; sub = sub->GetNextKey() )
+		{
+			if ( !Q_stricmp( sub->GetName(), "file" ) )
+			{
+				list.AddToTail( sub->GetString() );
+				continue;
+			}
+
+			Warning( "CParticleMgr::Init:  BF Manifest '%s' with bogus file type '%s', expecting 'file'\n", BF_PARTICLES_MANIFEST_FILE, sub->GetName() );
+		}
+	}
+	else
+	{
+		Warning( "PARTICLE SYSTEM: Unable to load Betterfortress manifest file '%s'\n", BF_PARTICLES_MANIFEST_FILE );
+	}
+
 	manifest->deleteThis();
+	manifest_bf->deleteThis();
 }
 
 

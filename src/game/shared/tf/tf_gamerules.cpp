@@ -650,7 +650,7 @@ extern ConVar mp_idlemaxtime;
 
 extern ConVar tf_mm_strict;
 extern ConVar mp_autoteambalance;
-extern ConVar tf_teaserprops;
+extern ConVar bf_teaserprops;
 
 
 // STAGING_SPY
@@ -4447,7 +4447,7 @@ void CTFGameRules::Activate()
 		}
 	}
 
- 	if ( !IsInTournamentMode() && tf_teaserprops.GetBool() )
+ 	if ( !IsInTournamentMode() && bf_teaserprops.GetBool() )
  	{
  		CExtraMapEntity::SpawnExtraModel();
 		CEntityBird::SpawnRandomBirds();

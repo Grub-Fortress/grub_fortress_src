@@ -86,6 +86,8 @@ CItemSelectionPanel::CItemSelectionPanel(Panel *parent) : CBaseLoadoutPanel(pare
 	m_bShowDuplicates = false;
 	m_bForceBackpack = false;
 	m_pOnlyAllowUniqueQuality = NULL;
+	m_pShowModItems = NULL;
+	m_pShowTF2Items = NULL;
 	m_pShowBackpack = NULL;
 	m_pShowSelection = NULL;
 	m_pNextPageButton = NULL;
@@ -94,6 +96,7 @@ CItemSelectionPanel::CItemSelectionPanel(Panel *parent) : CBaseLoadoutPanel(pare
 	m_pNoItemsInSelectionLabel = NULL;
 	m_bGotMousePressed = false;
 	m_pNameFilterTextEntry = NULL;
+	m_bLastClickedModItems = false;
 
 	m_DuplicateCounts.SetLessFunc( DefLessFunc( DuplicateCountsMap_t::KeyType_t ) );
 }
@@ -128,6 +131,8 @@ void CItemSelectionPanel::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	m_pNoItemsInSelectionLabel = dynamic_cast<vgui::Label*>( FindChildByName("NoItemsLabel") );
 	m_pOnlyAllowUniqueQuality = dynamic_cast<vgui::CheckButton *>( FindChildByName("OnlyAllowUniqueQuality") );
+	m_pShowModItems = dynamic_cast<vgui::CheckButton *>( FindChildByName("ShowModItems") );
+	m_pShowTF2Items = dynamic_cast<vgui::CheckButton *>( FindChildByName("ShowTF2Items") );
 	m_pShowBackpack = dynamic_cast<CExButton*>( FindChildByName("ShowBackpack") );
 	m_pShowSelection = dynamic_cast<CExButton*>( FindChildByName("ShowSelection") );
 	m_pNextPageButton = dynamic_cast<CExButton*>( FindChildByName("NextPageButton") );
@@ -147,6 +152,18 @@ void CItemSelectionPanel::ApplySchemeSettings( vgui::IScheme *pScheme )
 		{
 			m_pOnlyAllowUniqueQuality->SetSelected( true );
 		}
+	}
+
+	// Initialize the item type filter checkboxes
+	if ( m_pShowModItems )
+	{
+		m_pShowModItems->SetSelected( true );  // Start with both enabled
+		m_pShowModItems->AddActionSignalTarget( this );
+	}
+	if ( m_pShowTF2Items )
+	{
+		m_pShowTF2Items->SetSelected( true );  // Start with both enabled
+		m_pShowTF2Items->AddActionSignalTarget( this );
 	}
 
 	
@@ -327,6 +344,18 @@ void CItemSelectionPanel::OnCommand( const char *command )
 		//Repaint();
 		return;
 	}
+	else if ( !Q_strnicmp( command, "checkbox_moditem_changed", 8 ) )
+	{
+		m_bLastClickedModItems = true;
+		OnItemFilterCheckboxChanged();
+		return;
+	}
+	else if ( !Q_strnicmp( command, "checkbox_tf2item_changed", 8 ) )
+	{
+		m_bLastClickedModItems = false;
+		OnItemFilterCheckboxChanged();
+		return;
+	}
 	else
 	{
 		engine->ClientCmd( const_cast<char *>( command ) );
@@ -342,6 +371,59 @@ void CItemSelectionPanel::OnButtonChecked( KeyValues *pData )
 {
 	Assert( reinterpret_cast<vgui::Panel *>( pData->GetPtr("panel") ) == m_pOnlyAllowUniqueQuality );
 	UpdateModelPanels();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Handle checkbox changes for item type filtering
+//-----------------------------------------------------------------------------
+void CItemSelectionPanel::OnItemFilterCheckboxChanged()
+{
+	// Ensure at least one checkbox remains checked
+	if ( m_pShowModItems && m_pShowTF2Items )
+	{
+		bool bModChecked = m_pShowModItems->IsSelected();
+		bool bTF2Checked = m_pShowTF2Items->IsSelected();
+		
+		// If both are unchecked, re-enable the last one that was clicked
+		if ( !bModChecked && !bTF2Checked )
+		{
+			if ( m_bLastClickedModItems )
+			{
+				m_pShowModItems->SetSelected( true );
+			}
+			else
+			{
+				m_pShowTF2Items->SetSelected( true );
+			}
+		}
+	}
+	
+	UpdateModelPanels();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Check if an item passes the type filter (mod vs TF2)
+//-----------------------------------------------------------------------------
+bool CItemSelectionPanel::DoesItemPassTypeFilter( CEconItemView *pItemData ) const
+{
+	if ( !pItemData || !pItemData->IsValid() )
+		return false;
+		
+	if ( !m_pShowModItems || !m_pShowTF2Items )
+		return true; // If checkboxes don't exist, don't filter
+		
+	bool bShowModItems = m_pShowModItems->IsSelected();
+	bool bShowTF2Items = m_pShowTF2Items->IsSelected();
+	
+	// Get the item definition to check if it's a mod item
+	const GameItemDefinition_t *pItemDef = pItemData->GetStaticData();
+	if ( !pItemDef )
+		return true; // If we can't determine, show it
+		
+	bool bIsModItem = pItemDef->IsModItem();
+	
+	// Show if it's a mod item and mod items are enabled, OR if it's a TF2 item and TF2 items are enabled
+	return ( bIsModItem && bShowModItems ) || ( !bIsModItem && bShowTF2Items );
 }
 
 //-----------------------------------------------------------------------------
@@ -1040,6 +1122,8 @@ void CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection( void )
 			{
 				if( !DoesItemPassSearchFilter( pItemData->GetDescription(), wscFilter ) )
 					continue;
+				if( !DoesItemPassTypeFilter( pItemData ) )
+					continue;
 
 				CEquippableItemsForSlotGenerator::CEquippableResult& result = vecDisplayItems[ vecDisplayItems.AddToTail( pItemData ) ];
 				result.m_eDisplayType = GetItemNotSelectableReason( pItemData ) ? CEquippableItemsForSlotGenerator::kSlotDisplay_Invalid : CEquippableItemsForSlotGenerator::kSlotDisplay_Normal;
@@ -1054,7 +1138,8 @@ void CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection( void )
 		const CEquippableItemsForSlotGenerator::EquippableResultsVec_t& allDisplayItems = equippableItems.GetDisplayItems();
 		for ( int i=0; i<allDisplayItems.Count(); ++i )
 		{
-			if ( DoesItemPassSearchFilter( allDisplayItems[i].m_pEconItemView->GetDescription(), wscFilter ) )
+			if ( DoesItemPassSearchFilter( allDisplayItems[i].m_pEconItemView->GetDescription(), wscFilter ) &&
+				 DoesItemPassTypeFilter( allDisplayItems[i].m_pEconItemView ) )
 			{
 				vecDisplayItems.AddToTail( allDisplayItems[i] );
 			}
@@ -1064,7 +1149,8 @@ void CEquipSlotItemSelectionPanel::UpdateModelPanelsForSelection( void )
 	CEconItemView *pEquippedItem = equippableItems.GetEquippedItem();
 	if ( pEquippedItem )
 	{
-		if ( bShowEquippedItemFirst && DoesItemPassSearchFilter( pEquippedItem->GetDescription(), wscFilter ) )
+		if ( bShowEquippedItemFirst && DoesItemPassSearchFilter( pEquippedItem->GetDescription(), wscFilter ) &&
+			 DoesItemPassTypeFilter( pEquippedItem ) )
 		{
 			vecDisplayItems.AddToHead( pEquippedItem );
 		}
@@ -1285,8 +1371,9 @@ void CItemCriteriaSelectionPanel::UpdateModelPanelsForSelection( void )
 			// or we doing the tailored list and this item matches.
 			if ( m_bShowingEntireBackpack || GetItemNotSelectableReason( pItemData ) == NULL )
 			{
-				// The item also needs to pass the text search filter as well
-				if( DoesItemPassSearchFilter( pItemData->GetDescription(), wscFilter ) )
+				// The item also needs to pass the text search filter and type filter as well
+				if( DoesItemPassSearchFilter( pItemData->GetDescription(), wscFilter ) &&
+					DoesItemPassTypeFilter( pItemData ) )
 				{
 					bAdd = true;
 				}

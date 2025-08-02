@@ -1,4 +1,11 @@
-"LightmappedGeneric"
+"UnlitGeneric"
 {
-	"$basetexture" "hud/scoreboard_serverhost_d"
+	"$basetexture" "hud/scoreboard_serverhost"
+	"$color2" "[.5 .5 .5]"
+	"$alpha" ".9"
+	"$vertexcolor" 1
+	"$no_fullbright" 1
+	"$ignorez" 1
+	"%keywords" "tf"
+	"$translucent" 1
 }

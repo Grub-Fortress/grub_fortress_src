@@ -2435,6 +2435,7 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( ScriptCanBeHealed, "CanBeHealed", "Make this entity Healable from Mediguns." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetTargetable, "SetTargetable", "Make this entity Targetable from Bots or Sentryguns." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetBurnable, "SetBurnable", "Make this entity catch fire from Pyro weapons.")
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetObservable, "SetObservable", "Make this entity Observable.")
 	
 	DEFINE_SCRIPTFUNC( TerminateScriptScope, "Clear the current script scope for this entity" )
 

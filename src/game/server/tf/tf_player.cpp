@@ -5903,6 +5903,17 @@ void CTFPlayer::PostInventoryApplication( void )
 	}
 	m_iPlayerSkinOverride = iPlayerSkinOverride;
 
+	//MVM Versus - Remove the robo cosmetic if we are not a bot
+	//TODO - Optimize this to only get called if your playermodel is a Robot
+	if ( !TFGameRules()->IsMannVsMachineMode() )
+	{
+		if ( !m_bIsRobot )
+		{
+			GetPlayerClass()->SetCustomModel(NULL, USE_CLASS_ANIMATIONS);
+			UpdateModel();
+		}
+	}
+
 	m_Inventory.ClearClassLoadoutChangeTracking();
 }
 
@@ -13020,7 +13031,7 @@ void CTFPlayer::Event_Killed( const CTakeDamageInfo &info )
 	
 	SetGibbedOnLastDeath( bGib );
 
-	bool bIsMvMRobot = TFGameRules()->IsMannVsMachineMode() && IsBot();
+	bool bIsMvMRobot = TFGameRules()->IsMannVsMachineMode() && IsBot() || IsMVMRobot();
 	if ( bGib && !bIsMvMRobot && IsPlayerClass( TF_CLASS_SCOUT ) && RandomInt( 1, 100 ) <= SCOUT_ADD_BIRD_ON_GIB_CHANCE )
 	{
 		Vector vecPos = WorldSpaceCenter();
@@ -16944,6 +16955,22 @@ int CTFPlayer::BuildObservableEntityList( void )
 		}
 	}
 
+	//[VSCRIPT] Generic Observable
+	/*
+	CBaseEntity* pGenericObservable;
+	if ( pGenericObservable )
+	{ 
+		if ( pGenericObservable->m_bCanBeObserved )
+		{
+
+			m_hObservableEntities.AddToTail( pGenericObservable );
+
+			if (m_hObserverTarget.Get() == pGenericObservable)
+			{
+				iCurrentIndex = (m_hObservableEntities.Count() - 1);
+			}
+		}
+	}*/
 	return iCurrentIndex;
 }
 
@@ -17060,6 +17087,15 @@ bool CTFPlayer::IsValidObserverTarget( CBaseEntity * target )
 			if ( TFGameRules()->State_Get() == GR_STATE_TEAM_WIN )
 				return false;
 		}
+
+		// [VSCRIPT] Custom observable 		
+		/*CBaseEntity* pGenericObservable = dynamic_cast<CBaseEntity*>(target);
+		if ( pGenericObservable )
+		{ 
+			if ( pGenericObservable->m_bCanBeObserved )
+				return true;
+		}
+		*/
 
 		if ( GetTeamNumber() == TEAM_SPECTATOR )
 			return true;

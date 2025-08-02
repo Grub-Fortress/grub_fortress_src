@@ -1359,6 +1359,7 @@ public:
 	int                             m_bCanBeHealed;
 	bool                            m_bCanBeTargeted;
 	bool							m_bCanBeBurned;
+	bool                            m_bCanBeObserved;
 
 
 #if !defined( NO_ENTITY_PREDICTION )

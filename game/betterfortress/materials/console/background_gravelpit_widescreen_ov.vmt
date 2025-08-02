@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "console/background_gravelpit_widescreen_ov"
+	"$translucent" 1
+	"%keywords" "tf"
+}

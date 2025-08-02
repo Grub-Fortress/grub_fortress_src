@@ -14,8 +14,8 @@ struct EntityWhiteList_t
 	const char *pszEntName;
 };
 
-ConVar tf_teaserprops("tf_teaserprops", "0", FCVAR_REPLICATED, "Enable teaser props on mapspawn.");
-ConVar tf_teaserprops_type("tf_teaserprops_type", "0", FCVAR_REPLICATED, "Which teaser you want to spawn with?");
+ConVar bf_teaserprops("bf_teaserprops", "0", FCVAR_REPLICATED, "Enable teaser props on mapspawn.");
+ConVar bf_teaserprops_type("bf_teaserprops_type", "0", FCVAR_REPLICATED, "Which teaser you want to spawn with?");
 
 // limit the entities that can be created using this method
 EntityWhiteList_t g_szEntityWhiteList[] =
@@ -190,7 +190,7 @@ void CExtraMapEntity::SpawnExtraModel( void )
 //-----------------------------------------------------------------------------
 void CExtraMapEntity_Rocket::Spawn( void )
 {
-	if (tf_teaserprops_type.GetInt() == 0)
+	if (bf_teaserprops_type.GetInt() == 0)
 	{
 
 		BaseClass::Spawn();
@@ -211,7 +211,7 @@ void CExtraMapEntity_Rocket::Precache_Internal( void )
 //-----------------------------------------------------------------------------
 void CExtraMapEntity_Carrier::Spawn( void )
 {
-	if (tf_teaserprops_type.GetInt() == 1)
+	if (bf_teaserprops_type.GetInt() == 1)
 	{
 
 		BaseClass::Spawn();
@@ -226,7 +226,7 @@ void CExtraMapEntity_Carrier::Spawn( void )
 //-----------------------------------------------------------------------------
 void CExtraMapEntity_Sign::Spawn( void )
 {
-	if (tf_teaserprops_type.GetInt() == 2)
+	if (bf_teaserprops_type.GetInt() == 2)
 	{
 
 		BaseClass::Spawn();
@@ -241,7 +241,7 @@ void CExtraMapEntity_Sign::Spawn( void )
 //-----------------------------------------------------------------------------
 void CExtraMapEntity_Saucer::Spawn( void )
 {
-	if (tf_teaserprops_type.GetInt() == 2)
+	if (bf_teaserprops_type.GetInt() == 2)
 	{
 
 		BaseClass::Spawn();

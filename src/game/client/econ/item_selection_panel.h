@@ -79,6 +79,8 @@ public:
 	MESSAGE_FUNC_PTR( OnItemPanelMousePressed, "ItemPanelMousePressed", panel );
 	MESSAGE_FUNC_PTR( OnItemPanelMouseReleased, "ItemPanelMouseReleased", panel );
 	MESSAGE_FUNC_PARAMS( OnTextChanged, "TextChanged", data );
+	void OnItemFilterCheckboxChanged();
+	bool DoesItemPassTypeFilter( CEconItemView *pItemData ) const;
 
 	// Derived panels need to override these with the custom selection behavior
 	virtual const char *GetSchemeFile( void ) = 0;
@@ -100,6 +102,8 @@ protected:
 	KeyValues						*m_pSelectionItemModelPanelKVs;
 	KeyValues						*m_pDuplicateLabelKVs;
 	vgui::CheckButton				*m_pOnlyAllowUniqueQuality;
+	vgui::CheckButton				*m_pShowModItems;
+	vgui::CheckButton				*m_pShowTF2Items;
 	CExButton						*m_pShowBackpack;
 	CExButton						*m_pShowSelection;
 	bool							m_bForceBackpack;
@@ -123,6 +127,7 @@ protected:
 	vgui::TextEntry		*m_pNameFilterTextEntry;
 	CUtlVector<wchar_t>	m_wNameFilter;
 	float				m_flFilterItemTime;
+	bool				m_bLastClickedModItems;  // Track which checkbox was clicked last
 };
 
 //-----------------------------------------------------------------------------

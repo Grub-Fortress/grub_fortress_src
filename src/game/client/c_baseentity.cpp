@@ -87,6 +87,7 @@ C_BasePlayer *C_BaseEntity::m_pPredictionPlayer = NULL;
 bool C_BaseEntity::s_bAbsQueriesValid = true;
 bool C_BaseEntity::s_bAbsRecomputationEnabled = true;
 bool C_BaseEntity::s_bInterpolate = true;
+extern ConVar bf_player_parentables;
 
 bool C_BaseEntity::sm_bDisableTouchFuncs = false;	// Disables PhysicsTouch and PhysicsStartTouch function calls
 
@@ -6314,6 +6315,14 @@ void C_BaseEntity::RemoveFromTeleportList()
 #ifdef TF_CLIENT_DLL
 bool C_BaseEntity::ValidateEntityAttachedToPlayer( bool &bShouldRetry )
 {
+
+	// Better Fortress - Honestly VALVe please add this, this PATCH is pointless and unecessary anymore, let people parent whatever they want, thanks...
+	if ( bf_player_parentables.GetBool() )
+	{
+		bShouldRetry = false;
+		return true;
+	}
+
 	bShouldRetry = false;
 	C_BaseEntity *pParent = GetRootMoveParent();
 	if ( pParent == this )

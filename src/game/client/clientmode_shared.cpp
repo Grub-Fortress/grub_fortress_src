@@ -1125,7 +1125,7 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 			}
 #endif
 
-			if ( !IsInCommentaryMode() )
+			if ( !IsInCommentaryMode() && !engine->IsLevelMainMenuBackground() )
 			{
 				wchar_t wszLocalized[100];
 				if ( bAutoTeamed )
