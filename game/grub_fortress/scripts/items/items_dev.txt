@@ -15,15 +15,21 @@
         // Grub Nailgun 
 		"33000"
 		{
-            "name"						"TF_WEAPON_NAILGUN_GRUB"
-			"item_name"					"Grub's Nailgun"    
+            "name"						"Grub's Nailgun"
+			"item_name"					"Grub's Nailgun"
             "prefab"					"weapon_nailgun"
+			"show_in_armory"			"0"
 			"attributes"
 			{
+				"attach particle effect static"
+				{
+					"attribute_class"	"set_attached_particle_static"
+					"value"             "2"
+				}
 				"hidden secondary max ammo penalty"
 				{
 					"attribute_class"	"mult_maxammo_secondary"
-					"value"				"999"
+					"value"				"9999"
 				}
 				"clip size bonus"
 				{
@@ -50,11 +56,6 @@
 					"attribute_class"	"add_maxhealth"
 					"value"             "9999"
 				}
-				"Reload time decreased"
-				{
-					"attribute_class"	"mult_reload_time"
-					"value"             "0.001"
-				}
 				"restore health on kill"
 				{
 					"attribute_class"	"restore_health_on_kill"
@@ -62,5 +63,59 @@
 				}
 			}
         }
+		"33001"
+		{
+			"name"                      "Grub's Rocket Launcher"
+			"item_name"					"Grub's Rocket Launcher"
+			"prefab"                    "weapon_rocketlauncher"
+			"attributes"
+			{
+				"attach particle effect static"
+				{
+					"attribute_class"	"set_attached_particle_static"
+					"value"             "2"
+				}
+				"maxammo primary increased"
+				{
+					"attribute_class"	"mult_maxammo_primary"
+					"value"				"9999"
+				}
+				"damage bonus"
+				{
+					"attribute_class"	"mult_dmg"
+					"value"	"10100.0"
+				}
+				"clip size bonus"
+				{
+					"attribute_class"	"mult_clipsize"
+					"value"	"1100.0"
+				}
+				"fire rate bonus"
+				{
+					"attribute_class"	"mult_postfiredelay"
+					"value"	"0.25"
+				}
+				"heal on hit for slowfire"
+				{
+					"attribute_class"	"add_onhit_addhealth"
+					"value"	"250.0"
+				}
+				"critboost on kill"
+				{
+					"attribute_class"	"add_onkill_critboost_time"
+					"value"	"10.0"
+				}
+				"Projectile speed increased"
+				{
+					"atribute_class"	"mult_projectile_speed"
+					"value"	"1.5"
+				}
+				"move speed bonus"
+				{
+					"attribute_class"	"mult_player_movespeed"
+					"value"	"2.0"
+				}
+			}
+		}
     }
 }
