@@ -6,6 +6,7 @@
 
 #include "cbase.h"
 #include "c_tf_player.h"
+#include "tf_shareddefs.h"
 #include "c_user_message_register.h"
 #include "view.h"
 #include "iclientvehicle.h"
@@ -221,6 +222,66 @@ ConVar tf_romevision_opt_in( "tf_romevision_opt_in", "0", FCVAR_ARCHIVE, "Enable
 ConVar tf_romevision_skip_prompt( "tf_romevision_skip_prompt", "0", FCVAR_ARCHIVE, "If nonzero, skip the prompt about sharing Romevision." );
 
 ConVar tf_robot_cosmetic_opt_in( "tf_robot_cosmetic_opt_in", "1", FCVAR_USERINFO | FCVAR_ARCHIVE, "When set to 0, Robot models will not be used." );
+
+// Callback functions for cosmetic ConVars to update visibility immediately
+void bf_disable_cosmetics_changed( IConVar *var, const char *pOldValue, float flOldValue );
+void bf_disable_unusual_effects_changed( IConVar *var, const char *pOldValue, float flOldValue );
+
+ConVar bf_disable_cosmetics( "bf_disable_cosmetics", "0", FCVAR_ARCHIVE, "When set to 1, all cosmetic items (hats, misc items) will be hidden.", bf_disable_cosmetics_changed );
+ConVar bf_disable_unusual_effects( "bf_disable_unusual_effects", "0", FCVAR_ARCHIVE, "When set to 1, all unusual particle effects will be hidden.", bf_disable_unusual_effects_changed );
+
+//-----------------------------------------------------------------------------
+// Purpose: Callback functions to immediately update wearable visibility
+//-----------------------------------------------------------------------------
+void bf_disable_cosmetics_changed( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	// Force all wearables to re-evaluate their visibility
+	C_TFPlayer *pLocalPlayer = C_TFPlayer::GetLocalTFPlayer();
+	if ( pLocalPlayer )
+	{
+		// Update all players' wearables
+		for ( int i = 1; i <= MAX_PLAYERS; i++ )
+		{
+			C_TFPlayer *pPlayer = ToTFPlayer( UTIL_PlayerByIndex( i ) );
+			if ( pPlayer )
+			{
+				for ( int j = 0; j < pPlayer->GetNumWearables(); j++ )
+				{
+					C_EconWearable *pWearable = pPlayer->GetWearable( j );
+					if ( pWearable )
+					{
+						pWearable->UpdateVisibility();
+					}
+				}
+			}
+		}
+	}
+}
+
+void bf_disable_unusual_effects_changed( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	// Force all wearables to re-evaluate their particle systems
+	C_TFPlayer *pLocalPlayer = C_TFPlayer::GetLocalTFPlayer();
+	if ( pLocalPlayer )
+	{
+		// Update all players' wearables
+		for ( int i = 1; i <= MAX_PLAYERS; i++ )
+		{
+			C_TFPlayer *pPlayer = ToTFPlayer( UTIL_PlayerByIndex( i ) );
+			if ( pPlayer )
+			{
+				for ( int j = 0; j < pPlayer->GetNumWearables(); j++ )
+				{
+					C_EconWearable *pWearable = pPlayer->GetWearable( j );
+					if ( pWearable )
+					{
+						pWearable->UpdateVisibility();
+					}
+				}
+			}
+		}
+	}
+}
 
 #define BDAY_HAT_MODEL		"models/effects/bday_hat.mdl"
 #define BOMB_HAT_MODEL		"models/props_lakeside_event/bomb_temp_hat.mdl"
@@ -685,7 +746,20 @@ void C_TFRagdoll::CreateTFRagdoll()
 
 	if ( pPlayer && pPlayer->GetPlayerClass() && !pPlayer->ShouldDrawSpyAsDisguised() )
 	{
-		nModelIndex = modelinfo->GetModelIndex( pPlayer->GetPlayerClass()->GetModelName() );
+		// Check if the player was using robot cosmetics
+		int usingRobotCosmetic = 0;
+		CALL_ATTRIB_HOOK_INT_ON_OTHER( pPlayer, usingRobotCosmetic, robotrobotrobotrobot );
+		
+		// MVM Versus - use robot model for ragdoll if player was using robot cosmetics
+		if ( usingRobotCosmetic && tf_robot_cosmetic_opt_in.GetBool() )
+		{
+			int nRobotClassIndex = pPlayer->GetPlayerClass()->GetClassIndex();
+			nModelIndex = modelinfo->GetModelIndex( g_szBotModels[ nRobotClassIndex ] );
+		}
+		else
+		{
+			nModelIndex = modelinfo->GetModelIndex( pPlayer->GetPlayerClass()->GetModelName() );
+		}
 	}
 	else
 	{
@@ -4536,7 +4610,7 @@ void C_TFPlayer::OnDataChanged( DataUpdateType_t updateType )
 			{
 				if ( m_Shared.InCond( TF_COND_DISGUISED ) )
 				{
-					UpdateMVMEyeGlowEffect( false );
+					UpdateMVMEyeGlowEffect( true );
 				}
 				else
 				{
@@ -8988,7 +9062,46 @@ void C_TFPlayer::ValidateModelIndex( void )
 	else if ( m_Shared.InCond( TF_COND_DISGUISED ) && IsEnemyPlayer() )
 	{
 		TFPlayerClassData_t *pData = GetPlayerClassData( m_Shared.GetDisguiseClass() );
-		m_nModelIndex = modelinfo->GetModelIndex( pData->GetModelName() );
+		const char *pszModelName = pData->GetModelName();
+		
+		bool bUseRobotModel = false;
+		
+		// Check if this is MvM Versus mode and the spy is disguised as the robot team
+		if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && 
+			 m_Shared.GetDisguiseTeam() == TF_TEAM_PVE_INVADERS )
+		{
+			bUseRobotModel = true;
+		}
+		// Check if the disguise target is using the Robot Cosmetic attribute
+		else
+		{
+			C_TFPlayer *pDisguiseTarget = ToTFPlayer( m_Shared.GetDisguiseTarget() );
+			if ( pDisguiseTarget )
+			{
+				int usingRobotCosmetic = 0;
+				CALL_ATTRIB_HOOK_INT_ON_OTHER( pDisguiseTarget, usingRobotCosmetic, robotrobotrobotrobot );
+				if ( usingRobotCosmetic && tf_robot_cosmetic_opt_in.GetBool() )
+				{
+					bUseRobotModel = true;
+				}
+			}
+		}
+		
+		if ( bUseRobotModel )
+		{
+			// Use robot model for the disguised class
+			int nDisguiseClass = m_Shared.GetDisguiseClass();
+			if ( nDisguiseClass >= TF_FIRST_NORMAL_CLASS && nDisguiseClass < TF_LAST_NORMAL_CLASS )
+			{
+				// Use the robot model for this class - g_szBotModels is indexed by class number directly
+				if ( nDisguiseClass >= 0 && nDisguiseClass < ARRAYSIZE( g_szBotModels ) )
+				{
+					pszModelName = g_szBotModels[ nDisguiseClass ];
+				}
+			}
+		}
+		
+		m_nModelIndex = modelinfo->GetModelIndex( pszModelName );
 	}
 	else if ( m_Shared.InCond( TF_COND_HALLOWEEN_GHOST_MODE ) )
 	{
@@ -10619,9 +10732,48 @@ void C_TFPlayer::UpdateKillStreakEffects( int iCount, bool bKillScored /* = fals
 
 void C_TFPlayer::UpdateMVMEyeGlowEffect( bool bVisible )
 {
+	// Check if this player should have robot eye glow
+	bool bShouldHaveEyeGlow = false;
+	
 	int usingRobotCosmetic = 0;
 	CALL_ATTRIB_HOOK_INT( usingRobotCosmetic, robotrobotrobotrobot );
-	if ( !( ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS ) || ( usingRobotCosmetic && tf_robot_cosmetic_opt_in.GetBool() ) ) )
+	
+	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() )
+	{
+		// Actual robots (bots on invader team)
+		if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+		{
+			bShouldHaveEyeGlow = true;
+		}
+		// Spies disguised as robots
+		else if ( IsPlayerClass( TF_CLASS_SPY ) && m_Shared.InCond( TF_COND_DISGUISED ) && 
+				  m_Shared.GetDisguiseTeam() == TF_TEAM_PVE_INVADERS )
+		{
+			bShouldHaveEyeGlow = true;
+		}
+	}
+	// Players using robot cosmetic
+	else if ( usingRobotCosmetic && tf_robot_cosmetic_opt_in.GetBool() )
+	{
+		bShouldHaveEyeGlow = true;
+	}
+	// Spies disguised as players using robot cosmetic (outside MvM)
+	else if ( IsPlayerClass( TF_CLASS_SPY ) && m_Shared.InCond( TF_COND_DISGUISED ) )
+	{
+		C_TFPlayer *pDisguiseTarget = ToTFPlayer( m_Shared.GetDisguiseTarget() );
+		if ( pDisguiseTarget )
+		{
+			int targetUsingRobotCosmetic = 0;
+			CALL_ATTRIB_HOOK_INT_ON_OTHER( pDisguiseTarget, targetUsingRobotCosmetic, robotrobotrobotrobot );
+			if ( targetUsingRobotCosmetic && tf_robot_cosmetic_opt_in.GetBool() )
+			{
+				bShouldHaveEyeGlow = true;
+				usingRobotCosmetic = targetUsingRobotCosmetic; // Use target's cosmetic value for color determination
+			}
+		}
+	}
+	
+	if ( !bShouldHaveEyeGlow )
 	{
 		return;
 	}
@@ -10637,7 +10789,13 @@ void C_TFPlayer::UpdateMVMEyeGlowEffect( bool bVisible )
 		Vector vColor = Vector( 255, 255, 255 );
 		if( usingRobotCosmetic != 0)
 		{
-			vColor = GetTeamNumber() ==  TF_TEAM_RED ? Vector( 255, 0, 0 ) : Vector( 0, 240, 255 );
+			// For disguised spies, use disguise team color instead of spy's team
+			int teamForColor = GetTeamNumber();
+			if ( IsPlayerClass( TF_CLASS_SPY ) && m_Shared.InCond( TF_COND_DISGUISED ) )
+			{
+				teamForColor = m_Shared.GetDisguiseTeam();
+			}
+			vColor = teamForColor == TF_TEAM_RED ? Vector( 255, 0, 0 ) : Vector( 0, 240, 255 );
 		}
 		else
 		{

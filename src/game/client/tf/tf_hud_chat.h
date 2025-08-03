@@ -14,6 +14,10 @@
 #include <hud_basechat.h>
 #include "tf_gcmessages.h"
 
+// Client-side role detection functions
+int ClientUTIL_PlayerIsModDev( int clientIndex );
+bool ClientUTIL_IsListenServerHost( int clientIndex );
+
 struct ChatMessage_t
 {
 	ETFPartyChatType m_eType;
@@ -69,6 +73,8 @@ public:
 	int				GetChatInputOffset( void );
 	void			CreateChatLines( void );
 	virtual void	FireGameEvent( IGameEvent *event ) OVERRIDE;
+
+	virtual void	MsgFunc_SayText2( bf_read &msg ) OVERRIDE;
 
 	virtual bool	ShouldDraw( void );
 

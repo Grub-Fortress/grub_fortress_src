@@ -16,6 +16,11 @@
 #include "props_shared.h"
 #include "tf_mapinfo.h"
 #include "usermessages.h"
+#include "econ_item_schema.h"
+
+// ConVar declarations for cosmetic and unusual effect disabling
+extern ConVar bf_disable_cosmetics;
+extern ConVar bf_disable_unusual_effects;
 #else
 #include "tf_player.h"
 #endif
@@ -279,6 +284,51 @@ int	CTFWearable::InternalDrawModel( int flags )
 {
 	C_TFPlayer *pOwner = ToTFPlayer( GetOwnerEntity() );
 
+#ifdef CLIENT_DLL
+	// Check if we should hide the cosmetic model while keeping the entity visible for unusual effects
+	if ( bf_disable_cosmetics.GetBool() )
+	{
+		// Check if this is a cosmetic item (not a weapon-associated wearable)
+		if ( !GetWeaponAssociatedWith() )
+		{
+			const CEconItemView *pItem = GetAttributeContainer()->GetItem();
+			if ( pItem && pItem->IsValid() )
+			{
+				const CTFItemDefinition *pItemDef = pItem->GetStaticData();
+				if ( pItemDef )
+				{
+					// Get the loadout slot to determine if this is a cosmetic
+					int iLoadoutSlot = pItemDef->GetLoadoutSlot( pOwner ? pOwner->GetPlayerClass()->GetClassIndex() : TF_CLASS_SCOUT );
+					
+					// Hide cosmetic model rendering (hat, misc slots) but keep entity visible for effects
+					if ( IsMiscSlot( iLoadoutSlot ) || iLoadoutSlot == LOADOUT_POSITION_HEAD )
+					{
+						// If unusual effects are enabled, check if this item has them
+						if ( !bf_disable_unusual_effects.GetBool() )
+						{
+							// Check if this item has unusual effects
+							static CSchemaAttributeDefHandle pAttrDef_AttachParticleEffect( "attach particle effect" );
+							uint32 iValue = 0;
+							bool bHasParticleEffect = pItem->FindAttribute( pAttrDef_AttachParticleEffect, &iValue );
+							int iQualityParticleType = pItem->GetQualityParticleType();
+							
+							// If this item has unusual effects, hide the model but keep the entity for effects
+							if ( (bHasParticleEffect && iValue > 0) || iQualityParticleType > 0 )
+							{
+								return 0; // Don't draw the model, but entity stays visible for particle effects
+							}
+						}
+						
+						// No unusual effects or they're disabled, hide the model completely
+						// (This shouldn't be reached since ShouldDraw() would return false)
+						return 0;
+					}
+				}
+			}
+		}
+	}
+#endif
+
 	if ( pOwner && pOwner->m_Shared.InCond( TF_COND_HALLOWEEN_GHOST_MODE ) )
 	{
 		bool bShouldDraw = false;
@@ -318,6 +368,52 @@ int	CTFWearable::InternalDrawModel( int flags )
 bool CTFWearable::ShouldDraw()
 {
 	C_TFPlayer *pOwner = ToTFPlayer( GetOwnerEntity() );
+
+#ifdef CLIENT_DLL
+	// Check if cosmetics are disabled
+	if ( bf_disable_cosmetics.GetBool() )
+	{
+		// Check if this is a cosmetic item (not a weapon-associated wearable)
+		if ( !GetWeaponAssociatedWith() )
+		{
+			const CEconItemView *pItem = GetAttributeContainer()->GetItem();
+			if ( pItem && pItem->IsValid() )
+			{
+				// Allow certain special wearables to still show (like badge items, action items, etc.)
+				const CTFItemDefinition *pItemDef = pItem->GetStaticData();
+				if ( pItemDef )
+				{
+					// Get the loadout slot to determine if this is a cosmetic
+					int iLoadoutSlot = pItemDef->GetLoadoutSlot( pOwner ? pOwner->GetPlayerClass()->GetClassIndex() : TF_CLASS_SCOUT );
+					
+					// Hide cosmetic slots (hat, misc slots)
+					if ( IsMiscSlot( iLoadoutSlot ) || iLoadoutSlot == LOADOUT_POSITION_HEAD )
+					{
+						// Check if unusual effects are enabled AND this item has unusual effects
+						if ( !bf_disable_unusual_effects.GetBool() )
+						{
+							// Check if this item has unusual effects
+							static CSchemaAttributeDefHandle pAttrDef_AttachParticleEffect( "attach particle effect" );
+							uint32 iValue = 0;
+							bool bHasParticleEffect = pItem->FindAttribute( pAttrDef_AttachParticleEffect, &iValue );
+							int iQualityParticleType = pItem->GetQualityParticleType();
+							
+							// If this item has unusual effects, keep the entity visible for the particle effects
+							// but the model will be hidden by InternalDrawModel()
+							if ( (bHasParticleEffect && iValue > 0) || iQualityParticleType > 0 )
+							{
+								return BaseClass::ShouldDraw();
+							}
+						}
+						
+						// Hide the cosmetic completely (no unusual effects or unusual effects are disabled)
+						return false;
+					}
+				}
+			}
+		}
+	}
+#endif
 
 	if ( pOwner )
 	{
@@ -417,6 +513,15 @@ bool CTFWearable::ShouldDrawParticleSystems( void )
 {
 	if ( !BaseClass::ShouldDrawParticleSystems() )
 		return false;
+
+#ifdef CLIENT_DLL
+	// Check if unusual effects should be disabled
+	if ( bf_disable_unusual_effects.GetBool() )
+	{
+		// When unusual effects are disabled, hide ALL particle systems on wearables
+		return false;
+	}
+#endif
 
 	C_TFPlayer *pPlayer = ToTFPlayer( GetOwnerEntity() );
 	bool bStealthed = pPlayer->m_Shared.IsStealthed();

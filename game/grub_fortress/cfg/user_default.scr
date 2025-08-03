@@ -759,6 +759,22 @@ DESCRIPTION INFO_OPTIONS
 		{ "5" }
 	}
 
+	"bf_disable_cosmetics"
+	{
+		"#BF_DisableCosmetics"
+		"#Tooltip_DisableCosmetics"
+		{ BOOL }
+		{ "0" }
+	}
+
+	"bf_disable_unusual_effects"
+	{
+		"#BF_DisableUnusualEffects"
+		"#Tooltip_DisableUnusualEffects"
+		{ BOOL }
+		{ "0" }
+	}
+
 	"category8"
 	{
 		"#TF_OptionCategory_DemoSupport"

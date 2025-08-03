@@ -261,16 +261,6 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 	}
 
 	const char *pszPlayerName = pPlayer ? pPlayer->GetPlayerName():"Console";
-	
-	// Add HOST symbol for server host
-	char szDisplayName[256];
-	if ( pPlayer && !engine->IsDedicatedServer() && pPlayer == UTIL_GetListenServerHost() )
-	{
-		// Add HOST symbol next to host's name
-		Q_snprintf( szDisplayName, sizeof(szDisplayName), "[HOST] %s", pszPlayerName );
-		pszPlayerName = szDisplayName;
-	}
-
 	if ( pszPrefix && strlen( pszPrefix ) > 0 )
 	{
 		if ( pszLocation && strlen( pszLocation ) )

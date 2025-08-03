@@ -9,6 +9,7 @@
 #include "tf_player.h"
 #include "tf_gamerules.h"
 #include "tf_gamestats.h"
+#include "tf_shareddefs.h"
 #include "KeyValues.h"
 #include "viewport_panel_names.h"
 #include "client.h"
@@ -241,7 +242,7 @@ ConVar tf_halloween_giant_health_scale( "tf_halloween_giant_health_scale", "10",
 ConVar tf_grapplinghook_los_force_detach_time( "tf_grapplinghook_los_force_detach_time", "1", FCVAR_CHEAT );
 ConVar tf_powerup_max_charge_time( "tf_powerup_max_charge_time", "30", FCVAR_CHEAT );
 
-ConVar tf_spawn_with_throwable( "tf_spawn_with_throwable", "0", FCVAR_CHEAT );
+ConVar bf_spawn_with_throwable( "bf_spawn_with_throwable", "0", FCVAR_REPLICATED );
 
 extern ConVar tf_powerup_mode;
 extern ConVar tf_mvm_buybacks_method;
@@ -4121,8 +4122,12 @@ void CTFPlayer::Spawn()
 		RemoveAllCustomAttributes();
 
 
-		if ( tf_spawn_with_throwable.GetBool() )
-			GiveItemString( "Throwable Bread" );
+		if ( bf_spawn_with_throwable.GetBool() )
+		{
+			int nClassBread = RandomInt( TF_FIRST_NORMAL_CLASS, TF_LAST_NORMAL_CLASS - 1 );
+			const char *name = g_aRawPlayerClassNamesShort[nClassBread];
+			GiveItemString( CFmtStr( "Bread %s",name) );
+		}
 
 		if ( IsInCommentaryMode() && !IsFakeClient() )
 		{
@@ -13897,7 +13902,29 @@ void CTFPlayer::ClientHearVox( const char *pSentence )
 //-----------------------------------------------------------------------------
 void CTFPlayer::UpdateModel( void )
 {
-	SetModel( GetPlayerClass()->GetModelName() );
+	const char *pszModelName = GetPlayerClass()->GetModelName();
+	
+	// Check if this is a spy disguised as a robot team member in MvM Versus mode
+	if ( IsPlayerClass( TF_CLASS_SPY ) && m_Shared.InCond( TF_COND_DISGUISED ) )
+	{
+		// Check if we're in MvM mode and disguised as the robot team
+		if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && 
+			 m_Shared.GetDisguiseTeam() == TF_TEAM_PVE_INVADERS )
+		{
+			// Use robot model for the disguised class
+			int nDisguiseClass = m_Shared.GetDisguiseClass();
+			if ( nDisguiseClass >= TF_FIRST_NORMAL_CLASS && nDisguiseClass < TF_LAST_NORMAL_CLASS )
+			{
+				// Use the robot model for this class - g_szBotModels is indexed by class number directly
+				if ( nDisguiseClass >= 0 && nDisguiseClass < ARRAYSIZE( g_szBotModels ) )
+				{
+					pszModelName = g_szBotModels[ nDisguiseClass ];
+				}
+			}
+		}
+	}
+
+	SetModel( pszModelName );
 
 	// Immediately reset our collision bounds - our collision bounds will be set to the model's bounds.
 	SetCollisionBounds( GetPlayerMins(), GetPlayerMaxs() );

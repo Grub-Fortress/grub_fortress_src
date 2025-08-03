@@ -17,12 +17,59 @@
 #include "tf_gamerules.h"
 #include "ihudlcd.h"
 #include "tf_hud_freezepanel.h"
+#include "tier1/strtools.h"
 #if defined( REPLAY_ENABLED )
 #include "replay/ienginereplay.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+//-----------------------------------------------------------------------------
+// Client-side role detection functions
+//-----------------------------------------------------------------------------
+int ClientUTIL_PlayerIsModDev( int clientIndex )
+{
+	if ( !g_PR )
+		return 0;
+		
+	// Get the player's Steam ID using the client function
+	CSteamID steamID = GetSteamIDForPlayerIndex( clientIndex );
+	uint64 steamid = steamID.ConvertToUint64();
+	
+	switch(steamid)
+	{
+		//Main Devs
+		case 76561198130175522: // Alien31
+		case 76561198886303174: // main_thing
+		case 76561199004586557: // Vvis
+		case 76561198302570978: // GabenZone
+			return 1;
+		break;
+		//Publishers
+		case 76561198087658491: // MixerRules
+			return 2;
+		break;
+		//Contributors
+		case 76561198813329543: // Grub - it's grubbin time.
+			return 3;
+		break;
+		//None
+		default:
+			return 0;
+		break;
+	}
+}
+
+bool ClientUTIL_IsListenServerHost( int clientIndex )
+{
+	// On dedicated servers, there's no listen server host
+	if ( engine->IsPlayingDemo() || engine->IsPlayingTimeDemo() )
+		return false;
+		
+	// The listen server host is always player index 1
+	return (clientIndex == 1);
+}
 
 DECLARE_HUDELEMENT( CHudChat );
 DECLARE_HUD_MESSAGE( CHudChat, SayText );
@@ -456,4 +503,146 @@ int CHudChat::GetFilterFlags( void )
 	}
 	
 	return iFlags;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Override to add custom tags with colors
+//-----------------------------------------------------------------------------
+void CHudChat::MsgFunc_SayText2( bf_read &msg )
+{
+	// Got message during connection
+	if ( !g_PR )
+		return;
+
+	int client = msg.ReadByte();
+	bool bWantsToChat = msg.ReadByte();
+
+	wchar_t szBuf[6][256];
+	char untranslated_msg_text[256];
+	wchar_t *msg_text = ReadLocalizedString( msg, szBuf[0], sizeof( szBuf[0] ), false, untranslated_msg_text, sizeof( untranslated_msg_text ) );
+
+	// Read chat components
+	ReadChatTextString ( msg, szBuf[1], sizeof( szBuf[1] ) );		// player name
+	ReadChatTextString ( msg, szBuf[2], sizeof( szBuf[2] ) );		// chat text
+	ReadLocalizedString( msg, szBuf[3], sizeof( szBuf[3] ), true );
+	ReadLocalizedString( msg, szBuf[4], sizeof( szBuf[4] ), true );
+
+	if ( bWantsToChat )
+	{
+		int iFilter = CHAT_FILTER_NONE;
+
+		if ( client > 0 && (g_PR->GetTeam( client ) != g_PR->GetTeam( GetLocalPlayerIndex() )) )
+		{
+			iFilter = CHAT_FILTER_PUBLICCHAT;
+		}
+
+		// Build custom colored chat message directly in chat history
+		CHudChatHistory *pChatHistory = GetChatHistory();
+		if ( pChatHistory )
+		{
+			// Insert linebreak first
+			pChatHistory->InsertString( L"\n" );
+			
+			// Add HOST tag if they're the server host
+			if ( client > 0 && ClientUTIL_IsListenServerHost( client ) )
+			{
+				pChatHistory->InsertColorChange( Color( 240, 240, 240, 255 ) ); // #F0F0F0
+				pChatHistory->InsertString( g_pVGuiLocalize->Find( "#TF_Tag_Host" ) );
+				pChatHistory->InsertFade( hud_saytext_time.GetFloat(), CHAT_HISTORY_IDLE_FADE_TIME );
+			}
+			
+			// Add special tag (DEV/Publisher)
+			if ( client > 0 )
+			{
+				int bModDev = ClientUTIL_PlayerIsModDev( client );
+				switch(bModDev)
+				{
+					case 1: // Dev
+						pChatHistory->InsertColorChange( Color( 240, 135, 43, 255 ) ); // #F0872B
+						pChatHistory->InsertString( g_pVGuiLocalize->Find( "#TF_Tag_Dev" ) );
+						pChatHistory->InsertFade( hud_saytext_time.GetFloat(), CHAT_HISTORY_IDLE_FADE_TIME );
+						break;
+					case 2: // Publisher
+						pChatHistory->InsertColorChange( Color( 46, 143, 191, 255 ) ); // #2E8FBF
+						pChatHistory->InsertString( g_pVGuiLocalize->Find( "#TF_Tag_Publisher" ) );
+						pChatHistory->InsertFade( hud_saytext_time.GetFloat(), CHAT_HISTORY_IDLE_FADE_TIME );
+						break;
+					case 3: // Contributor
+						pChatHistory->InsertColorChange( Color( 95, 154, 63, 255 ) ); // #5F9A3F
+						pChatHistory->InsertString(  g_pVGuiLocalize->Find( "#TF_Tag_Contributor" ) );
+						pChatHistory->InsertFade( hud_saytext_time.GetFloat(), CHAT_HISTORY_IDLE_FADE_TIME );
+						break;
+				}
+			}
+			
+			// Add player name with team color
+			pChatHistory->InsertColorChange( GetClientColor( client ) );
+			pChatHistory->InsertString( szBuf[1] );
+			pChatHistory->InsertFade( hud_saytext_time.GetFloat(), CHAT_HISTORY_IDLE_FADE_TIME );
+			
+			// Add separator and chat text
+			pChatHistory->InsertColorChange( GetTextColorForClient( COLOR_NORMAL, client ) );
+			pChatHistory->InsertString( L" : " );
+			pChatHistory->InsertString( szBuf[2] );
+			pChatHistory->InsertFade( hud_saytext_time.GetFloat(), CHAT_HISTORY_IDLE_FADE_TIME );
+		}
+
+		// Also build message for console/ansi output without color codes
+		wchar_t szPlainPlayerName[512];
+		Q_wcsncpy( szPlainPlayerName, L"", sizeof(szPlainPlayerName) );
+		
+		// Add HOST tag
+		if ( client > 0 && ClientUTIL_IsListenServerHost( client ) )
+		{
+			V_wcsncat( szPlainPlayerName, g_pVGuiLocalize->Find( "#TF_Tag_Host" ), ARRAYSIZE(szPlainPlayerName) );
+		}
+		
+		// Add special tag
+		if ( client > 0 )
+		{
+			int bModDev = ClientUTIL_PlayerIsModDev( client );
+			switch(bModDev)
+			{
+				case 1:
+					V_wcsncat( szPlainPlayerName, g_pVGuiLocalize->Find( "#TF_Tag_Dev" ), ARRAYSIZE(szPlainPlayerName) );
+					break;
+				case 2:
+					V_wcsncat( szPlainPlayerName, g_pVGuiLocalize->Find( "#TF_Tag_Publisher" ), ARRAYSIZE(szPlainPlayerName) );
+					break;
+				case 3:
+					V_wcsncat( szPlainPlayerName, g_pVGuiLocalize->Find( "#TF_Tag_Contributor" ), ARRAYSIZE(szPlainPlayerName) );
+					break;
+			}
+		}
+		
+		// Add player name
+		V_wcsncat( szPlainPlayerName, szBuf[1], ARRAYSIZE(szPlainPlayerName) );
+		
+		// Build for console output
+		g_pVGuiLocalize->ConstructString_safe( szBuf[5], msg_text, 4, szPlainPlayerName, szBuf[2], szBuf[3], szBuf[4] );
+		char ansiString[512];
+		g_pVGuiLocalize->ConvertUnicodeToANSI( ConvertCRtoNL( szBuf[ 5 ] ), ansiString, sizeof( ansiString ) );
+
+		UTIL_GetFilteredChatText( client, ansiString, sizeof( ansiString ) );
+		if ( !ansiString[ 0 ] )
+		{
+			// This user has been ignored at the Steam level
+			return;
+		}
+
+		Msg( "%s\n", RemoveColorMarkup(ansiString) );
+
+		CLocalPlayerFilter filter;
+		C_BaseEntity::EmitSound( filter, SOUND_FROM_LOCAL_PLAYER, "HudChat.Message" );
+	}
+	else
+	{
+		// For non-chat messages, use the original approach
+		g_pVGuiLocalize->ConstructString_safe( szBuf[5], msg_text, 4, szBuf[1], szBuf[2], szBuf[3], szBuf[4] );
+		char ansiString[512];
+		g_pVGuiLocalize->ConvertUnicodeToANSI( ConvertCRtoNL( szBuf[ 5 ] ), ansiString, sizeof( ansiString ) );
+		
+		// print raw chat text
+		ChatPrintf( client, GetFilterForString( untranslated_msg_text ), "%s", ansiString );
+	}
 }

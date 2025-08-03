@@ -1020,7 +1020,7 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 		if ( PlayerNameNotSetYet(event->GetString("name")) )
 			return;
 
-		if ( !IsInCommentaryMode() )
+		if ( !IsInCommentaryMode() || !engine->IsLevelMainMenuBackground() )
 		{
 			wchar_t wszLocalized[100];
 			wchar_t wszPlayerName[ MAX_PLAYER_NAME_LENGTH ];
@@ -1050,7 +1050,7 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 		if ( PlayerNameNotSetYet( pszPlayerName ) )
 			return;
 
-		if ( !IsInCommentaryMode() )
+		if ( !IsInCommentaryMode() || !engine->IsLevelMainMenuBackground() )
 		{
 			wchar_t wszPlayerName[MAX_PLAYER_NAME_LENGTH];
 			g_pVGuiLocalize->ConvertANSIToUnicode( pszPlayerName, wszPlayerName, sizeof(wszPlayerName) );
@@ -1125,7 +1125,7 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 			}
 #endif
 
-			if ( !IsInCommentaryMode() && !engine->IsLevelMainMenuBackground() )
+			if ( !IsInCommentaryMode() || !engine->IsLevelMainMenuBackground() )
 			{
 				wchar_t wszLocalized[100];
 				if ( bAutoTeamed )
@@ -1234,7 +1234,7 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 	}
 	else if ( Q_strcmp( "server_cvar", eventname ) == 0 )
 	{
-		if ( !IsInCommentaryMode() )
+		if ( !IsInCommentaryMode() || !engine->IsLevelMainMenuBackground() )
 		{
 			wchar_t wszCvarName[64];
 			g_pVGuiLocalize->ConvertANSIToUnicode( event->GetString("cvarname"), wszCvarName, sizeof(wszCvarName) );
@@ -1260,7 +1260,7 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 		if ( !hudChat || !pPlayer )
 			return;
 
-		if ( !IsInCommentaryMode() )
+		if ( !IsInCommentaryMode() || !engine->IsLevelMainMenuBackground() )
 		{
 			CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>( engine->GetAchievementMgr() );
 			if ( !pAchievementMgr )

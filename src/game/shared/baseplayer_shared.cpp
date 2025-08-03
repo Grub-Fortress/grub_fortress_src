@@ -58,7 +58,7 @@
 #include "tier0/memdbgon.h"
 
 #if defined(GAME_DLL)
-	ConVar sv_infinite_ammo("sv_infinite_ammo", "0", FCVAR_CHEAT | FCVAR_NOTIFY , "Player's active weapon will never run out of ammo");
+	ConVar sv_infinite_ammo("sv_infinite_ammo", "0", FCVAR_REPLICATED | FCVAR_NOTIFY , "Player's active weapon will never run out of ammo");
 #if !defined(_XBOX)
 	extern ConVar sv_pushaway_max_force;
 	extern ConVar sv_pushaway_force;
@@ -340,7 +340,7 @@ void CBasePlayer::ItemPostFrame()
 			);
 		}
 #ifdef TF_DLL
-		// tf: additionally replenish spy cloak, engineer metal, etc. -copperpixel
+		// copperpixel
 		CTFPlayer* pTFPlayer = ToTFPlayer(this);
 		if (pTFPlayer)
 		{
