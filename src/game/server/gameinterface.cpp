@@ -319,7 +319,7 @@ int UTIL_PlayerIsModDev( CBasePlayer *client )
 		break;
 
 //		case 76561199500159028: // Moon - The Linux Guy
-//			return 2; // Contributors
+//			return 3; // Contributors
 //		break;
 
 		default:

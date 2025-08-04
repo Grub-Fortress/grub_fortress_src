@@ -39,22 +39,14 @@ int ClientUTIL_PlayerIsModDev( int clientIndex )
 	
 	switch(steamid)
 	{
-		//Main Devs
-		case 76561198130175522: // Alien31
-		case 76561198886303174: // main_thing
-		case 76561199004586557: // Vvis
-		case 76561198302570978: // GabenZone
-			return 1;
+		case 76561198813329543: // Grub
+			return 1; // Devs
 		break;
-		//Publishers
-		case 76561198087658491: // MixerRules
-			return 2;
-		break;
-		//Contributors
-		case 76561198813329543: // Grub - it's grubbin time.
-			return 3;
-		break;
-		//None
+
+//		case 76561199500159028: // Moon - The Linux Guy
+//			return 3; // Contributors
+//		break;
+
 		default:
 			return 0;
 		break;
