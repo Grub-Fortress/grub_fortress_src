@@ -124,6 +124,11 @@
 #include "tf_mann_vs_machine_stats.h"
 #include "player_vs_environment/tf_upgrades.h"
 #include "player_vs_environment/tf_population_manager.h"
+#include "player_vs_environment/tf_populators.h"
+#include "player_vs_environment/tf_populator_spawners.h"
+#include "econ_item_system.h"
+#include "tf_player_shared.h"
+#include "econ_item_schema.h"
 #include "tf_revive.h"
 #include "tf_logic_halloween_2014.h"
 #include "tf_logic_player_destruction.h"
@@ -204,7 +209,7 @@ ConVar tf_damage_multiplier_red( "tf_damage_multiplier_red", "1.0", FCVAR_CHEAT,
 
 
 ConVar tf_max_voice_speak_delay( "tf_max_voice_speak_delay", "1.5", FCVAR_NOTIFY, "Max time after a voice command until player can do another one");
-extern ConVar tf_voicespam;
+extern ConVar bf_voicespam;
 
 ConVar tf_allow_player_use( "tf_allow_player_use", "0", FCVAR_NOTIFY, "Allow players to execute +use while playing." );
 
@@ -248,9 +253,12 @@ extern ConVar tf_powerup_mode;
 extern ConVar tf_mvm_buybacks_method;
 extern ConVar tf_mvm_buybacks_per_wave;
 extern ConVar tf_mvm_bot_flag_carrier_interval_to_1st_upgrade;
+extern ConVar bf_gamemode_mvmvs;
 extern ConVar tf_mvm_bot_flag_carrier_interval_to_2nd_upgrade;
 extern ConVar tf_mvm_bot_flag_carrier_interval_to_3rd_upgrade;
 extern ConVar tf_mvm_bot_flag_carrier_health_regen;
+extern ConVar bf_mvmvs_playstyle;
+extern ConVar bf_mvmvs_restrict_slots;
 
 #define TF_CANNONBALL_FORCE_SCALE	80.f
 #define TF_CANNONBALL_FORCE_UPWARD	300.f
@@ -779,6 +787,283 @@ END_SEND_TABLE()
 
 //============
 
+// Helper function to count current boss robots on invader team
+int CountBossRobots( int iTeam )
+{
+	int iBossCount = 0;
+	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+	{
+		CTFPlayer *pPlayer = ToTFPlayer( UTIL_PlayerByIndex( i ) );
+		if ( pPlayer && pPlayer->GetTeamNumber() == iTeam && pPlayer->IsAlive() )
+		{
+			// Check if player has boss health bar attribute (indicates boss robot)
+			if ( pPlayer->GetUseBossHealthBar() )
+			{
+				iBossCount++;
+			}
+		}
+	}
+	return iBossCount;
+}
+
+// Helper function to count current giant robots on invader team
+int CountGiantRobots( int iTeam )
+{
+	int iGiantCount = 0;
+	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+	{
+		CTFPlayer *pPlayer = ToTFPlayer( UTIL_PlayerByIndex( i ) );
+		if ( pPlayer && pPlayer->GetTeamNumber() == iTeam && pPlayer->IsAlive() )
+		{
+			// Check if player is a miniboss (giant robot)
+			if ( pPlayer->IsMiniBoss() )
+			{
+				iGiantCount++;
+			}
+		}
+	}
+	return iGiantCount;
+}
+
+// Helper function to check if a spawner creates a boss robot
+bool SpawnerCreatesBoss( CTFBotSpawner *pBotSpawner )
+{
+	if ( !pBotSpawner )
+		return false;
+		
+	// Check if the spawner has the USE_BOSS_HEALTH_BAR attribute
+	return pBotSpawner->HasAttribute( CTFBot::USE_BOSS_HEALTH_BAR );
+}
+
+// Helper function to check if a spawner creates a giant robot
+bool SpawnerCreatesGiant( CTFBotSpawner *pBotSpawner )
+{
+	if ( !pBotSpawner )
+		return false;
+		
+	// Check if the spawner is marked as a miniboss
+	return pBotSpawner->IsMiniBoss();
+}
+
+// Helper functions for MvM Versus popfile robot spawning
+void CollectBotSpawners( IPopulationSpawner *pSpawner, CUtlVector< IPopulationSpawner * > &spawners )
+{
+	if ( !pSpawner )
+		return;
+
+	// Check if this is a TFBot spawner
+	CTFBotSpawner *pBotSpawner = dynamic_cast< CTFBotSpawner * >( pSpawner );
+	if ( pBotSpawner )
+	{
+		spawners.AddToTail( pBotSpawner );
+		return;
+	}
+
+	// Handle RandomChoice spawners - pick from their list
+	CRandomChoiceSpawner *pRandomSpawner = dynamic_cast< CRandomChoiceSpawner * >( pSpawner );
+	if ( pRandomSpawner )
+	{
+		for ( int i = 0; i < pRandomSpawner->m_spawnerVector.Count(); ++i )
+		{
+			CollectBotSpawners( pRandomSpawner->m_spawnerVector[i], spawners );
+		}
+		return;
+	}
+
+	// Handle Squad spawners - add all members
+	CSquadSpawner *pSquadSpawner = dynamic_cast< CSquadSpawner * >( pSpawner );
+	if ( pSquadSpawner )
+	{
+		for ( int i = 0; i < pSquadSpawner->m_memberSpawnerVector.Count(); ++i )
+		{
+			CollectBotSpawners( pSquadSpawner->m_memberSpawnerVector[i], spawners );
+		}
+		return;
+	}
+
+	// Handle Mob spawners - get the inner spawner
+	CMobSpawner *pMobSpawner = dynamic_cast< CMobSpawner * >( pSpawner );
+	if ( pMobSpawner && pMobSpawner->m_spawner )
+	{
+		CollectBotSpawners( pMobSpawner->m_spawner, spawners );
+		return;
+	}
+}
+
+bool ApplySpawnerTemplate( CTFPlayer *pPlayer, IPopulationSpawner *pSpawner )
+{
+	if ( !pPlayer || !pSpawner )
+		return false;
+
+	CTFBotSpawner *pBotSpawner = dynamic_cast< CTFBotSpawner * >( pSpawner );
+	if ( !pBotSpawner )
+		return false;
+
+	const CTFBot::EventChangeAttributes_t &attributes = pBotSpawner->m_defaultAttributes;
+
+	// Apply class if specified (otherwise keep current class)
+	if ( pBotSpawner->m_class != TF_CLASS_UNDEFINED )
+	{
+		// Store current class to see if it's changing
+		int nOldClass = pPlayer->GetPlayerClass()->GetClassIndex();
+		pPlayer->HandleCommand_JoinClass( g_aRawPlayerClassNamesShort[pBotSpawner->m_class] );
+	}
+
+	// Apply scale if specified - do this AFTER class change
+	if ( pBotSpawner->m_scale > 0.0f )
+	{
+		pPlayer->SetModelScale( pBotSpawner->m_scale );
+	}
+
+	// Apply health if specified - cache current health first
+	int nCurrentHealth = pPlayer->GetHealth();
+	int nCurrentMaxHealth = pPlayer->GetMaxHealth();
+	
+	if ( pBotSpawner->m_health > 0 )
+	{
+		// Apply the popfile health directly
+		pPlayer->SetMaxHealth( pBotSpawner->m_health );
+		pPlayer->SetHealth( pBotSpawner->m_health );
+	}
+
+	// Apply character attributes (like damage bonus, speed bonus, etc.)
+	// First, remove any existing player attributes to start clean
+	pPlayer->RemovePlayerAttributes( false );
+	
+	// Check for AlwaysCrit bot attribute (NOT a character attribute)
+	bool bHasAlwaysCrit = pBotSpawner->HasAttribute( CTFBot::ALWAYS_CRIT );
+	if ( bHasAlwaysCrit )
+	{
+		DevMsg( "*** FOUND ALWAYSCRIT BOT ATTRIBUTE ***\n" );
+	}
+	
+	for ( int i = 0; i < attributes.m_characterAttributes.Count(); ++i )
+	{
+		const static_attrib_t &attrib = attributes.m_characterAttributes[i];
+		const CEconItemAttributeDefinition *pDef = attrib.GetAttributeDefinition();
+		if ( pDef )
+		{
+			pPlayer->GetAttributeList()->SetRuntimeAttributeValue( pDef, attrib.m_value.asFloat );
+			
+			// Debug character attributes
+			const char *pszAttrName = pDef->GetDefinitionName();
+			DevMsg( "Character attribute found: '%s' = %f\n", pszAttrName ? pszAttrName : "NULL", attrib.m_value.asFloat );
+		}
+	}
+	
+	// After applying attributes, use ModifyMaxHealth to ensure proper health handling
+	if ( pBotSpawner->m_health > 0 )
+	{
+		pPlayer->ModifyMaxHealth( pBotSpawner->m_health );
+		pPlayer->SetHealth( pBotSpawner->m_health );
+	}
+	
+	// Apply items (weapons and cosmetics)
+	for ( int i = 0; i < attributes.m_items.Count(); ++i )
+	{
+		const char *pszItemName = attributes.m_items[i];
+		if ( pszItemName && *pszItemName )
+		{
+			pPlayer->GiveItemString( pszItemName );
+		}
+	}
+
+	// Apply item-specific attributes after items are equipped
+	for ( int i = 0; i < attributes.m_itemsAttributes.Count(); ++i )
+	{
+		const CTFBot::EventChangeAttributes_t::item_attributes_t &itemAttributes = attributes.m_itemsAttributes[i];
+		const char *pszItemName = itemAttributes.m_itemName.Get();
+		
+		// Find the item definition to match against equipped items
+		CSchemaItemDefHandle itemDef( pszItemName );
+		if ( !itemDef )
+		{
+			Warning( "Unable to find item %s to update attribute.\n", pszItemName ); 
+			continue;
+		}
+
+		// Search through all loadout slots to find the matching item
+		for ( int iItemSlot = LOADOUT_POSITION_PRIMARY; iItemSlot < CLASS_LOADOUT_POSITION_COUNT; iItemSlot++ )
+		{
+			CEconEntity* pEntity = NULL;
+			CEconItemView *pCurItemData = CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot( pPlayer, iItemSlot, &pEntity );
+			if ( pCurItemData && itemDef && ( pCurItemData->GetItemDefIndex() == itemDef->GetDefinitionIndex() ) )
+			{
+				// Apply attributes to this item
+				for ( int iAtt = 0; iAtt < itemAttributes.m_attributes.Count(); ++iAtt )
+				{
+					const static_attrib_t& attrib = itemAttributes.m_attributes[iAtt];
+					CAttributeList *pAttribList = pCurItemData->GetAttributeList();
+					if ( pAttribList )
+					{
+						pAttribList->SetRuntimeAttributeValue( attrib.GetAttributeDefinition(), attrib.m_value.asFloat );
+					}
+				}
+
+				if ( pEntity )
+				{
+					// Update model in case we change style
+					pEntity->UpdateModelToClass();
+				}
+
+				// Move on to the next set of attributes
+				break;
+			}
+		}
+	}
+	
+	// Notify the attribute system that attributes have changed
+	pPlayer->NetworkStateChanged();
+
+	// Apply tags
+	for ( int i = 0; i < attributes.m_tags.Count(); ++i )
+	{
+		const char *pszTag = attributes.m_tags[i];
+		if ( pszTag && *pszTag )
+		{
+			pPlayer->AddTag( pszTag );
+		}
+	}
+
+	// Apply miniboss attributes
+	if ( pBotSpawner->IsMiniBoss() )
+	{
+		pPlayer->SetIsMiniBoss( true );
+		// Apply the tf_mvm_miniboss_scale for giants that don't have explicit scale
+		if ( pBotSpawner->m_scale <= 0.0f )
+		{
+			pPlayer->SetModelScale( tf_mvm_miniboss_scale.GetFloat(), 0 );
+		}
+		pPlayer->MVM_StartIdleSound();
+		TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed( MP_CONCEPT_MVM_GIANT_CALLOUT, TF_TEAM_PVE_DEFENDERS );
+	}
+
+	// Apply gatebot attributes
+	if ( pBotSpawner->HasAttribute( CTFBot::AGGRESSIVE ) ) // Use aggressive as gatebot indicator
+	{
+		pPlayer->AddTag( "bot_gatebot" );
+		const char *className = g_aRawPlayerClassNamesShort[pPlayer->GetPlayerClass()->GetClassIndex()];
+		if ( className )
+		{
+			pPlayer->GiveItemString( CFmtStr( "MvM GateBot Light %s", className ) );
+		}
+	}
+
+	// Apply infinite crits at the very end if AlwaysCrit attribute was found
+	// This ensures it doesn't get cleared by any other systems
+	if ( bHasAlwaysCrit )
+	{
+		DevMsg( "*** APPLYING ALWAYSCRIT - Adding TF_COND_CRITBOOSTED ***\n" );
+		pPlayer->m_Shared.AddCond( TF_COND_CRITBOOSTED, PERMANENT_CONDITION );
+	}
+	else
+	{
+		DevMsg( "No AlwaysCrit attribute found in this robot template\n" );
+	}
+
+	return true;
+}
+
 LINK_ENTITY_TO_CLASS( player, CTFPlayer );
 PRECACHE_REGISTER(player);
 
@@ -1211,6 +1496,7 @@ CTFPlayer::CTFPlayer()
 	m_flNextScorePointForPD = -1;
 
 	m_iPlayerSkinOverride = 0;
+	m_iWeaponSlotRestrictions = 0;
 
 	m_nPrevRoundTeamNum = TEAM_UNASSIGNED;
 	m_flLastDamageResistSoundTime = -1.f;
@@ -1882,7 +2168,7 @@ void CTFPlayer::TFPlayerThink()
 	SetContextThink( &CTFPlayer::TFPlayerThink, gpGlobals->curtime, "TFPlayerThink" );
 	//MVM Versus - Spawn Protection 
 	// TODO: why does this function get called effectively twice? (one here and in MvMDeployBombThink) - main_thing
-	if( TFGameRules()->IsMannVsMachineMode() && tf_gamemode_mvmvs.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsBot() )
+	if( TFGameRules()->IsMannVsMachineMode() && bf_gamemode_mvmvs.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsBot() )
 	{
 		bool bInRespawnRoom = PointInRespawnRoom(this, WorldSpaceCenter(), true);
 		if( bInRespawnRoom )
@@ -1895,7 +2181,7 @@ void CTFPlayer::TFPlayerThink()
 				AddCustomAttribute( "no_attack", 1, 1.0f );
 		}
 	}
-	if( TFGameRules()->IsMannVsMachineMode() && tf_gamemode_mvmvs.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsBot() && !TFGameRules()->InSetup() )
+	if( TFGameRules()->IsMannVsMachineMode() && bf_gamemode_mvmvs.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsBot() && !TFGameRules()->InSetup() )
 	{
 		SetContextThink( &CTFPlayer::MvMDeployBombThink, gpGlobals->curtime, "MvMDeployBombThink" );
 	}
@@ -4184,34 +4470,207 @@ void CTFPlayer::Spawn()
 		ClearTags();
 		if( GetTeamNumber() == TF_TEAM_PVE_INVADERS )
 		{
-
-			//Spawn the player as Gatebot | 50% chance
-			if( tf_mvmvs_use_loadout.GetBool() )
+			// Use new bf_mvmvs_playstyle convar
+			switch( bf_mvmvs_playstyle.GetInt() )
 			{
-				if(random->RandomInt(0,1) == 1)
+				case 0: // Classic - Spawn with loadout, random chances for giants/gatebots
 				{
-					AddTag( "bot_gatebot" );
-					const char *name = g_aRawPlayerClassNamesRandom[nRobotClassIndex];
-					GiveItemString( CFmtStr( "MvM GateBot Light %s",name) );
+					// Get current counts for bosses and giants
+					int iCurrentBosses = CountBossRobots( TF_TEAM_PVE_INVADERS );
+					int iCurrentGiants = CountGiantRobots( TF_TEAM_PVE_INVADERS );
+					int iMaxBosses = bf_mvmvs_max_bosses.GetInt();
+					int iMaxGiants = bf_mvmvs_max_giants.GetInt();
+					
+					//Spawn the player as Gatebot | 50% chance
+					if(random->RandomInt(0,1) == 1)
+					{
+						AddTag( "bot_gatebot" );
+						const char *name = g_aRawPlayerClassNamesRandom[nRobotClassIndex];
+						GiveItemString( CFmtStr( "MvM GateBot Light %s",name) );
+					}
+					//Spawn the player as Miniboss | 50% chance (but respect giant limit)
+					if( random->RandomInt(0,1) == 1 && iCurrentGiants < iMaxGiants )
+					{
+						SetIsMiniBoss( true );
+						MVM_SetMinibossType(); // Apply giant attributes and scaling
+						MVM_StartIdleSound();
+						TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed(MP_CONCEPT_MVM_GIANT_CALLOUT,TF_TEAM_PVE_DEFENDERS);
+						DevMsg( "(VERSUS) Spawned as giant in classic mode (giants: %d/%d)\n", iCurrentGiants + 1, iMaxGiants );
+					}
+					else if( iCurrentGiants >= iMaxGiants )
+					{
+						DevMsg( "(VERSUS) Giant spawn blocked - limit reached (%d/%d)\n", iCurrentGiants, iMaxGiants );
+					}
+					break;
 				}
-				//Spawn the player as Miniboss | 50% chance
-				if(random->RandomInt(0,1) == 1)
+				case 1: // Popfile List - Load robots from current wave
+				default:
 				{
-					MVM_SetMinibossType();
-					MVM_StartIdleSound();
-					TFGameRules()->HaveAllPlayersSpeakConceptIfAllowed(MP_CONCEPT_MVM_GIANT_CALLOUT,TF_TEAM_PVE_DEFENDERS);
+					// Clean up existing robot state BEFORE doing anything else
+					RemoveAllItems();
+					RemoveAllCustomAttributes();
+					ClearTags(); // Clear robot tags like gatebot, etc.
+					
+					// Reset robot-specific states
+					SetIsMiniBoss( false );
+					m_bUseBossHealthBar = false;
+					
+					// Remove all conditions that might persist from previous robot
+					m_Shared.RemoveAllCond();
+					
+					// Force model scale back to normal before class init
+					SetModelScale( 1.0f );
+					
+					// Re-initialize class to get clean state after clearing everything
+					m_bRespawning = true;
+					InitClass();
+					m_bRespawning = false;
+					
+					// Apply team glows again since we cleared conditions
+					m_Shared.AddCond( TF_COND_TEAM_GLOWS, tf_spawn_glows_duration.GetInt() );
+					
+					// Try to load from current wave's popfile robots
+					if ( g_pPopulationManager && g_pPopulationManager->GetCurrentWave() )
+					{
+						CWave *pCurrentWave = g_pPopulationManager->GetCurrentWave();
+						CUtlVector< IPopulationSpawner * > availableSpawners;
+						
+						// Get the player's selected class
+						int nPlayerClass = GetPlayerClass()->GetClassIndex();
+						bool bIsRandomClass = (nPlayerClass == TF_CLASS_RANDOM);
+						
+						// Collect bot spawners from current wave that match the player's class (or all if random)
+						for ( int i = 0; i < pCurrentWave->GetNumWaveSpawns(); ++i )
+						{
+							CWaveSpawnPopulator *pWaveSpawn = pCurrentWave->GetWaveSpawn(i);
+							if ( pWaveSpawn && pWaveSpawn->m_spawner )
+							{
+								CUtlVector< IPopulationSpawner * > waveSpawners;
+								CollectBotSpawners( pWaveSpawn->m_spawner, waveSpawners );
+								
+								// Filter by class if player didn't pick random
+								for ( int j = 0; j < waveSpawners.Count(); ++j )
+								{
+									CTFBotSpawner *pBotSpawner = dynamic_cast< CTFBotSpawner * >( waveSpawners[j] );
+									if ( !pBotSpawner )
+										continue;
+										
+									// If player picked random, include all robots
+									// If player picked specific class, only include robots of that class
+									if ( bIsRandomClass || pBotSpawner->GetClass() == nPlayerClass )
+									{
+										availableSpawners.AddToTail( pBotSpawner );
+										DevMsg( "(VERSUS) Added robot: Class %d (Player wants: %d)\n", 
+											pBotSpawner->GetClass(), nPlayerClass );
+									}
+								}
+								
+								DevMsg( "(VERSUS) Collected spawners from wave spawn %d (Support: %s)\n", 
+									i, pWaveSpawn->IsSupportWave() ? "Yes" : "No" );
+							}
+						}
+						
+						// Add default robots for the selected class (or all classes if random)
+						if ( bIsRandomClass )
+						{
+							// Add default robots for all classes
+							for ( int classIdx = TF_FIRST_NORMAL_CLASS; classIdx < TF_LAST_NORMAL_CLASS; ++classIdx )
+							{
+								// Create a simple default robot spawner for this class
+								DevMsg( "(VERSUS) Adding default robot for class %d\n", classIdx );
+								// We'll handle this in the selection logic below
+							}
+						}
+						else
+						{
+							// Add default robot for the specific class
+							DevMsg( "(VERSUS) Adding default robot for selected class %d\n", nPlayerClass );
+						}
+						
+						DevMsg( "(VERSUS) Total spawners collected from current wave: %d\n", availableSpawners.Count() );
+						
+						// If we have popfile robots, pick from them with limit enforcement
+						if ( availableSpawners.Count() > 0 )
+						{
+							// Get current counts for bosses and giants
+							int iCurrentBosses = CountBossRobots( TF_TEAM_PVE_INVADERS );
+							int iCurrentGiants = CountGiantRobots( TF_TEAM_PVE_INVADERS );
+							int iMaxBosses = bf_mvmvs_max_bosses.GetInt();
+							int iMaxGiants = bf_mvmvs_max_giants.GetInt();
+							
+							// Filter spawners based on limits
+							CUtlVector< IPopulationSpawner * > validSpawners;
+							for ( int j = 0; j < availableSpawners.Count(); ++j )
+							{
+								CTFBotSpawner *pBotSpawner = dynamic_cast< CTFBotSpawner * >( availableSpawners[j] );
+								if ( !pBotSpawner )
+									continue;
+								
+								bool bIsBoss = SpawnerCreatesBoss( pBotSpawner );
+								bool bIsGiant = SpawnerCreatesGiant( pBotSpawner );
+								
+								// Check if this spawner would exceed limits
+								if ( bIsBoss && iCurrentBosses >= iMaxBosses )
+								{
+									DevMsg( "(VERSUS) Skipping boss robot - limit reached (%d/%d)\n", iCurrentBosses, iMaxBosses );
+									continue;
+								}
+								
+								if ( bIsGiant && iCurrentGiants >= iMaxGiants )
+								{
+									DevMsg( "(VERSUS) Skipping giant robot - limit reached (%d/%d)\n", iCurrentGiants, iMaxGiants );
+									continue;
+								}
+								
+								// This spawner is valid
+								validSpawners.AddToTail( availableSpawners[j] );
+							}
+							
+							// Pick from valid popfile spawners
+							if ( validSpawners.Count() > 0 )
+							{
+								int randomIndex = RandomInt( 0, validSpawners.Count() - 1 );
+								IPopulationSpawner *pSelectedSpawner = validSpawners[randomIndex];
+								
+								if ( ApplySpawnerTemplate( this, pSelectedSpawner ) )
+								{
+									DevMsg( "(VERSUS) Successfully applied popfile robot template (bosses: %d/%d, giants: %d/%d)\n", 
+										iCurrentBosses, iMaxBosses, iCurrentGiants, iMaxGiants );
+									
+									// Apply weapon slot restrictions if enabled
+									if ( bf_mvmvs_restrict_slots.GetBool() && bf_mvmvs_playstyle.GetInt() == 1 )
+									{
+										CTFBotSpawner *pBotSpawner = dynamic_cast< CTFBotSpawner * >( pSelectedSpawner );
+										if ( pBotSpawner )
+										{
+											ApplyWeaponSlotRestrictionsFromTemplate( pBotSpawner );
+										}
+									}
+									
+									break; // Success, don't fall back to default
+								}
+								else
+								{
+									DevMsg( "(VERSUS) Failed to apply popfile robot template\n" );
+								}
+							}
+							else
+							{
+								DevMsg( "(VERSUS) No valid popfile robots after applying limits\n" );
+							}
+						}
+						
+						// If no popfile robots were available/valid, spawn as default robot
+						DevMsg( "(VERSUS) Spawning as default robot for class %d\n", nPlayerClass );
+						// Player keeps their loadout - no additional items needed for default robot
+					}
+					else
+					{
+						DevMsg( "(VERSUS) No population manager or current wave - spawning as default robot\n" );
+						// Player keeps their loadout - no additional items needed for default robot
+					}
+					break;
 				}
-			}
-			else
-			{
-				// TODO: Move this keyvalue to tf_population_manager
-				KeyValues *pRobotInfo = new KeyValues( "data" );
-				if (!pRobotInfo->LoadFromFile(g_pFullFileSystem, "scripts/robots_standard.txt", "MOD"))
-					return;
-
-				DevMsg( "(VERSUS) Parsing robot keyvalues...\n" );
-				ParseRobotKeyvalues( pRobotInfo );
-				pRobotInfo->deleteThis();
 			}
 
 			if( g_pPopulationManager->IsPopFileEventType(MVM_EVENT_POPFILE_HALLOWEEN) )
@@ -4661,16 +5120,24 @@ void CTFPlayer::InitClass( void )
 	m_PlayerAnimState->SetWalkSpeed( GetPlayerClass()->GetMaxSpeed() * 0.5 );
 
 	// Give default items for class.
-	// We want to prevent giving items in versus.
-	if( !( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && tf_gamemode_mvmvs.GetBool() && !tf_mvmvs_use_loadout.GetBool() ) || IsFakeClient() )
+	// We want to prevent giving items in versus when using popfile playstyle (1) with bf_mvmvs_use_loadout disabled
+	bool bIsVersusWithPopfileAndNoLoadout = ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && 
+											  GetTeamNumber() == TF_TEAM_PVE_INVADERS && 
+											  bf_gamemode_mvmvs.GetBool() && 
+											  bf_mvmvs_playstyle.GetInt() == 1 && 
+											  !bf_mvmvs_use_loadout.GetBool() );
+	
+	if( !bIsVersusWithPopfileAndNoLoadout || IsFakeClient() )
 	{
 		//DevMsg( "Giving items...\n" );
 		GiveDefaultItems();
 	}
-	else if( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && tf_gamemode_mvmvs.GetBool() && !tf_mvmvs_use_loadout.GetBool() )
+	else if( bIsVersusWithPopfileAndNoLoadout )
 	{
 		//DevMsg( "Removing items...\n" );
 		RemoveAllItems();
+		// Give basic stock weapons when using popfile mode with no loadout
+		GiveDefaultItems();
 	}
 	// Set initial health and armor based on class.
 	// Do it after items have been delivered, so items can modify it
@@ -5339,6 +5806,13 @@ void CTFPlayer::ManageRegularWeapons( TFPlayerClassData_t *pData )
 
 	if ( TFGameRules() && TFGameRules()->GameModeUsesUpgrades() && !IsBot() ) 
 	{
+		// Check if this is MvM Versus mode and player is on Invaders team - clear upgrades before reapplying
+		extern ConVar bf_gamemode_mvmvs;
+		if ( bf_gamemode_mvmvs.GetBool() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && g_pPopulationManager )
+		{
+			g_pPopulationManager->RemovePlayerAndItemUpgradesFromHistory( this );
+		}
+
 		if (  m_Inventory.ClassLoadoutHasChanged( GetPlayerClass()->GetClassIndex() ) 
 		   || ( m_bSwitchedClass )
 		   || ( g_pPopulationManager && g_pPopulationManager->IsRestoringCheckpoint() ) )
@@ -6646,7 +7120,7 @@ int CTFPlayer::GetAutoTeam( int nPreferedTeam /*= TF_TEAM_AUTOASSIGN*/ )
 						}
 					}
 				}
-					return TFGameRules()->GetTeamAssignmentOverride( this, tf_gamemode_mvmvs.GetBool() ? TF_TEAM_PVE_DEFENDERS : nPreferedTeam );
+					return TFGameRules()->GetTeamAssignmentOverride( this, bf_gamemode_mvmvs.GetBool() ? TF_TEAM_PVE_DEFENDERS : nPreferedTeam );
 			}
 		}
 
@@ -6769,7 +7243,7 @@ bool CTFPlayer::ShouldForceAutoTeam( void )
 	if ( mp_forceautoteam.GetBool() )
 		return true;
 
-	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && !tf_gamemode_mvmvs.GetBool() )
+	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && !bf_gamemode_mvmvs.GetBool() )
 		return true;
 
 	if ( TFGameRules() && TFGameRules()->IsCompetitiveMode() )
@@ -7224,6 +7698,13 @@ void CTFPlayer::ChangeTeam( int iTeamNum, bool bAutoTeam, bool bSilent, bool bAu
 	}
 
 	BaseClass::ChangeTeam( iTeamNum, bAutoTeam, bSilent, bAutoBalance );
+
+	// Additional safety check: Clear upgrades when humans join Invaders team in MvM Versus
+	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && bf_gamemode_mvmvs.GetBool() && 
+		 !IsBot() && iTeamNum == TF_TEAM_PVE_INVADERS && g_pPopulationManager )
+	{
+		g_pPopulationManager->RemovePlayerAndItemUpgradesFromHistory( this );
+	}
 
 	if ( TFGameRules() && TFGameRules()->IsInHighlanderMode() )
 	{
@@ -8227,7 +8708,7 @@ bool CTFPlayer::ClientCommand( const CCommand &args )
 
 			if ( bArgsChecked )
 			{
-				if ( TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && tf_gamemode_mvmvs.GetBool() && iBuilding == OBJ_TELEPORTER && iMode == MODE_TELEPORTER_ENTRANCE )
+				if ( TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && bf_gamemode_mvmvs.GetBool() && iBuilding == OBJ_TELEPORTER && iMode == MODE_TELEPORTER_ENTRANCE )
 					return true;
 
 				StartBuildingObjectOfType( iBuilding, iMode );
@@ -20524,7 +21005,7 @@ bool CTFPlayer::CanHearAndReadChatFrom( CBasePlayer *pPlayer )
 		if ( IsHLTV() || IsReplay() )
 			return true;
 		
-		return ( GetTeamNumber() == pPlayer->GetTeamNumber() || tf_gamemode_mvmvs.GetBool() );
+		return ( GetTeamNumber() == pPlayer->GetTeamNumber() || bf_gamemode_mvmvs.GetBool() );
 	}
 
 	if ( pPlayer->m_lifeState != LIFE_ALIVE && m_lifeState == LIFE_ALIVE )
@@ -20786,7 +21267,7 @@ void CTFPlayer::NoteSpokeVoiceCommand(const char* pszScenePlayed)
 	{
 		m_iVoiceSpamCounter++;
 	}
-	if (tf_voicespam.GetBool())
+	if (bf_voicespam.GetBool())
 	{
 		m_flNextVoiceCommandTime = gpGlobals->curtime + tf_max_voice_speak_delay.GetFloat();
 	}
@@ -21353,6 +21834,175 @@ void CTFPlayer::MVM_StopIdleSound(void)
 //-----------------------------------------------------------------------------
 // MVM Versus - Placeholder boss list
 // ----------------------------------------------------------------------------
+void CTFPlayer::MVM_SetMinibossType(void)
+{
+    SetIsMiniBoss(true);
+    if(IsMiniBoss())
+    {
+        AddTag("bot_giant");
+        int iClass = GetPlayerClass()->GetClassIndex();
+        switch(iClass)
+        {
+            case TF_CLASS_HEAVYWEAPONS:
+            {
+                SetHealth(5000);
+                AddCustomAttribute("override footstep sound set",2,-1);
+                AddCustomAttribute("move speed bonus",0.5,-1);
+                AddCustomAttribute("max health additive bonus",4700,-1);
+                AddCustomAttribute("damage force reduction",0.3,-1);
+                AddCustomAttribute("airblast vulnerability multiplier",0.3,-1);
+                break;
+            }
+            case TF_CLASS_SOLDIER:
+            {
+                SetHealth(3800);
+                AddCustomAttribute("override footstep sound set",3,-1);
+                AddCustomAttribute("move speed bonus",0.5,-1);
+                AddCustomAttribute("max health additive bonus",3600,-1);
+                AddCustomAttribute("damage force reduction",0.4,-1);
+                AddCustomAttribute("airblast vulnerability multiplier",0.4,-1);
+                break;
+            }
+            case TF_CLASS_DEMOMAN:
+            {
+                SetHealth(3000);
+                AddCustomAttribute("override footstep sound set",4,-1);
+                AddCustomAttribute("move speed bonus",0.5,-1);
+                AddCustomAttribute("max health additive bonus",2825,-1);
+                AddCustomAttribute("damage force reduction",0.5,-1);
+                AddCustomAttribute("airblast vulnerability multiplier",0.5,-1);
+                break;
+            }
+            case TF_CLASS_SCOUT:
+            {
+                SetHealth(1600);
+                AddCustomAttribute("override footstep sound set",5,-1);
+                AddCustomAttribute("move speed bonus",2,-1);
+                AddCustomAttribute("max health additive bonus",1475,-1);
+                AddCustomAttribute("damage force reduction",0.7,-1);
+                AddCustomAttribute("airblast vulnerability multiplier",0.7,-1);
+                break;
+            }
+            case TF_CLASS_PYRO:
+            {
+                SetHealth(3000);
+                AddCustomAttribute("override footstep sound set",6,-1);
+                AddCustomAttribute("move speed bonus",0.4,-1);
+                AddCustomAttribute("max health additive bonus",2825,-1);
+                AddCustomAttribute("damage force reduction",0.6,-1);
+                AddCustomAttribute("airblast vulnerability multiplier",0.6,-1);
+                break;
+            }
+            default:
+            {
+                return;
+                SetIsMiniBoss(false);
+                break;
+            }
+        }
+        SetModelScale( tf_mvm_miniboss_scale.GetFloat() , 0 );
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+// MVM Versus - Weapon slot restriction functions
+// ----------------------------------------------------------------------------
+bool CTFPlayer::IsWeaponSlotRestricted( int slot ) const
+{
+    // Convert loadout position to restriction flag
+    int slotFlag = 0;
+    switch ( slot )
+    {
+        case LOADOUT_POSITION_PRIMARY:
+            slotFlag = 0x01;
+            break;
+        case LOADOUT_POSITION_SECONDARY:
+            slotFlag = 0x02;
+            break;
+        case LOADOUT_POSITION_MELEE:
+            slotFlag = 0x04;
+            break;
+        default:
+            return false; // Other slots are not restricted
+    }
+    
+    // If no restrictions are set, allow all slots
+    if ( m_iWeaponSlotRestrictions == 0 )
+        return false;
+        
+    // Check if this slot is allowed (bit is set in restrictions)
+    return !(m_iWeaponSlotRestrictions & slotFlag);
+}
+
+void CTFPlayer::RemoveRestrictedWeapons( void )
+{
+    // Remove weapons from restricted slots
+    for ( int iSlot = LOADOUT_POSITION_PRIMARY; iSlot <= LOADOUT_POSITION_MELEE; iSlot++ )
+    {
+        if ( IsWeaponSlotRestricted( iSlot ) )
+        {
+            CTFWeaponBase *pWeapon = dynamic_cast<CTFWeaponBase*>( GetEntityForLoadoutSlot( iSlot ) );
+            if ( pWeapon )
+            {
+                RemovePlayerItem( pWeapon );
+                UTIL_Remove( pWeapon );
+            }
+        }
+    }
+}
+
+void CTFPlayer::ApplyWeaponSlotRestrictionsFromTemplate( CTFBotSpawner *pSpawner )
+{
+    if ( !pSpawner )
+        return;
+        
+    CTFBotSpawner *pBotSpawner = dynamic_cast< CTFBotSpawner * >( pSpawner );
+    if ( !pBotSpawner )
+        return;
+        
+    // Analyze which weapon slots the template uses
+    int nAllowedSlots = 0; // Bitflags for allowed slots
+    const CTFBot::EventChangeAttributes_t &attributes = pBotSpawner->m_defaultAttributes;
+    
+    // Check each item in the template to see which slots it occupies
+    for ( int i = 0; i < attributes.m_items.Count(); ++i )
+    {
+        const char *pszItemName = attributes.m_items[i];
+        if ( pszItemName && *pszItemName )
+        {
+            // Find the item definition to determine its slot
+            CSchemaItemDefHandle itemDef( pszItemName );
+            if ( itemDef )
+            {
+                // Create a CEconItemView to get slot information
+                CEconItemView tempItem;
+                tempItem.Init( itemDef->GetDefinitionIndex(), AE_NORMAL, AE_NORMAL, true );
+                
+                // Cast to CTFItemDefinition to access TF-specific methods
+                const CTFItemDefinition *pTFItemDef = dynamic_cast<const CTFItemDefinition*>( tempItem.GetItemDefinition() );
+                if ( pTFItemDef )
+                {
+                    int iSlot = pTFItemDef->GetLoadoutSlot( GetPlayerClass()->GetClassIndex() );
+                    if ( iSlot >= LOADOUT_POSITION_PRIMARY && iSlot <= LOADOUT_POSITION_MELEE )
+                    {
+                        // Mark this slot as allowed
+                        nAllowedSlots |= (1 << iSlot);
+                        DevMsg( "(VERSUS) Template item '%s' uses slot %d\n", pszItemName, iSlot );
+                    }
+                }
+            }
+        }
+    }
+    
+    // Set weapon slot restrictions based on template
+    SetWeaponSlotRestrictions( nAllowedSlots );
+    DevMsg( "(VERSUS) Set weapon slot restrictions: 0x%02X\n", nAllowedSlots );
+    
+    // Remove weapons from restricted slots
+    RemoveRestrictedWeapons();
+    DevMsg( "(VERSUS) Removed weapons from restricted slots\n" );
+}
 
 void CTFPlayer::ClearTags(void)
 {
@@ -21656,79 +22306,6 @@ void CTFPlayer::MVM_TurnIntoRobot(void)
 			UpdateModel();
 			SetBloodColor(DONT_BLEED);
 		}
-	}
-}
-
-//-----------------------------------------------------------------------------
-// MVM Versus - Placeholder boss list
-// ----------------------------------------------------------------------------
-void CTFPlayer::MVM_SetMinibossType(void)
-{
-	SetIsMiniBoss(true);
-	if(IsMiniBoss())
-	{
-		AddTag("bot_giant");
-		int iClass = GetPlayerClass()->GetClassIndex();
-		switch(iClass)
-		{
-			case TF_CLASS_HEAVYWEAPONS:
-			{
-				SetHealth(5000);
-				AddCustomAttribute("override footstep sound set",2,-1);
-				AddCustomAttribute("move speed bonus",0.5,-1);
-				AddCustomAttribute("max health additive bonus",4700,-1);
-				AddCustomAttribute("damage force reduction",0.3,-1);
-				AddCustomAttribute("airblast vulnerability multiplier",0.3,-1);
-				break;
-			}
-			case TF_CLASS_SOLDIER:
-			{
-				SetHealth(3800);
-				AddCustomAttribute("override footstep sound set",3,-1);
-				AddCustomAttribute("move speed bonus",0.5,-1);
-				AddCustomAttribute("max health additive bonus",3600,-1);
-				AddCustomAttribute("damage force reduction",0.4,-1);
-				AddCustomAttribute("airblast vulnerability multiplier",0.4,-1);
-				break;
-			}
-			case TF_CLASS_DEMOMAN:
-			{
-				SetHealth(3000);
-				AddCustomAttribute("override footstep sound set",4,-1);
-				AddCustomAttribute("move speed bonus",0.5,-1);
-				AddCustomAttribute("max health additive bonus",2825,-1);
-				AddCustomAttribute("damage force reduction",0.5,-1);
-				AddCustomAttribute("airblast vulnerability multiplier",0.5,-1);
-				break;
-			}
-			case TF_CLASS_SCOUT:
-			{
-				SetHealth(1600);
-				AddCustomAttribute("override footstep sound set",5,-1);
-				AddCustomAttribute("move speed bonus",2,-1);
-				AddCustomAttribute("max health additive bonus",1475,-1);
-				AddCustomAttribute("damage force reduction",0.7,-1);
-				AddCustomAttribute("airblast vulnerability multiplier",0.7,-1);
-				break;
-			}
-			case TF_CLASS_PYRO:
-			{
-				SetHealth(3000);
-				AddCustomAttribute("override footstep sound set",6,-1);
-				AddCustomAttribute("move speed bonus",0.4,-1);
-				AddCustomAttribute("max health additive bonus",2825,-1);
-				AddCustomAttribute("damage force reduction",0.6,-1);
-				AddCustomAttribute("airblast vulnerability multiplier",0.6,-1);
-				break;
-			}
-			default:
-			{
-				return;
-				SetIsMiniBoss(false);
-				break;
-			}
-		}
-		SetModelScale( tf_mvm_miniboss_scale.GetFloat() , 0 );
 	}
 }
 //-----------------------------------------------------------------------------

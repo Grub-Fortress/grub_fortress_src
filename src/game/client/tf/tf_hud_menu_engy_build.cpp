@@ -819,7 +819,7 @@ void CHudMenuEngyBuild::ReplaceBuildings( EngyConstructBuilding_t (&targetBuildi
 bool CHudMenuEngyBuild::CanBuild( int iSlot )
 {
 	bool bInTraining = TFGameRules() && TFGameRules()->IsInTraining();
-	bool bInMVMVS = ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && tf_gamemode_mvmvs.GetBool() );
+	bool bInMVMVS = ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && bf_gamemode_mvmvs.GetBool() );
 
 	if ( bInMVMVS )
 	{

@@ -372,6 +372,19 @@ public:
 
 			int nScrollToItem = 0;
 
+			// Check if we're on the robot team in MvM Versus mode
+			bool bMvMMode = TFGameRules() && TFGameRules()->IsMannVsMachineMode();
+			bool bRobotTeam = false;
+			if ( bMvMMode )
+			{
+				// Get the parent CTFClassMenu to check team number
+				CTFClassMenu *pClassMenu = dynamic_cast<CTFClassMenu*>( GetParent() );
+				if ( pClassMenu )
+				{
+					bRobotTeam = ( pClassMenu->GetTeamNumber() == TF_TEAM_PVE_INVADERS );
+				}
+			}
+
 			// Get tip count
 			const wchar_t *wzTipCount = g_pVGuiLocalize->Find( CFmtStr( "ClassTips_%d_Count", iClass ) );
 			int nTipCount = wzTipCount ? _wtoi( wzTipCount ) : 0;
@@ -379,6 +392,7 @@ public:
 			{
 				const wchar_t *pwszText = g_pVGuiLocalize->Find( CFmtStr( "#ClassTips_%d_%d", iClass, iTip ) );
 				const wchar_t *pwszTextMvM = g_pVGuiLocalize->Find( CFmtStr( "#ClassTips_%d_%d_MvM", iClass, iTip ) );
+				const wchar_t *pwszTextRobot = g_pVGuiLocalize->Find( CFmtStr( "#ClassTips_%d_%d_Robot", iClass, iTip ) );
 				wchar_t *pwszIcon = g_pVGuiLocalize->Find( CFmtStr( "ClassTips_%d_%d_Icon", iClass, iTip ) );
 				char szIcon[MAX_PATH];
 
@@ -388,30 +402,36 @@ public:
 					g_pVGuiLocalize->ConvertUnicodeToANSI( pwszIcon, szIcon, sizeof( szIcon ) );
 				}
 
-				// Don't load MvM tips outside the mode
-				if ( pwszTextMvM )
-				{
-					if ( !TFGameRules()->IsMannVsMachineMode() )
-						continue;
+				// Check what type of tips to display based on game mode and team
+				const wchar_t *pwszDisplayText = NULL;
 
+				// Prioritize robot tips if we're on the robot team in MvM
+				if ( bMvMMode && bRobotTeam && pwszTextRobot )
+				{
+					pwszDisplayText = pwszTextRobot;
+					// If we're MvM robot mode, remember first robot tip
+					if ( !nScrollToItem )
+						nScrollToItem = iTip;
+				}
+				// Use MvM tips for human team in MvM mode (only if no robot tips exist)
+				else if ( bMvMMode && !bRobotTeam && pwszTextMvM )
+				{
+					pwszDisplayText = pwszTextMvM;
 					// If we're MvM mode, remember first MvM tip
 					if ( !nScrollToItem )
 						nScrollToItem = iTip;
 				}
+				// Use regular tips for non-MvM modes
+				else if ( !bMvMMode && pwszText )
+				{
+					pwszDisplayText = pwszText;
+				}
 
-				// Create a TipsItemPanel for each tip
-				if ( pwszText || pwszTextMvM )
+				// Create tip panel if we have text to display
+				if ( pwszDisplayText )
 				{
 					CTFClassTipsItemPanel *pClassTipsItemPanel = new CTFClassTipsItemPanel( this, "ClassTipsItemPanel", iTip );
-					if ( pwszText )
-					{
-						pClassTipsItemPanel->SetClassTip( pwszText, szIcon );
-					}
-					else if ( pwszTextMvM )
-					{
-						pClassTipsItemPanel->SetClassTip( pwszTextMvM, szIcon );
-					}
-
+					pClassTipsItemPanel->SetClassTip( pwszDisplayText, szIcon );
 					m_pClassTipsListPanel->AddItem( NULL, pClassTipsItemPanel );
 				}
 			}

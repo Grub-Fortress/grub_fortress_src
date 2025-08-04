@@ -888,9 +888,13 @@ ConVar tf_mvm_buybacks_method( "tf_mvm_buybacks_method", "0", FCVAR_REPLICATED |
 ConVar tf_mvm_buybacks_per_wave( "tf_mvm_buybacks_per_wave", "3", FCVAR_REPLICATED | FCVAR_HIDDEN, "The fixed number of buybacks players can use per-wave." );
 
 //MVM Versus - Convars
-ConVar tf_gamemode_mvmvs( "tf_gamemode_mvmvs", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Enable versus in MvM");
-ConVar tf_mvmvs_robot_stations( "tf_mvmvs_robot_stations", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "Allow Robots to use upgrade stations");
-ConVar tf_mvmvs_use_loadout( "tf_mvmvs_use_loadout", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Robot players will spawn with their loadout items, if not, will be picked from the robot selection list file");
+ConVar bf_gamemode_mvmvs( "bf_gamemode_mvmvs", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Enable versus in MvM");
+ConVar bf_mvmvs_robot_stations( "bf_mvmvs_robot_stations", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "Allow Robots to use upgrade stations");
+ConVar bf_mvmvs_use_loadout( "bf_mvmvs_use_loadout", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Robot players will spawn with their loadout items, if not, will be picked from the robot selection list file");
+ConVar bf_mvmvs_playstyle( "bf_mvmvs_playstyle", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "MvM Versus playstyle: 0 = Classic (spawn with loadout, random giants/gatebots), 1 = Popfile List (load robots from current wave)" );
+ConVar bf_mvmvs_max_bosses( "bf_mvmvs_max_bosses", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Maximum number of human-controlled Boss Robots allowed on the Invader team" );
+ConVar bf_mvmvs_max_giants( "bf_mvmvs_max_giants", "3", FCVAR_REPLICATED | FCVAR_NOTIFY, "Maximum number of human-controlled Giant Robots allowed on the Invader team" );
+ConVar bf_mvmvs_restrict_slots( "bf_mvmvs_restrict_slots", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "If enabled, in playstyle 1, restrict weapon slots to only those equipped for the robot template" );
 
 #ifdef GAME_DLL
 enum { kMVM_CurrencyPackMinSize = 1, };
@@ -18691,7 +18695,7 @@ convar_tags_t convars_to_check_for_tags[] =
 	{ "tf_gamemode_ctf", "ctf", NULL },
 	{ "tf_gamemode_sd", "sd", NULL },
 	{ "tf_gamemode_mvm", "mvm", NULL },
-	{ "tf_gamemode_mvmvs", "versus", NULL },
+	{ "bf_gamemode_mvmvs", "versus", NULL },
 	{ "tf_gamemode_payload", "payload", NULL },
 	{ "tf_gamemode_rd",	"rd", NULL },
 	{ "tf_gamemode_pd",	"pd", NULL },
@@ -21306,7 +21310,7 @@ int CTFGameRules::GetTeamAssignmentOverride( CTFPlayer *pTFPlayer, int iDesiredT
 	int nMatchPlayers = pMatch ? pMatch->GetNumActiveMatchPlayers() : 0;
 	CMatchInfo::PlayerMatchData_t *pMatchPlayer = ( pMatch && steamID.IsValid() ) ? pMatch->GetMatchDataForPlayer( steamID ) : NULL;
 
-	if ( IsMannVsMachineMode() && !tf_gamemode_mvmvs.GetBool() )
+	if ( IsMannVsMachineMode() && !bf_gamemode_mvmvs.GetBool() )
 	{
 		if ( !pTFPlayer->IsBot() && iTeam != TEAM_SPECTATOR )
 		{
@@ -21357,6 +21361,32 @@ int CTFGameRules::GetTeamAssignmentOverride( CTFPlayer *pTFPlayer, int iDesiredT
 				     pTFPlayer->GetPlayerName() );
 				iTeam = TEAM_SPECTATOR;
 			}
+		}
+	}
+	// Handle currency for MvM Versus mode when switching to Defenders
+	else if ( IsMannVsMachineMode() && bf_gamemode_mvmvs.GetBool() && !pTFPlayer->IsBot() && iTeam == TF_TEAM_PVE_DEFENDERS )
+	{
+		// Set currency for players switching to Defenders team in MvM Versus
+		if ( g_pPopulationManager )
+		{
+			int nRoundCurrency = MannVsMachineStats_GetAcquiredCredits();
+			nRoundCurrency += g_pPopulationManager->GetStartingCurrency();
+
+			// deduct any cash that has already been spent
+			int spentCurrency = g_pPopulationManager->GetPlayerCurrencySpent( pTFPlayer );
+			pTFPlayer->SetCurrency( nRoundCurrency - spentCurrency );
+
+			Log( "MVM Versus: Set currency for %s switching to Defenders team: %d\n", pTFPlayer->GetPlayerName(), nRoundCurrency - spentCurrency );
+		}
+	}
+	// Handle MvM Versus mode when switching to Invaders (robots) team
+	else if ( IsMannVsMachineMode() && bf_gamemode_mvmvs.GetBool() && !pTFPlayer->IsBot() && iTeam == TF_TEAM_PVE_INVADERS )
+	{
+		// Clear upgrades when humans join the robots team to prevent exploiting
+		if ( g_pPopulationManager )
+		{
+			g_pPopulationManager->RemovePlayerAndItemUpgradesFromHistory( pTFPlayer );
+			Log( "MVM Versus: Cleared upgrades for %s switching to Invaders team\n", pTFPlayer->GetPlayerName() );
 		}
 	}
 	else if ( pMatch )

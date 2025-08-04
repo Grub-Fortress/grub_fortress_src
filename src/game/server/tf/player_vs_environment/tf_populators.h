@@ -346,6 +346,10 @@ public:
 	int NumEngineersTeleportSpawned( void ) const;
 	void IncrementEngineerTeleportSpawned( void );
 
+	// Access to wave spawners for popfile mode
+	int GetNumWaveSpawns( void ) const { return m_waveSpawnVector.Count(); }
+	CWaveSpawnPopulator *GetWaveSpawn( int index ) const { return m_waveSpawnVector[index]; }
+
 private:
 	bool IsDoneWithNonSupportWaves( void );
 

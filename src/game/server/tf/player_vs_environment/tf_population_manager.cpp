@@ -22,6 +22,9 @@
 #include "tf_gamerules.h"
 #include "econ_item_schema.h"
 #include "tf_upgrades_shared.h"
+#include "entity_capture_flag.h"
+#include "util.h"
+#include "tf_player.h"
 
 #include "etwprof.h"
 
@@ -31,6 +34,7 @@ extern ConVar tf_mvm_respec_limit;
 extern ConVar tf_mvm_respec_credit_goal;
 extern ConVar tf_mvm_buybacks_method;
 extern ConVar tf_mvm_buybacks_per_wave;
+extern ConVar bf_gamemode_mvmvs;
 
 void MvMMissionCycleFileChangedCallback( IConVar *var, const char *pOldString, float flOldValue )
 {
@@ -47,6 +51,8 @@ ConVar tf_populator_active_buffer_range( "tf_populator_active_buffer_range", "30
 
 ConVar tf_mvm_default_sentry_buster_damage_dealt_threshold( "tf_mvm_default_sentry_buster_damage_dealt_threshold", "3000", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY );
 ConVar tf_mvm_default_sentry_buster_kill_threshold( "tf_mvm_default_sentry_buster_kill_threshold", "15", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY );
+
+ConVar bf_mvmvs_invader_bomb_chance ( "bf_mvmvs_invader_bomb_chance ", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Allow Invaders team players to get the bomb at wave start in MvM Versus mode" );
 
 
 void MinibossScaleChangedCallBack( IConVar *pVar, const char *pOldString, float flOldValue )
@@ -1066,6 +1072,11 @@ void CPopulationManager::StartCurrentWave( void )
 
 	TFGameRules()->State_Transition( GR_STATE_RND_RUNNING );
 
+	// Give Invaders team players a chance to get the bomb at wave start in MvM Versus mode
+	if ( TFGameRules()->IsMannVsMachineMode() && bf_gamemode_mvmvs.GetBool() && bf_mvmvs_invader_bomb_chance .GetBool() )
+	{
+		GiveBombToRandomInvader();
+	}
 
 	m_nRespecsAwardedInWave = 0;
 
@@ -2713,4 +2724,134 @@ bool CPopulationManager::HasEventChangeAttributes( const char* pszEventName ) co
 	}
 
 	return pBots->Count();
+}
+
+//-------------------------------------------------------------------------
+// Purpose: Give the bomb to a random Invaders team player at wave start in MvM Versus mode
+//-------------------------------------------------------------------------
+void CPopulationManager::GiveBombToRandomInvader( void )
+{
+	// Debug output
+	DevMsg( "GiveBombToRandomInvader: Starting bomb distribution for MvM Versus\n" );
+
+	// Find the bomb (flag) entity - look for any flag first
+	CCaptureFlag *pBomb = NULL;
+	int flagCount = 0;
+	for ( CCaptureFlag *pFlag = (CCaptureFlag *)gEntList.FindEntityByClassname( NULL, "item_teamflag" ); 
+		  pFlag != NULL; 
+		  pFlag = (CCaptureFlag *)gEntList.FindEntityByClassname( pFlag, "item_teamflag" ) )
+	{
+		flagCount++;
+		DevMsg( "Found flag %d, type: %d, team: %d\n", flagCount, pFlag->GetType(), pFlag->GetTeamNumber() );
+		
+		// In MvM, the bomb is typically a CTF flag or neutral flag
+		if ( pFlag->GetType() == TF_FLAGTYPE_CTF || pFlag->GetType() == TF_FLAGTYPE_ATTACK_DEFEND )
+		{
+			pBomb = pFlag;
+			DevMsg( "Selected flag as bomb\n" );
+			break;
+		}
+	}
+
+	if ( !pBomb )
+	{
+		DevMsg( "GiveBombToRandomInvader: No bomb flag found (checked %d flags)\n", flagCount );
+		return;
+	}
+
+	// Collect all living Invaders team players
+	CUtlVector<CTFPlayer *> invaderPlayers;
+	int totalPlayers = 0;
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		CTFPlayer *pPlayer = ToTFPlayer( UTIL_PlayerByIndex( i ) );
+		if ( !pPlayer || !pPlayer->IsPlayer() )
+			continue;
+
+		totalPlayers++;
+
+		if ( !pPlayer->IsConnected() )
+		{
+			DevMsg( "Player %d not connected\n", i );
+			continue;
+		}
+
+		DevMsg( "Player %d: team %d, class %d, alive %d\n", i, pPlayer->GetTeamNumber(), 
+			pPlayer->GetPlayerClass()->GetClassIndex(), pPlayer->IsAlive() );
+
+		if ( pPlayer->GetTeamNumber() != TF_TEAM_PVE_INVADERS )
+			continue;
+
+		if ( pPlayer->GetPlayerClass()->GetClassIndex() == TF_CLASS_UNDEFINED )
+			continue;
+
+		if ( !pPlayer->IsAlive() )
+			continue;
+
+		invaderPlayers.AddToTail( pPlayer );
+		DevMsg( "Added invader player %d to list\n", i );
+	}
+
+	DevMsg( "GiveBombToRandomInvader: Found %d valid invaders out of %d total players\n", 
+		invaderPlayers.Count(), totalPlayers );
+
+	if ( invaderPlayers.Count() == 0 )
+	{
+		DevMsg( "GiveBombToRandomInvader: No valid Invaders players found\n" );
+		return;
+	}
+
+	// Don't reset the bomb, just try to give it directly
+	// pBomb->ResetFlag();
+
+	// Select a random Invaders player to give the bomb to
+	int randomIndex = RandomInt( 0, invaderPlayers.Count() - 1 );
+	CTFPlayer *pChosenPlayer = invaderPlayers[randomIndex];
+
+	DevMsg( "GiveBombToRandomInvader: Chose player %d (index %d of %d)\n", 
+		pChosenPlayer ? pChosenPlayer->entindex() : -1, randomIndex, invaderPlayers.Count() );
+
+	// Give the bomb to the chosen player
+	if ( pChosenPlayer && pChosenPlayer->IsAlive() )
+	{
+		DevMsg( "GiveBombToRandomInvader: About to give bomb to player %s\n", pChosenPlayer->GetPlayerName() );
+		
+		// Reset the bomb to its home position first to ensure it's in a clean state
+		pBomb->ResetFlag();
+		
+		// Wait a frame for the reset to complete, then force pickup
+		// Move the bomb to the player's position
+		Vector playerPos = pChosenPlayer->WorldSpaceCenter();
+		pBomb->SetAbsOrigin( playerPos );
+		
+		// Use the proper pickup method that handles all the visual and gameplay states
+		pBomb->PickUp( pChosenPlayer, true ); // silent = true to avoid normal pickup sound/effects
+		
+		// Ensure the bomb is properly attached and visible
+		if ( pChosenPlayer->GetItem() == pBomb )
+		{
+			// Force the flag to be visible and properly attached
+			pBomb->SetRenderMode( kRenderNormal );
+			pBomb->SetRenderColorA( 255 );
+			pBomb->RemoveEffects( EF_NODRAW );
+			pBomb->RemoveSolidFlags( FSOLID_NOT_SOLID );
+			
+			// Make sure the flag follows the player properly
+			pBomb->SetMoveType( MOVETYPE_NONE );
+			pBomb->SetParent( (CBaseEntity*)pChosenPlayer );
+			
+			DevMsg( "GiveBombToRandomInvader: Successfully gave bomb to player %s\n", pChosenPlayer->GetPlayerName() );
+			
+			// Send a message to all players
+			DevMsg( "GiveBombToRandomInvader: Player %s has received the bomb!\n", pChosenPlayer->GetPlayerName() );
+		}
+		else
+		{
+			DevMsg( "GiveBombToRandomInvader: Pickup failed\n" );
+		}
+	}
+	else
+	{
+		DevMsg( "GiveBombToRandomInvader: Failed to give bomb - player invalid or dead\n" );
+	}
 }

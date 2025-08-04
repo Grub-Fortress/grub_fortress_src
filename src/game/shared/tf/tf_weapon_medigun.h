@@ -121,6 +121,7 @@ public:
 	void			ManageChargeEffect( void );
 
 	void			UpdateMedicAutoCallers( void );
+	void			UpdateCritHealIndicators( void );
 #else
 
 	void			HealTargetThink( void );
@@ -239,6 +240,8 @@ protected:
 
 	CUtlVector< int >	m_iAutoCallers;
 	float				m_flAutoCallerCheckTime;
+	CUtlVector< int >	m_iCritHealIndicators;
+	float				m_flCritHealCheckTime;
 #endif
 
 private:														

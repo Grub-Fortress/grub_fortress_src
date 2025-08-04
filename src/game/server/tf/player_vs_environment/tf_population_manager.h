@@ -74,6 +74,9 @@ public:
 
 	CWave *GetCurrentWave( void );
 
+	// MvM Versus bomb distribution
+	void GiveBombToRandomInvader( void );
+
 	int	 GetWaveNumber( void ) { return m_iCurrentWaveIndex; }
 	int GetTotalWaveCount( void ) { return m_waveVector.Count(); }
 

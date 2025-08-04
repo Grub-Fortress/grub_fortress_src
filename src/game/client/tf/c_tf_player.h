@@ -230,6 +230,11 @@ public:
 	void CreateSaveMeEffect( MedicCallerType nType = CALLER_TYPE_NORMAL );
 	void StopSaveMeEffect( bool bForceRemoveInstantly = false );
 
+	void CreateCritHealIndicator();
+	void StopCritHealIndicator();
+	float GetLastDamageTime() const { return m_flLastDamageTime; }
+	bool ShouldShowCritHealIndicator() const { return m_bShowCritHealIndicator; }
+
 	void CreateTauntWithMeEffect();
 	void StopTauntWithMeEffect();
 
@@ -596,6 +601,7 @@ private:
 
 	// Medic callout particle effect
 	CNewParticleEffect	*m_pSaveMeEffect;
+	CNewParticleEffect	*m_pCritHealIndicator;
 	CNewParticleEffect	*m_pTauntWithMeEffect;
 
 	bool m_bUpdateObjectHudState;
@@ -662,6 +668,9 @@ public:
 	RuneTypes_t		m_eDisplayingRuneIcon;
 
 	float			m_flMvMLastDamageTime;
+	float			m_flLastDamageTime;		// Client-side damage tracking for crit heal indicator
+	int				m_iLastHealth;			// Track health changes to detect damage
+	bool			m_bShowCritHealIndicator;	// Flag to show crit heal indicator
 	int				m_iSpawnCounter;
 	bool			m_bArenaSpectator;
 

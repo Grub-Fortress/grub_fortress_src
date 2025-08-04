@@ -415,7 +415,7 @@ bool CObjectTeleporter::IsPlacementPosValid( void )
 
 	// m_vecBuildOrigin is the proposed build origin
 
-	if( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && tf_gamemode_mvmvs.GetBool())
+	if( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && bf_gamemode_mvmvs.GetBool())
 	{
 		if ( PointInFlagDetectionZone( m_vecBuildOrigin, this ) )
 			return false;
@@ -456,7 +456,7 @@ void CObjectTeleporter::OnGoActive( void )
 	m_flLastStateChangeTime = 0.0f;	// used as a flag to initialize the playback rate to 0 in the first DeterminePlaybackRate
 
 	// Handle bot spawn teleporters in versus
-	if ( GetBuilder() && GetBuilder()->GetTeamNumber() == TF_TEAM_PVE_INVADERS && !GetBuilder()->IsBot() && !IsEntrance() && TFGameRules() && TFGameRules()->IsMannVsMachineMode() && tf_gamemode_mvmvs.GetBool() )
+	if ( GetBuilder() && GetBuilder()->GetTeamNumber() == TF_TEAM_PVE_INVADERS && !GetBuilder()->IsBot() && !IsEntrance() && TFGameRules() && TFGameRules()->IsMannVsMachineMode() && bf_gamemode_mvmvs.GetBool() )
 	{
 		CUtlStringList spawnPoints;
 		for ( int i=0; i<ITFTeamSpawnAutoList::AutoList().Count(); ++i )

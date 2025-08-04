@@ -3899,7 +3899,11 @@ C_TFPlayer::C_TFPlayer() :
 	m_flBurnEffectStartTime = 0;
 	m_pDisguisingEffect = NULL;
 	m_pSaveMeEffect = NULL;
+	m_pCritHealIndicator = NULL;
 	m_pTauntWithMeEffect = NULL;
+	m_flLastDamageTime = 0.0f;
+	m_iLastHealth = 0;
+	m_bShowCritHealIndicator = false;
 	m_hOldObserverTarget = NULL;
 	m_iOldObserverMode = OBS_MODE_NONE;
 	m_pStunnedEffect = NULL;
@@ -4594,6 +4598,15 @@ void C_TFPlayer::OnDataChanged( DataUpdateType_t updateType )
 		}
 
 		m_Shared.OnDataChanged();
+
+		// Track damage for crit heal indicator
+		int iCurrentHealth = GetHealth();
+		if ( updateType != DATA_UPDATE_CREATED && m_iLastHealth > 0 && iCurrentHealth < m_iLastHealth )
+		{
+			// Player took damage (health decreased)
+			m_flLastDamageTime = gpGlobals->curtime;
+		}
+		m_iLastHealth = iCurrentHealth;
 
 		if ( m_bDisguised != m_Shared.InCond( TF_COND_DISGUISED ) )
 		{
@@ -6004,6 +6017,7 @@ void C_TFPlayer::ClientThink()
 		( m_Shared.InCond( TF_COND_DISGUISED ) && IsEnemyPlayer() && ( GetPercentInvisible() > 0 ) ) )
 	{
 		StopSaveMeEffect( true );
+		StopCritHealIndicator();
 		ParticleProp()->StopParticlesNamed( "bot_eye_glow", true );
 	}
 
@@ -8283,6 +8297,67 @@ void C_TFPlayer::StopSaveMeEffect( bool bForceRemoveInstantly /*= false*/ )
 		}
 		
 		m_pSaveMeEffect = NULL;
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void C_TFPlayer::CreateCritHealIndicator()
+{
+	// Don't create them for the local player in first-person view.
+	if ( IsLocalPlayer() && InFirstPersonView() )
+		return;
+
+	C_TFPlayer *pLocalPlayer = C_TFPlayer::GetLocalTFPlayer();
+	if ( !pLocalPlayer || !pLocalPlayer->IsPlayerClass( TF_CLASS_MEDIC ) )
+		return;
+
+	// Only show for teammates
+	if ( pLocalPlayer->GetTeamNumber() != GetTeamNumber() )
+		return;
+
+	// Set flag to show the indicator - we'll handle the actual rendering elsewhere
+	m_bShowCritHealIndicator = true;
+	
+	// For now, also create a temporary particle effect until we implement proper rendering
+	StopCritHealIndicator();
+	
+	// Use team-specific crit heal particle effects
+	const char *pszParticleName = NULL;
+	if ( GetTeamNumber() == TF_TEAM_RED )
+	{
+		pszParticleName = "speech_mediccall_crit_red";
+	}
+	else if ( GetTeamNumber() == TF_TEAM_BLUE )
+	{
+		pszParticleName = "speech_mediccall_crit_blu";
+	}
+	
+	if ( pszParticleName )
+	{
+		m_pCritHealIndicator = ParticleProp()->Create( pszParticleName, PATTACH_POINT_FOLLOW, "head" );
+		
+		if ( m_pCritHealIndicator )
+		{
+			// Set a distinct yellow color to indicate "ready for crit heal"
+			Vector vCritHealColor( 1.0f, 1.0f, 0.0f ); // Bright yellow for crit heal ready
+			m_pCritHealIndicator->SetControlPoint( 1, vCritHealColor );
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void C_TFPlayer::StopCritHealIndicator()
+{
+	m_bShowCritHealIndicator = false;
+	
+	if ( m_pCritHealIndicator )
+	{
+		ParticleProp()->StopEmission( m_pCritHealIndicator );
+		m_pCritHealIndicator = NULL;
 	}
 }
 

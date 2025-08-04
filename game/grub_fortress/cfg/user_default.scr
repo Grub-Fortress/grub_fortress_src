@@ -327,6 +327,14 @@ DESCRIPTION INFO_OPTIONS
 		{ SLIDER 10 99 }
 		{ "75" }
 	}
+	
+	"bf_medic_show_crit_heal_indicator"
+	{
+		"#TF_MedicShowCritHealIndicator"
+		"#Tooltip_MedicShowCritHealIndicator"
+		{ BOOL }
+		{ "1" }
+	}
 		
 	"category4"
 	{

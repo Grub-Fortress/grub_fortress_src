@@ -35,6 +35,7 @@ class CTFReviveMarker;
 class CWaveSpawnPopulator;
 class CTFTauntProp;
 class CTFDroppedWeapon;
+class CTFBotSpawner;
 
 extern const float tf_afterburn_max_duration;
 
@@ -648,6 +649,7 @@ public:
 	//MVM Versus - Ported bot exclusive stuff
 	void MVM_StartIdleSound(void);
 	void MVM_SetMinibossType(void);
+	void FillMissingWeaponsWithStock(void); // Applies bot template configuration based on class
 	void ParseRobotKeyvalues( KeyValues *kvClass );
 	void ParseRobotCharacterAttributes( KeyValues *data );
 	void ParseRobotItemAttributes( KeyValues *data );
@@ -673,6 +675,7 @@ public:
 	void ApplyGenericPushbackImpulse( const Vector &vecImpulse, CTFPlayer *pAttacker );
 
 	void SetUseBossHealthBar( bool bUseBossHealthBar ) { m_bUseBossHealthBar = bUseBossHealthBar; }
+	bool GetUseBossHealthBar( void ) const { return m_bUseBossHealthBar; }
 
 	void SetUsingVRHeadset( bool bState ){ m_bUsingVRHeadset = bState; }
 
@@ -1575,6 +1578,13 @@ public:
 	float GetLastAutobalanceTime() { return m_flLastAutobalanceTime; }
 	bool IsMaxHealthDraining( void ) { return m_nMaxHealthDrainBucket != 0.0; }
 
+	// MvM Versus - Weapon slot restrictions
+	void SetWeaponSlotRestrictions( int restrictionFlags ) { m_iWeaponSlotRestrictions = restrictionFlags; }
+	void ClearWeaponSlotRestrictions( void ) { m_iWeaponSlotRestrictions = 0; }
+	bool IsWeaponSlotRestricted( int slot ) const;
+	void RemoveRestrictedWeapons( void );
+	void ApplyWeaponSlotRestrictionsFromTemplate( CTFBotSpawner *pSpawner );
+
 private:
 	bool PickupWeaponFromOther( CTFDroppedWeapon *pDroppedWeapon );
 	bool TryToPickupDroppedWeapon();
@@ -1610,6 +1620,9 @@ private:
 
 	CNetworkVar( int, m_iPlayerSkinOverride );
 	CNetworkVar( bool, m_bIsRobot );
+
+	// MvM Versus - Weapon slot restriction flags
+	int m_iWeaponSlotRestrictions;
 
 	CUtlMap<int, float> m_PlayersExtinguished;	// userID and most recent time they were extinguished for bonus points
 

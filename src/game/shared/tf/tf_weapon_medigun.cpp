@@ -203,6 +203,7 @@ extern ConVar tf_max_health_boost;
 ConVar hud_medicautocallers( "hud_medicautocallers", "0", FCVAR_ARCHIVE | FCVAR_ARCHIVE_XBOX );
 ConVar hud_medicautocallersthreshold( "hud_medicautocallersthreshold", "75", FCVAR_ARCHIVE | FCVAR_ARCHIVE_XBOX );
 ConVar hud_medichealtargetmarker ( "hud_medichealtargetmarker", "0", FCVAR_ARCHIVE | FCVAR_ARCHIVE_XBOX );
+ConVar bf_medic_show_crit_heal_indicator( "bf_medic_show_crit_heal_indicator", "1", FCVAR_ARCHIVE | FCVAR_USERINFO, "Show critical heal indicators above patients who haven't taken damage recently while playing as Medic." );
 #endif
 
 const char *g_pszMedigunHealSounds[] =
@@ -255,6 +256,7 @@ CWeaponMedigun::~CWeaponMedigun()
 	}
 
 	m_flAutoCallerCheckTime = 0.0f;
+	m_flCritHealCheckTime = 0.0f;
 #endif
 }
 
@@ -2574,6 +2576,103 @@ void CWeaponMedigun::UpdateMedicAutoCallers( void )
 		// Throttle this check
 		m_flAutoCallerCheckTime = gpGlobals->curtime + 0.25f;
 	}
+
+	// Update crit heal indicators
+	UpdateCritHealIndicators();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Show crit heal indicators for patients ready for critical healing
+//-----------------------------------------------------------------------------
+void CWeaponMedigun::UpdateCritHealIndicators( void )
+{
+#ifdef CLIENT_DLL
+	if ( !bf_medic_show_crit_heal_indicator.GetBool() )
+		return;
+
+	// Find teammates that can be crit healed
+	if ( gpGlobals->curtime > m_flCritHealCheckTime )
+	{
+		if ( !g_TF_PR )
+		{
+			return;
+		}
+
+		C_TFPlayer *pLocalPlayer = C_TFPlayer::GetLocalTFPlayer();
+		
+		// Only show indicators when playing as medic
+		if ( !pLocalPlayer || !pLocalPlayer->IsPlayerClass( TF_CLASS_MEDIC ) )
+		{
+			return;
+		}
+
+		for( int playerIndex = 1; playerIndex <= MAX_PLAYERS; playerIndex++ )
+		{
+			C_TFPlayer *pPlayer = ToTFPlayer( UTIL_PlayerByIndex( playerIndex ) );
+			if ( pPlayer )
+			{
+				// Don't do this for the local player
+				if ( pPlayer == pLocalPlayer )
+					continue;
+
+				// Only show for teammates
+				if ( pPlayer->GetTeamNumber() != GetLocalPlayerTeam() )
+					continue;
+
+				if ( pPlayer->IsAlive() && !pPlayer->IsPlayerDead() )
+				{
+					// Check if player hasn't taken damage recently (15+ seconds for full crit heal benefit)
+					float flTimeSinceLastDamage = gpGlobals->curtime - pPlayer->GetLastDamageTime();
+					
+					// Show crit heal indicator if player hasn't taken damage in 15+ seconds
+					// TF2 crit heal mechanics: 10 seconds for start, 15 seconds for full crit heal bonus
+					bool bCanBeCritHealed = (flTimeSinceLastDamage >= 15.0f);
+					
+					if ( bCanBeCritHealed )
+					{
+						// Make sure we're not already tracking this
+						if ( m_iCritHealIndicators.Find( playerIndex ) != m_iCritHealIndicators.InvalidIndex() )
+							continue;
+
+						// Distance check - don't show for players too far away
+						float flDistSq = pPlayer->GetAbsOrigin().DistToSqr( pLocalPlayer->GetAbsOrigin() );
+						if ( flDistSq >= 1000000 ) // 1000 units
+						{
+							continue;
+						}
+
+						// Create the crit heal indicator
+						pPlayer->CreateCritHealIndicator();
+
+						// Track this player so we don't re-add them
+						m_iCritHealIndicators.AddToTail( playerIndex );
+					}
+					else
+					{
+						// Player has taken recent damage, remove indicator if present
+						if ( m_iCritHealIndicators.Find( playerIndex ) != m_iCritHealIndicators.InvalidIndex() )
+						{
+							pPlayer->StopCritHealIndicator();
+							m_iCritHealIndicators.FindAndRemove( playerIndex );
+						}
+					}
+				}
+				else
+				{
+					// Player is dead, remove indicator if present
+					if ( m_iCritHealIndicators.Find( playerIndex ) != m_iCritHealIndicators.InvalidIndex() )
+					{
+						pPlayer->StopCritHealIndicator();
+						m_iCritHealIndicators.FindAndRemove( playerIndex );
+					}
+				}
+			}
+		}
+
+		// Throttle this check
+		m_flCritHealCheckTime = gpGlobals->curtime + 0.25f;
+	}
+#endif
 }
 #endif
 
