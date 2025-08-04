@@ -888,13 +888,13 @@ ConVar tf_mvm_buybacks_method( "tf_mvm_buybacks_method", "0", FCVAR_REPLICATED |
 ConVar tf_mvm_buybacks_per_wave( "tf_mvm_buybacks_per_wave", "3", FCVAR_REPLICATED | FCVAR_HIDDEN, "The fixed number of buybacks players can use per-wave." );
 
 //MVM Versus - Convars
-ConVar bf_gamemode_mvmvs( "bf_gamemode_mvmvs", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Enable versus in MvM");
-ConVar bf_mvmvs_robot_stations( "bf_mvmvs_robot_stations", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "Allow Robots to use upgrade stations");
-ConVar bf_mvmvs_use_loadout( "bf_mvmvs_use_loadout", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Robot players will spawn with their loadout items, if not, will be picked from the robot selection list file");
-ConVar bf_mvmvs_playstyle( "bf_mvmvs_playstyle", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "MvM Versus playstyle: 0 = Classic (spawn with loadout, random giants/gatebots), 1 = Popfile List (load robots from current wave)" );
-ConVar bf_mvmvs_max_bosses( "bf_mvmvs_max_bosses", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Maximum number of human-controlled Boss Robots allowed on the Invader team" );
-ConVar bf_mvmvs_max_giants( "bf_mvmvs_max_giants", "3", FCVAR_REPLICATED | FCVAR_NOTIFY, "Maximum number of human-controlled Giant Robots allowed on the Invader team" );
-ConVar bf_mvmvs_restrict_slots( "bf_mvmvs_restrict_slots", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "If enabled, in playstyle 1, restrict weapon slots to only those equipped for the robot template" );
+ConVar bf_gamemode_mvmvs( "bf_gamemode_mvmvs", "0", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "Enable versus in MvM");
+ConVar bf_mvmvs_robot_stations( "bf_mvmvs_robot_stations", "0", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "Allow Robots to use upgrade stations");
+ConVar bf_mvmvs_use_loadout( "bf_mvmvs_use_loadout", "1", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "Robot players will spawn with their loadout items, if not, will be picked from the robot selection list file");
+ConVar bf_mvmvs_playstyle( "bf_mvmvs_playstyle", "0", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "MvM Versus playstyle: 0 = Classic (spawn with loadout, random giants/gatebots), 1 = Popfile List (load robots from current wave)" );
+ConVar bf_mvmvs_max_bosses( "bf_mvmvs_max_bosses", "1", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "Maximum number of human-controlled Boss Robots allowed on the Invader team" );
+ConVar bf_mvmvs_max_giants( "bf_mvmvs_max_giants", "3", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "Maximum number of human-controlled Giant Robots allowed on the Invader team" );
+ConVar bf_mvmvs_restrict_slots( "bf_mvmvs_restrict_slots", "1", FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DEVELOPMENTONLY, "If enabled, in playstyle 1, restrict weapon slots to only those equipped for the robot template" );
 
 #ifdef GAME_DLL
 enum { kMVM_CurrencyPackMinSize = 1, };
