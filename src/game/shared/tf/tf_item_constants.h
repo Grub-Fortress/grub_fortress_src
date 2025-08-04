@@ -63,9 +63,6 @@ enum loadout_positions_t
 	// other
 	LOADOUT_POSITION_ACTION,
 
-	// Special skin slot for whole body cosmetics
-	LOADOUT_POSITION_SKIN,
-
 	// More wearables, yay!
 	LOADOUT_POSITION_MISC2,
 
@@ -140,7 +137,6 @@ inline bool IsWearableSlot( int iSlot )
 	return iSlot == LOADOUT_POSITION_HEAD
 		|| iSlot == LOADOUT_POSITION_MISC
 		|| iSlot == LOADOUT_POSITION_ACTION
-		|| iSlot == LOADOUT_POSITION_SKIN
 		|| IsMiscSlot( iSlot )
 		|| IsTauntSlot( iSlot );
 }
