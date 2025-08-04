@@ -346,6 +346,8 @@ public:
 	int NumEngineersTeleportSpawned( void ) const;
 	void IncrementEngineerTeleportSpawned( void );
 
+	//Vscript function; Arbitary forces the win senario. Doesn't compenstates for money unearned
+	void ForceWin();
 	// Access to wave spawners for popfile mode
 	int GetNumWaveSpawns( void ) const { return m_waveSpawnVector.Count(); }
 	CWaveSpawnPopulator *GetWaveSpawn( int index ) const { return m_waveSpawnVector[index]; }

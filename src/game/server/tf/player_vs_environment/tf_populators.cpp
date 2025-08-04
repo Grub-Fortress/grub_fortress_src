@@ -1962,6 +1962,27 @@ void CWave::ForceReset()
 	}
 }
 
+void CWave::ForceWin()
+{
+	FOR_EACH_VEC(m_waveSpawnVector, i)
+	{
+		CWaveSpawnPopulator* waveSpawnPopulator = m_waveSpawnVector[i];
+		waveSpawnPopulator->OnNonSupportWavesDone();
+	}
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		// Now let's kill everyone left on the attacking team
+		CTFPlayer* pPlayer = ToTFPlayer(UTIL_PlayerByIndex(i));
+		if (pPlayer && pPlayer->IsAlive() &&
+			((pPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS) || pPlayer->m_Shared.InCond(TF_COND_REPROGRAMMED)))
+		{
+			pPlayer->CommitSuicide(true, false);
+		}
+	}
+	WaveCompleteUpdate();
+}
+
 //-------------------------------------------------------------------------
 CWaveSpawnPopulator *CWave::FindWaveSpawnPopulator( const char *name )
 {

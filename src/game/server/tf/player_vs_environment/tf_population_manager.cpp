@@ -1273,6 +1273,33 @@ void CPopulationManager::WaveEnd( bool bSuccess )
 	}
 }
 
+void CPopulationManager::ScriptEndWave( bool bSuccess )
+{
+	CWave* pWave = GetCurrentWave();
+	if ( !bSuccess )
+	{
+		//If told to end in a failure, it will auto-reset without the end screen
+		if ( pWave )
+		{
+			pWave->ForceFinish();
+			WaveEnd( bSuccess );
+			pWave->ForceReset();
+			TFGameRules()->SetAllowBetweenRounds( true );
+			TFGameRules()->State_Transition( GR_STATE_PREROUND );
+			TFGameRules()->PlayerReadyStatus_ResetState();
+			TFObjectiveResource()->SetMannVsMachineBetweenWaves( true );
+			RestorePlayerCurrency();
+		}
+	}
+	else
+	{
+		if ( pWave )
+		{
+			pWave->ForceWin();
+		}
+	}
+}
+
 //-------------------------------------------------------------------------
 // Save the current wave as a checkpoint.
 // When the scenario restarts from a loss, it will restart at the checkpoint.

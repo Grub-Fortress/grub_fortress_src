@@ -8683,6 +8683,12 @@ void CC_Ent_Create( const CCommand& args )
 				return;
 		}
 	}
+	//You can't create players
+	if ( !Q_stricmp( args[1], "player" ) )
+	{
+		Msg( "You cannot create a player\n" );
+		return;
+	}
 
 	bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
 	CBaseEntity::SetAllowPrecache( true );

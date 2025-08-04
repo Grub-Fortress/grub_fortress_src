@@ -42,6 +42,10 @@ ConVar cl_mute_all_comms("cl_mute_all_comms", "1", FCVAR_ARCHIVE, "If 1, then al
 ConVar cl_enable_text_chat( "cl_enable_text_chat", "1", FCVAR_ARCHIVE, "Enable text chat in this game" );
 ConVar cl_clear_chat_on_disconnect( "cl_clear_chat_on_disconnect", "0", FCVAR_ARCHIVE, "Clears the chat history when you disconnect from a server." );
 
+ConVar bf_sound_chatping ( "bf_sound_chatping", "0", FCVAR_NONE, "The Chat will play a sound everytime someone finishes typing." );
+ConVar bf_sound_chatping_file ( "bf_sound_chatping_file", "HudChat.Message", FCVAR_NONE, "The sound for the Chat that will play everytime someone finishes typing." );
+
+
 const int kChatFilterVersion = 1;
 
 Color g_ColorBlue( 153, 204, 255, 255 );
@@ -790,8 +794,11 @@ void CBaseHudChat::MsgFunc_SayText( bf_read &msg )
 		Printf( CHAT_FILTER_NONE, "%s", hudtextmessage->LookupString( szString ) );
 	}
 
-	CLocalPlayerFilter filter;
-	C_BaseEntity::EmitSound( filter, SOUND_FROM_LOCAL_PLAYER, "HudChat.Message" );
+	if ( bf_sound_chatping.GetBool() )
+	{ 
+		CLocalPlayerFilter filter;
+		C_BaseEntity::EmitSound( filter, SOUND_FROM_LOCAL_PLAYER, bf_sound_chatping_file.GetString() );
+	}
 
 	Msg( "%s", szString );
 }
@@ -855,8 +862,11 @@ void CBaseHudChat::MsgFunc_SayText2( bf_read &msg )
 
 		Msg( "%s\n", RemoveColorMarkup(ansiString) );
 
-		CLocalPlayerFilter filter;
-		C_BaseEntity::EmitSound( filter, SOUND_FROM_LOCAL_PLAYER, "HudChat.Message" );
+		if ( bf_sound_chatping.GetBool() )
+		{ 
+			CLocalPlayerFilter filter;
+			C_BaseEntity::EmitSound( filter, SOUND_FROM_LOCAL_PLAYER, bf_sound_chatping_file.GetString() );
+		}
 	}
 	else
 	{
