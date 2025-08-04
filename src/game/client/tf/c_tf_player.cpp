@@ -227,8 +227,8 @@ ConVar tf_robot_cosmetic_opt_in( "tf_robot_cosmetic_opt_in", "1", FCVAR_USERINFO
 void bf_disable_cosmetics_changed( IConVar *var, const char *pOldValue, float flOldValue );
 void bf_disable_unusual_effects_changed( IConVar *var, const char *pOldValue, float flOldValue );
 
-ConVar bf_disable_cosmetics( "bf_disable_cosmetics", "0", FCVAR_ARCHIVE, "When set to 1, all cosmetic items (hats, misc items) will be hidden.", bf_disable_cosmetics_changed );
-ConVar bf_disable_unusual_effects( "bf_disable_unusual_effects", "0", FCVAR_ARCHIVE, "When set to 1, all unusual particle effects will be hidden.", bf_disable_unusual_effects_changed );
+ConVar bf_disable_cosmetics( "bf_disable_cosmetics", "1", FCVAR_DEVELOPMENTONLY, "When set to 1, all cosmetic items (hats, misc items) will be hidden.", bf_disable_cosmetics_changed );
+ConVar bf_disable_unusual_effects( "bf_disable_unusual_effects", "1", FCVAR_DEVELOPMENTONLY, "When set to 1, all unusual particle effects will be hidden.", bf_disable_unusual_effects_changed );
 
 //-----------------------------------------------------------------------------
 // Purpose: Callback functions to immediately update wearable visibility
