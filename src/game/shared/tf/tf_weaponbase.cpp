@@ -2110,6 +2110,9 @@ void CTFWeaponBase::IncrementAmmo( void )
 {
 	CTFPlayer *pPlayer = GetTFPlayerOwner();
 
+	int iInfiniteAmmo = 0;
+	CALL_ATTRIB_HOOK_INT( iInfiniteAmmo, has_infinite_ammo );
+
 	// If we have ammo, remove ammo and add it to clip
 	if ( !m_bReloadedThroughAnimEvent )
 	{
@@ -2122,7 +2125,8 @@ void CTFWeaponBase::IncrementAmmo( void )
 			if ( pPlayer && pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) > 0 )
 			{
 				m_iClip1 = MIN( ( m_iClip1 + 1 ), GetMaxClip1() );
-				pPlayer->RemoveAmmo( 1, m_iPrimaryAmmoType );
+				if ( iInfiniteAmmo != 2 )
+					pPlayer->RemoveAmmo( 1, m_iPrimaryAmmoType );
 			}
 		}
 	}

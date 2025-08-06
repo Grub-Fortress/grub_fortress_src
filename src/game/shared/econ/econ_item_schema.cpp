@@ -16,6 +16,20 @@
 #include "item_selection_criteria.h"
 #include "checksum_sha1.h"
 
+#ifdef CLIENT_DLL
+#include "engine/IEngineSound.h"
+#include "cdll_client_int.h"
+#include "vgui_controls/MessageBox.h"
+#include "vgui/IVGui.h"
+#include "vgui/ISurface.h"
+#include "cdll_int.h"
+#endif
+
+#ifdef GAME_DLL
+#include "engine/iserverplugin.h"
+#include "eiface.h"
+#endif
+
 #include <google/protobuf/text_format.h>
 #include <string.h>
 
@@ -24,6 +38,12 @@
 #include "materialsystem/itexturecompositor.h"
 
 #include "econ_paintkit.h"
+
+#ifdef CLIENT_DLL
+#include "vgui_controls/MessageBox.h"
+#include "vgui/IVGui.h"
+#include "vgui/ISurface.h"
+#endif
 
 #if ( defined( _MSC_VER ) && _MSC_VER >= 1900 )
 #define timezone _timezone
@@ -37,6 +57,13 @@
 #include "econ_item_tools.h"
 
 #include "econ_quests.h"
+
+//-----------------------------------------------------------------------------
+// Forward declarations for security functions
+//-----------------------------------------------------------------------------
+bool VerifyCustomItemsSignature();
+bool ValidateModItems(const CUtlHashMapLarge<int, CEconItemDefinition*>& mapItems);
+void ShowSecurityErrorAndExit(const char* pszErrorMessage);
 
 #if defined(CLIENT_DLL) || defined(GAME_DLL)
 	#include "econ_item_system.h"
@@ -4432,6 +4459,174 @@ bool CEconItemSchema::BInitBinaryBuffer( CUtlBuffer &buffer, CUtlVector<CUtlStri
 	return false;
 }
 
+//-----------------------------------------------------------------------------
+// Security validation functions
+//-----------------------------------------------------------------------------
+
+// Developer signatures for moditem validation (only these developers can create mod items)
+static const char* g_pszDeveloperSignatures[] = {
+	"ALIEN31ITA",		// Primary developer signature
+	"BETTERFORTRESS",	// Project signature
+	// Add more developer signatures as needed
+	NULL
+};
+
+//-----------------------------------------------------------------------------
+// Purpose: Verify file signature for items_custom.txt
+//-----------------------------------------------------------------------------
+bool VerifyCustomItemsSignature()
+{
+	// Check if signature file exists
+	if (!g_pFullFileSystem->FileExists("scripts/items/items_custom.txt.sig", "GAME"))
+	{
+		DevWarning("Security Error: items_custom.txt.sig file not found!\n");
+		return false;
+	}
+
+	// Load the signature file
+	FileHandle_t hSigFile = g_pFullFileSystem->Open("scripts/items/items_custom.txt.sig", "rb", "GAME");
+	if (hSigFile == FILESYSTEM_INVALID_HANDLE)
+	{
+		DevWarning("Security Error: Cannot open items_custom.txt.sig file!\n");
+		return false;
+	}
+
+	// Read signature
+	char szSignature[256];
+	int nBytesRead = g_pFullFileSystem->Read(szSignature, sizeof(szSignature) - 1, hSigFile);
+	g_pFullFileSystem->Close(hSigFile);
+	szSignature[nBytesRead] = '\0';
+
+	// Load the items_custom.txt file to calculate hash
+	FileHandle_t hItemsFile = g_pFullFileSystem->Open("scripts/items/items_custom.txt", "rb", "GAME");
+	if (hItemsFile == FILESYSTEM_INVALID_HANDLE)
+	{
+		Warning("Security Error: Cannot open items_custom.txt file for verification!\n");
+		return false;
+	}
+
+	// Get file size and read entire file
+	int nFileSize = g_pFullFileSystem->Size(hItemsFile);
+	CUtlBuffer buffer;
+	buffer.EnsureCapacity(nFileSize);
+	g_pFullFileSystem->Read(buffer.Base(), nFileSize, hItemsFile);
+	buffer.SeekPut(CUtlBuffer::SEEK_HEAD, nFileSize);
+	g_pFullFileSystem->Close(hItemsFile);
+
+	// Calculate SHA1 hash of the file
+	unsigned char hash[k_cubHash];
+	GenerateHash(hash, buffer.Base(), buffer.TellPut());
+
+	// Convert hash to string
+	char szCalculatedHash[k_cubHash * 2 + 1];
+	for (int i = 0; i < k_cubHash; i++)
+	{
+		Q_snprintf(szCalculatedHash + i * 2, 3, "%02x", hash[i]);
+	}
+
+	// Verify that signature matches calculated hash
+	if (Q_stricmp(szSignature, szCalculatedHash) != 0)
+	{
+		Warning("Security Error: items_custom.txt signature verification failed!\n");
+		return false;
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Validate moditem definitions to prevent unauthorized items
+//-----------------------------------------------------------------------------
+bool ValidateModItems(const CUtlHashMapLarge<int, CEconItemDefinition*>& mapItems)
+{
+	bool bFoundUnauthorizedModItems = false;
+
+	FOR_EACH_MAP_FAST(mapItems, i)
+	{
+		CEconItemDefinition* pItemDef = mapItems[i];
+		if (pItemDef && pItemDef->IsModItem())
+		{
+			int nDefIndex = pItemDef->GetDefinitionIndex();
+			
+			// SECURITY: Only allow moditem=1 on items with definition index >= 40000
+			// Items below 40000 are typically base TF2 items and setting moditem=1 on them
+			// allows players to get Live TF2 items for free, which is a critical exploit
+			if (nDefIndex < 40000)
+			{
+				// Exception list: Allow specific items that we know are legitimate custom overrides
+				// These are items that Better Fortress 2 legitimately needs to modify
+				bool bIsLegitimateOverride = false;
+				
+				// Add specific item IDs that are legitimate overrides here
+				// For example, if we need to modify specific TF2 items for gameplay balance
+				int nLegitimateOverrides[] = {
+					792, 849, 1191, 1192, 1193, 1194, 1179, 773
+				};
+				
+				for (int j = 0; j < ARRAYSIZE(nLegitimateOverrides); j++)
+				{
+					if (nDefIndex == nLegitimateOverrides[j])
+					{
+						bIsLegitimateOverride = true;
+						break;
+					}
+				}
+				
+				if (!bIsLegitimateOverride)
+				{
+					Warning("SECURITY ERROR: Unauthorized moditem detected! Item %d (\"%s\") has moditem=1 but is in the base TF2 range (<40000)!\n", 
+						nDefIndex, pItemDef->GetDefinitionName() ? pItemDef->GetDefinitionName() : "Unknown");
+					Warning("This could allow obtaining Live TF2 items for free, which is not allowed!\n");
+					bFoundUnauthorizedModItems = true;
+				}
+				else
+				{
+					Warning("Notice: Legitimate override - Base TF2 item %d (\"%s\") is being modified as part of Better Fortress 2 gameplay changes\n", 
+						nDefIndex, pItemDef->GetDefinitionName() ? pItemDef->GetDefinitionName() : "Unknown");
+				}
+			}
+			else
+			{
+				// Items >= 40000 are allowed to have moditem=1 (these are custom items)
+				DevMsg("Notice: Custom item %d (\"%s\") has moditem=1 (allowed for custom items)\n", 
+					nDefIndex, pItemDef->GetDefinitionName() ? pItemDef->GetDefinitionName() : "Unknown");
+			}
+		}
+	}
+
+	return !bFoundUnauthorizedModItems;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Show security error dialog and exit game
+//-----------------------------------------------------------------------------
+void ShowSecurityErrorAndExit(const char* pszErrorMessage)
+{
+#ifdef CLIENT_DLL
+	// Show error dialog on client
+	vgui::MessageBox* pMessageBox = new vgui::MessageBox("Better Fortress 2 - Security Error", pszErrorMessage);
+	pMessageBox->SetOKButtonVisible(true);
+	pMessageBox->SetOKButtonText("Exit Game");
+	pMessageBox->SetCancelButtonVisible(false);
+	pMessageBox->SetCloseButtonVisible(false);
+	pMessageBox->DoModal();
+	
+	// Add a callback to exit when OK is pressed
+	pMessageBox->SetCommand(new KeyValues("quit"));
+	
+	// Force exit the game after a short delay
+	engine->ClientCmd_Unrestricted("quit\n");
+#endif
+
+	// Also print to console and log
+	Warning("SECURITY ERROR: %s\n", pszErrorMessage);
+	
+#ifdef GAME_DLL
+	// On server, force shutdown
+	engine->ServerCommand("quit\n");
+#endif
+}
+
 unsigned char g_sha1ItemSchemaText[ k_cubHash ];
 
 //-----------------------------------------------------------------------------
@@ -7041,6 +7236,24 @@ void CEconItemSchema::Validate( CValidator &validator, const char *pchName )
 
 bool CEconItemSchema::BPostSchemaInit( CUtlVector<CUtlString> *pVecErrors )
 {
+	// SECURITY: Validate items_custom.txt signature and mod items
+	if (g_pFullFileSystem->FileExists("scripts/items/items_custom.txt", "GAME"))
+	{
+		// Verify signature first
+		if (!VerifyCustomItemsSignature())
+		{
+			ShowSecurityErrorAndExit("Critical Security Error:\n\nThe items_custom.txt file has been modified without proper authorization!\n\nThis could indicate tampering with game files to obtain unauthorized items.\n\nThe game will now exit for security reasons.");
+			return false;
+		}
+
+		// Validate mod items to prevent unauthorized Live TF2 items
+		if (!ValidateModItems(m_mapItems))
+		{
+			ShowSecurityErrorAndExit("Critical Security Error:\n\nUnauthorized mod items detected!\n\nSomeone has set 'moditem \"1\"' on base TF2 items, which could allow obtaining Live TF2 items for free.\n\nThis is not allowed and the game will now exit.");
+			return false;
+		}
+	}
+
 	// We need the protodefs to be initialized
 	if ( !GetProtoScriptObjDefManager()->BDefinitionsLoaded() )
 	{

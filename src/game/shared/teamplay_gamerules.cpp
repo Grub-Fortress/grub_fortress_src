@@ -121,6 +121,18 @@ bool CTeamplayRules::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 		return true;
 	}
 
+	if ( FStrEq( args[0], "scripted_user_func" ) )
+	{
+		
+		HSCRIPT hConCommandFunc = g_pScriptVM->LookupFunction( "UserConsoleCommand" );
+		if ( hConCommandFunc )
+		{
+			g_pScriptVM->Call( hConCommandFunc, NULL, true, NULL, (HSCRIPT)ToHScript( pEdict ), args.ArgS() );
+		}
+
+		return true;
+	}
+
 	return false;
 }
 

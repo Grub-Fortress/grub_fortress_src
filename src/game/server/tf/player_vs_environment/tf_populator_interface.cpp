@@ -32,7 +32,7 @@ public:
 	//Converted to standalones
 	void ChangeBotAttributes( const char* pszEventNam );
 	void ChangeDefaultEventAttributes( const char* pszEventNam );
-	void GoToWave( uint32 waveNumber, float fCleanMoneyPercent = -1.0f );
+	void GoToWave( int waveNumber, float fCleanMoneyPercent = -1.0f );
 	void StartWave ( void );
 
 	// Vscript handlers - August101
@@ -70,8 +70,8 @@ END_DATADESC()
 	DEFINE_SCRIPTFUNC_NAMED(ScriptStartWave, "StartWave", "Forcibly Start current wave")
 	DEFINE_SCRIPTFUNC_NAMED(GoToWave, "JumpToWave", "Arugments - (waveNum, CurrencyPercent); Set the current Wave")
 	DEFINE_SCRIPTFUNC_NAMED(ScriptEndWave, "EndWave", "Arugments - (victory); Force finishes the current Wave")
-	DEFINE_SCRIPTFUNC(ScriptPauseSpawning, "Pause spawnwaves")
-	DEFINE_SCRIPTFUNC(ScriptUnpauseSpawning, "Resume spawnwaves")
+	DEFINE_SCRIPTFUNC_NAMED(ScriptPauseSpawning, "PauseBotSpawning", "Pause spawnwaves")
+	DEFINE_SCRIPTFUNC_NAMED(ScriptUnpauseSpawning, "UnpauseBotSpawning", "Resume spawnwaves")
 	DEFINE_SCRIPTFUNC_NAMED(ChangeBotAttributes, "ChangeBotAttributes", "Arugments - (attribute); ChangeBotAttributes input as a vscript function")
 	DEFINE_SCRIPTFUNC_NAMED(ChangeDefaultEventAttributes, "ChangeDefaultEventAttributes", "Arugments - (attribute); ChangeDefaultEventAttributes input as a vscript function")
 	END_SCRIPTDESC();
@@ -100,6 +100,7 @@ void CPointPopulatorInterface::InputUnpauseBotSpawning( inputdata_t &inputdata )
 
 void CPointPopulatorInterface::InputGoToWave( inputdata_t &inputdata )
 {
+
 	char		token[128];
 	const char	*p = STRING( inputdata.value.StringID() );
 	int			nMoneyPercent = 0;
@@ -123,11 +124,28 @@ void CPointPopulatorInterface::InputGoToWave( inputdata_t &inputdata )
 	{
 		GoToWave( nWave, nMoneyPercent );
 	}
+
+	/*
+	if ( inputdata.value.Int() <= 1 )
+	{
+		Msg( "Populator Input: Missing wave number\n" );
+		return;
+	}
+
+	float fCleanMoneyPercent = -1.0f;
+	if ( inputdata.value.Int() >= 3 )
+	{
+		fCleanMoneyPercent = atof( args.Arg(2) );
+	}
+
+	uint32 desiredWave = (uint32)Max( atoi( inputdata.value.Int() ) - 1, 0) ;
+	GoToWave( desiredWave, fCleanMoneyPercent );
+	*/
 }
 
-void CPointPopulatorInterface::GoToWave( uint32 waveNumber, float fCleanMoneyPercent )
+void CPointPopulatorInterface::GoToWave( int waveNumber, float fCleanMoneyPercent )
 {
-	g_pPopulationManager->JumpToWave( waveNumber, fCleanMoneyPercent );
+	g_pPopulationManager->JumpToWave( (uint32) waveNumber, fCleanMoneyPercent );
 }
 
 void CPointPopulatorInterface::InputStartWave( inputdata_t & ) { StartWave(); }

@@ -78,6 +78,7 @@
 #include "econ_gcmessages.h"
 #include "tf_gcmessages.h"
 #include "tf_obj_sentrygun.h"
+#include "tf_obj_teleporter.h"
 #include "tf_weapon_shovel.h"
 #include "bot/tf_bot.h"
 #include "bot/tf_bot_manager.h"
@@ -671,7 +672,7 @@ BEGIN_ENT_SCRIPTDESC( CTFPlayer, CBaseMultiplayerPlayer , "Team Fortress 2 Playe
 	DEFINE_SCRIPTFUNC( AddCurrency, "Kaching! Give the player some cash for game modes with upgrades, ie. MvM" )
 	DEFINE_SCRIPTFUNC( RemoveCurrency, "Take away money from a player for reasons such as ie. spending." )
 
-	DEFINE_SCRIPTFUNC( IgnitePlayer, "" )
+
 	DEFINE_SCRIPTFUNC( SetCustomModel, "" )
 	DEFINE_SCRIPTFUNC( SetCustomModelWithClassAnimations, "" )
 	DEFINE_SCRIPTFUNC( SetCustomModelOffset, "" )
@@ -733,6 +734,7 @@ BEGIN_ENT_SCRIPTDESC( CTFPlayer, CBaseMultiplayerPlayer , "Team Fortress 2 Playe
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCustomAttribute, "GetCustomAttribute", "Get a custom attribute float from the player" )
 
 	DEFINE_SCRIPTFUNC_WRAPPED( StunPlayer, "" )
+	DEFINE_SCRIPTFUNC_WRAPPED( IgnitePlayer, "" )
 	DEFINE_SCRIPTFUNC_WRAPPED( PlayGesture, "Plays a gesture" )
 	DEFINE_SCRIPTFUNC_WRAPPED( PlaySpecificSequence, "Plays a Sequence" )
 END_SCRIPTDESC();
@@ -2832,6 +2834,43 @@ void CTFPlayer::PostSpawnThink( void )
 		if ( pMedigun )
 		{
 				pMedigun->SetChargeLevelToPreserve( 0.f );
+		}
+	}
+
+	// Apply teleporter invulnerability for robot players if they spawned near a teleporter exit
+	if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS && TFGameRules() && TFGameRules()->IsMannVsMachineMode() && 
+		 (IsFakeClient() || GetTeamNumber() == TF_TEAM_PVE_INVADERS) )
+	{
+		// Look for nearby teleporter exits to determine if we spawned from one
+		CObjectTeleporter* pNearbyTeleporter = nullptr;
+		for ( int i = 0; i < IBaseObjectAutoList::AutoList().Count(); ++i )
+		{
+			CBaseObject *pObj = static_cast< CBaseObject* >( IBaseObjectAutoList::AutoList()[i] );
+			if ( pObj->GetType() != OBJ_TELEPORTER || pObj->GetTeamNumber() != GetTeamNumber() )
+				continue;
+
+			CObjectTeleporter *pTeleporter = assert_cast< CObjectTeleporter* >( pObj );
+			if ( pTeleporter->IsEntrance() || pTeleporter->IsBuilding() || pTeleporter->HasSapper() || pTeleporter->IsPlasmaDisabled() )
+				continue;
+
+			// Check if this teleporter has spawn points configured
+			const CUtlStringList& teleportWhereNames = pTeleporter->GetTeleportWhere();
+			if ( teleportWhereNames.Count() > 0 )
+			{
+				// Check if we're close to this teleporter (within reasonable spawn distance)
+				float distance = GetAbsOrigin().DistTo( pTeleporter->GetAbsOrigin() );
+				if ( distance < 200.0f ) // 200 units should be reasonable for teleporter spawn radius
+				{
+					pNearbyTeleporter = pTeleporter;
+					break;
+				}
+			}
+		}
+
+		if ( pNearbyTeleporter )
+		{
+			// Grant 1.5 seconds of invulnerability (teleport protection)
+			m_Shared.AddCond( TF_COND_INVULNERABLE, 1.5f );
 		}
 	}
 }
@@ -6788,6 +6827,19 @@ CBaseEntity* CTFPlayer::EntSelectSpawnPoint()
 	case TF_TEAM_BLUE:
 		{
 			pSpawnPointName = "info_player_teamspawn";
+			
+			// Check for teleporter spawn override first if player is on invader team
+			if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS && TFGameRules() && TFGameRules()->IsMannVsMachineMode() )
+			{
+				CBaseEntity *pTeleporterSpot = FindTeleporterSpawnOverride();
+				if ( pTeleporterSpot )
+				{
+					pSpot = pTeleporterSpot;
+					m_pSpawnPoint = dynamic_cast<CTFTeamSpawn*>( pSpot );
+					return pSpot;
+				}
+			}
+			
 			if ( SelectSpawnSpotByType( pSpawnPointName, pSpot ) )
 			{
 				g_pLastSpawnPoints[ GetTeamNumber() ] = pSpot;
@@ -6961,6 +7013,65 @@ bool CTFPlayer::SelectSpawnSpotByName( const char *pEntName, CBaseEntity* &pSpot
 	}
 	
 	return false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Find a teleporter exit to use as a spawn point for Invader team players
+//-----------------------------------------------------------------------------
+CBaseEntity* CTFPlayer::FindTeleporterSpawnOverride( void )
+{
+	// Look for teleporter exits on our team that have spawn points configured
+	CUtlVector< CObjectTeleporter * > teleporterVector;
+
+	for ( int i = 0; i < IBaseObjectAutoList::AutoList().Count(); ++i )
+	{
+		CBaseObject *pObj = static_cast< CBaseObject* >( IBaseObjectAutoList::AutoList()[i] );
+		if ( pObj->GetType() != OBJ_TELEPORTER )
+			continue;
+
+		if ( pObj->GetTeamNumber() != GetTeamNumber() )
+			continue;
+
+		// Must be an exit, not an entrance
+		CObjectTeleporter *pTeleporter = assert_cast< CObjectTeleporter* >( pObj );
+		if ( pTeleporter->IsEntrance() )
+			continue;
+
+		if ( pTeleporter->IsBuilding() )
+			continue;
+
+		if ( pTeleporter->HasSapper() )
+			continue;
+
+		if ( pTeleporter->IsPlasmaDisabled() )
+			continue;
+
+		// Check if this teleporter has spawn points configured in its TeleportWhere list
+		const CUtlStringList& teleportWhereNames = pTeleporter->GetTeleportWhere();
+		if ( teleportWhereNames.Count() > 0 )
+		{
+			teleporterVector.AddToTail( pTeleporter );
+		}
+	}
+
+	if ( teleporterVector.Count() > 0 )
+	{
+		// Pick a random teleporter if multiple are available
+		int which = RandomInt( 0, teleporterVector.Count() - 1 );
+		CObjectTeleporter *pChosenTeleporter = teleporterVector[ which ];
+		
+		// Play teleporter delivery sound for robot players
+		if ( IsFakeClient() || (TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS) )
+		{
+			EmitSound( "MVM.Robot_Teleporter_Deliver" );
+		}
+		
+		// Create a temporary entity at the teleporter's location to use as spawn point
+		// We return the teleporter itself, which acts as a valid spawn point
+		return pChosenTeleporter;
+	}
+
+	return NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -17468,21 +17579,20 @@ int CTFPlayer::BuildObservableEntityList( void )
 	}
 
 	//[VSCRIPT] Generic Observable
-	/*
-	CBaseEntity* pGenericObservable;
-	if ( pGenericObservable )
-	{ 
-		if ( pGenericObservable->m_bCanBeObserved )
+	CBaseEntity *pEntity = gEntList.FirstEnt();
+	while ( pEntity )
+	{
+		if( pEntity->m_bCanBeObserved )
 		{
+			m_hObservableEntities.AddToTail( pEntity );
 
-			m_hObservableEntities.AddToTail( pGenericObservable );
-
-			if (m_hObserverTarget.Get() == pGenericObservable)
+			if ( m_hObserverTarget.Get() == pEntity )
 			{
-				iCurrentIndex = (m_hObservableEntities.Count() - 1);
+				iCurrentIndex = (m_hObservableEntities.Count()-1);
 			}
 		}
-	}*/
+		pEntity = gEntList.NextEnt( pEntity );
+	}
 	return iCurrentIndex;
 }
 
@@ -17600,18 +17710,6 @@ bool CTFPlayer::IsValidObserverTarget( CBaseEntity * target )
 				return false;
 		}
 
-		// [VSCRIPT] Custom observable 		
-		/*CBaseEntity* pGenericObservable = dynamic_cast<CBaseEntity*>(target);
-		if ( pGenericObservable )
-		{ 
-			if ( pGenericObservable->m_bCanBeObserved )
-				return true;
-		}
-		*/
-
-		if ( GetTeamNumber() == TEAM_SPECTATOR )
-			return true;
-
 		// active bosses should be valid targets
 		if ( target == TFGameRules()->GetActiveBoss() )
 		{
@@ -17624,6 +17722,10 @@ bool CTFPlayer::IsValidObserverTarget( CBaseEntity * target )
 
 			return true;
 		}
+
+
+		if ( GetTeamNumber() == TEAM_SPECTATOR )
+			return true;
 		
 		switch ( mp_forcecamera.GetInt() )	
 		{
@@ -17883,6 +17985,9 @@ void CTFPlayer::ValidateCurrentObserverTarget( void )
 		{
 			ForceObserverMode( OBS_MODE_CHASE );
 		}
+		//[VSCRIPT] Generic Observable
+		if ( !m_hObserverTarget->m_bCanBeObserved && !IsValidObserverTarget( m_hObserverTarget ))
+			FindInitialObserverTarget();
 	}
 
 	BaseClass::ValidateCurrentObserverTarget();
@@ -22456,7 +22561,7 @@ void CTFPlayer::Internal_HandleMapEvent( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CTFPlayer::IgnitePlayer()
+void CTFPlayer::InputIgnitePlayer( inputdata_t &inputdata )
 {
 	if ( FStrEq( "sd_doomsday", STRING( gpGlobals->mapname ) ) )
 	{
@@ -22467,12 +22572,7 @@ void CTFPlayer::IgnitePlayer()
 		}
 	}
 
-	m_Shared.Burn( this, NULL );
-}
-
-void CTFPlayer::InputIgnitePlayer( inputdata_t &inputdata )
-{
-	IgnitePlayer();
+	m_Shared.Burn( this, NULL, inputdata.value.Float() > 0 ? inputdata.value.Float() : TF_BURNING_FLAME_LIFE );
 }
 
 //-----------------------------------------------------------------------------
@@ -25046,6 +25146,13 @@ void CTFPlayer::ScriptEquipWearableViewModel( HSCRIPT hWearableViewModel )
 void CTFPlayer::ScriptStunPlayer( float flTime, float flReductionAmount, int iStunFlags /* = TF_STUN_MOVEMENT */, HSCRIPT hAttacker /* = NULL */ )
 {
 	m_Shared.StunPlayer( flTime, flReductionAmount, iStunFlags, ScriptToEntClass< CTFPlayer >( hAttacker ) );
+}
+
+void CTFPlayer::ScriptIgnitePlayer( float flBurningTime, HSCRIPT hAttacker /* = NULL */, HSCRIPT hWeapon /* = NULL */ )
+{
+	CTFPlayer *pAttacker = ScriptToEntClass< CTFPlayer >( hAttacker );
+	CTFWeaponBase *pWeapon = ScriptToEntClass< CTFWeaponBase >( hWeapon );
+	m_Shared.Burn( pAttacker ? pAttacker : this, pWeapon, flBurningTime );
 }
 
 bool CTFPlayer::ScriptPlayGesture(const char* pGestureName)

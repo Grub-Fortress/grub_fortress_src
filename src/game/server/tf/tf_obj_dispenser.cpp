@@ -469,6 +469,8 @@ void CObjectDispenser::OnGoActive( void )
 		m_hTouchTrigger = CBaseEntity::Create( "dispenser_touch_trigger", GetAbsOrigin(), vec3_angle, this );
 		UTIL_SetSize(m_hTouchTrigger.Get(), Vector(-flRadius,-flRadius,-flRadius), Vector(flRadius,flRadius,flRadius) );
 		m_hTouchTrigger->SetSolid(SOLID_BBOX);
+		//Parent patch - so the trigger moves along with his owner
+		m_hTouchTrigger->SetParent( this );
 	}
 
 	Assert( m_hTouchTrigger.Get() );

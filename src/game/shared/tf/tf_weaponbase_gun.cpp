@@ -384,6 +384,12 @@ CBaseEntity *CTFWeaponBaseGun::FireProjectile( CTFPlayer *pPlayer )
 //-----------------------------------------------------------------------------
 void CTFWeaponBaseGun::RemoveProjectileAmmo( CTFPlayer *pPlayer )
 {
+	int iInfiniteAmmo = 0;
+	CALL_ATTRIB_HOOK_INT( iInfiniteAmmo, has_infinite_ammo );
+	if ( iInfiniteAmmo == 1 )
+	{
+		return;
+	}
 
 	if ( m_iClip1 != -1 )
 	{

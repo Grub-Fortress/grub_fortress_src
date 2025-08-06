@@ -221,8 +221,6 @@ ConVar tf_taunt_first_person( "tf_taunt_first_person", "0", FCVAR_NONE, "1 = tau
 ConVar tf_romevision_opt_in( "tf_romevision_opt_in", "0", FCVAR_ARCHIVE, "Enable Romevision in Mann vs. Machine mode when available." );
 ConVar tf_romevision_skip_prompt( "tf_romevision_skip_prompt", "0", FCVAR_ARCHIVE, "If nonzero, skip the prompt about sharing Romevision." );
 
-ConVar tf_robot_cosmetic_opt_in( "tf_robot_cosmetic_opt_in", "1", FCVAR_USERINFO | FCVAR_ARCHIVE, "When set to 0, Robot models will not be used." );
-
 // Callback functions for cosmetic ConVars to update visibility immediately
 void bf_disable_cosmetics_changed( IConVar *var, const char *pOldValue, float flOldValue );
 void bf_disable_unusual_effects_changed( IConVar *var, const char *pOldValue, float flOldValue );
@@ -746,20 +744,7 @@ void C_TFRagdoll::CreateTFRagdoll()
 
 	if ( pPlayer && pPlayer->GetPlayerClass() && !pPlayer->ShouldDrawSpyAsDisguised() )
 	{
-		// Check if the player was using robot cosmetics
-		int usingRobotCosmetic = 0;
-		CALL_ATTRIB_HOOK_INT_ON_OTHER( pPlayer, usingRobotCosmetic, robotrobotrobotrobot );
-		
-		// MVM Versus - use robot model for ragdoll if player was using robot cosmetics
-		if ( usingRobotCosmetic && tf_robot_cosmetic_opt_in.GetBool() )
-		{
-			int nRobotClassIndex = pPlayer->GetPlayerClass()->GetClassIndex();
-			nModelIndex = modelinfo->GetModelIndex( g_szBotModels[ nRobotClassIndex ] );
-		}
-		else
-		{
-			nModelIndex = modelinfo->GetModelIndex( pPlayer->GetPlayerClass()->GetModelName() );
-		}
+		nModelIndex = modelinfo->GetModelIndex( pPlayer->GetPlayerClass()->GetModelName() );
 	}
 	else
 	{
@@ -9155,7 +9140,7 @@ void C_TFPlayer::ValidateModelIndex( void )
 			{
 				int usingRobotCosmetic = 0;
 				CALL_ATTRIB_HOOK_INT_ON_OTHER( pDisguiseTarget, usingRobotCosmetic, robotrobotrobotrobot );
-				if ( usingRobotCosmetic && tf_robot_cosmetic_opt_in.GetBool() )
+				if ( usingRobotCosmetic )
 				{
 					bUseRobotModel = true;
 				}
@@ -9195,22 +9180,16 @@ void C_TFPlayer::ValidateModelIndex( void )
 		CALL_ATTRIB_HOOK_INT( usingRobotCosmetic, robotrobotrobotrobot );
 		C_TFPlayerClass *pClass = GetPlayerClass();
 
-		// MVM Versus - doing this here so it can be disabled clientside as a ConVar.
-		if ( usingRobotCosmetic && tf_robot_cosmetic_opt_in.GetBool() )
+		// MVM Versus - use robot model when using robot cosmetics
+		if ( usingRobotCosmetic && pClass )
 		{
-			if ( pClass )
-			{
-				int nRobotClassIndex = GetPlayerClass()->GetClassIndex();
-				m_nModelIndex = modelinfo->GetModelIndex( g_szBotModels[ nRobotClassIndex ] );
-				SetBloodColor( DONT_BLEED );
-			}
+			int nRobotClassIndex = GetPlayerClass()->GetClassIndex();
+			SetModelIndex( modelinfo->GetModelIndex( g_szBotModels[ nRobotClassIndex ] ) );
+			SetBloodColor( DONT_BLEED );
 		}
-		else
+		else if ( pClass )
 		{
-			if ( pClass )
-			{
-				m_nModelIndex = modelinfo->GetModelIndex( pClass->GetModelName() );
-			}
+			SetModelIndex( modelinfo->GetModelIndex( pClass->GetModelName() ) );
 		}
 	}
 
@@ -10828,7 +10807,7 @@ void C_TFPlayer::UpdateMVMEyeGlowEffect( bool bVisible )
 		}
 	}
 	// Players using robot cosmetic
-	else if ( usingRobotCosmetic && tf_robot_cosmetic_opt_in.GetBool() )
+	else if ( usingRobotCosmetic )
 	{
 		bShouldHaveEyeGlow = true;
 	}
@@ -10840,7 +10819,7 @@ void C_TFPlayer::UpdateMVMEyeGlowEffect( bool bVisible )
 		{
 			int targetUsingRobotCosmetic = 0;
 			CALL_ATTRIB_HOOK_INT_ON_OTHER( pDisguiseTarget, targetUsingRobotCosmetic, robotrobotrobotrobot );
-			if ( targetUsingRobotCosmetic && tf_robot_cosmetic_opt_in.GetBool() )
+			if ( targetUsingRobotCosmetic )
 			{
 				bShouldHaveEyeGlow = true;
 				usingRobotCosmetic = targetUsingRobotCosmetic; // Use target's cosmetic value for color determination

@@ -148,6 +148,19 @@ PowerupBottleType_t CTFPowerupBottle::GetPowerupType( void ) const
 		return POWERUP_BOTTLE_BUILDINGS_INSTANT_UPGRADE;
 	}
 
+	int iHasRadiusStealth = 0;
+	CALL_ATTRIB_HOOK_INT( iHasRadiusStealth, radius_stealth );
+	if ( iHasRadiusStealth )
+	{
+		return POWERUP_BOTTLE_RADIUS_STEALTH;
+	}
+
+	int iHasXrayCash = 0;
+	CALL_ATTRIB_HOOK_INT( iHasXrayCash, see_cash_through_walls );
+	if ( iHasXrayCash )
+	{
+		return POWERUP_BOTTLE_SEE_CASH_THROUGH_WALL;
+	}
 
 	return POWERUP_BOTTLE_NONE;
 }
@@ -365,6 +378,36 @@ void CTFPowerupBottle::ReapplyProvision( void )
 							}
 						}		
 					}
+				}
+			}
+
+			int iHasRadiusStealth = 0;
+			CALL_ATTRIB_HOOK_INT( iHasRadiusStealth, radius_stealth );
+			if ( iHasRadiusStealth )
+			{
+				if ( m_bActive )
+				{
+					CBaseEntity *pObjects[MAX_PLAYERS_ARRAY_SAFE];
+					int nCount = UTIL_EntitiesInSphere( pObjects, ARRAYSIZE( pObjects ), pTFPlayer->GetAbsOrigin(), 128, FL_CLIENT );
+					for ( int i = 0; i < nCount; i++ )
+					{
+						CBaseCombatCharacter *pBaseTarget = NULL;
+						CTFPlayer *pTarget = ToTFPlayer( pObjects[i] );
+						if ( !pTarget )
+						{
+							pBaseTarget = dynamic_cast<CBaseCombatCharacter*>( pObjects[i] );
+						}
+						else
+						{
+							pBaseTarget = pTarget;
+						}
+
+						if ( !pBaseTarget || !pTarget || !pTarget->IsAlive() || pBaseTarget->GetTeamNumber() != pTFPlayer->GetTeamNumber() )
+							continue;
+
+						pTarget->m_Shared.AddCond( TF_COND_STEALTHED_USER_BUFF, 7, pTFPlayer );
+					}
+					pTFPlayer->m_Shared.AddCond( TF_COND_STEALTHED_USER_BUFF, 7, pTFPlayer );
 				}
 			}
 

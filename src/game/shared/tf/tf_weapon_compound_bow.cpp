@@ -147,21 +147,17 @@ void CTFCompoundBow::LaunchGrenade( void )
 	if ( pMainArrow )
 	{
 		pMainArrow->SetArrowAlight( m_bArrowAlight );
-		if ( TFGameRules() && TFGameRules()->GameModeUsesUpgrades() )
+		Vector vecMainVelocity = pMainArrow->GetAbsVelocity();
+		float flMainSpeed = vecMainVelocity.Length();
+		int iArrowMastery = 0;
+		CALL_ATTRIB_HOOK_INT(iArrowMastery, arrow_mastery);
+		for (int i = 0; i < iArrowMastery; ++i)
 		{
-			Vector vecMainVelocity = pMainArrow->GetAbsVelocity();
-			float flMainSpeed = vecMainVelocity.Length();
-			int iArrowMastery = 0;
-			CALL_ATTRIB_HOOK_INT(iArrowMastery, arrow_mastery);
-			for (int i = 0; i < iArrowMastery; ++i)
-			{
-				QAngle qOffset1 = pMainArrow->GetAbsAngles() + QAngle(0, GetRandomSpreadOffset(i + 1), 0);
-				CreateExtraArrow(pMainArrow, qOffset1, flMainSpeed);
-				QAngle qOffset2 = pMainArrow->GetAbsAngles() + QAngle(0, -GetRandomSpreadOffset(i + 1), 0);
-				CreateExtraArrow(pMainArrow, qOffset2, flMainSpeed);
-			}
+			QAngle qOffset1 = pMainArrow->GetAbsAngles() + QAngle(0, GetRandomSpreadOffset(i + 1), 0);
+			CreateExtraArrow(pMainArrow, qOffset1, flMainSpeed);
+			QAngle qOffset2 = pMainArrow->GetAbsAngles() + QAngle(0, -GetRandomSpreadOffset(i + 1), 0);
+			CreateExtraArrow(pMainArrow, qOffset2, flMainSpeed);
 		}
-
 	}
 
 #else

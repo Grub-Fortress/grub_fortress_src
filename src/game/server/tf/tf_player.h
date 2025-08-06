@@ -570,7 +570,7 @@ public:
 
 	void PlayerUse( void );
 
-	void IgnitePlayer();
+
 	void SetCustomModel( const char *pszModel );
 	void SetCustomModelWithClassAnimations( const char *pszModel );
 	void SetCustomModelOffset( const Vector &offset );
@@ -912,6 +912,7 @@ public:
 	bool ScriptIsBotOfType(int nType) const { return this->IsBotOfType(nType); }
 
 	void ScriptStunPlayer( float flTime, float flReductionAmount, int iStunFlags = TF_STUN_MOVEMENT, HSCRIPT hAttacker = NULL );
+	void ScriptIgnitePlayer( float flBurningTime, HSCRIPT hAttacker = NULL, HSCRIPT hWeapon = NULL ); //Flaminsarge
 	bool ScriptPlayGesture( const char* pGestureName );
 	bool ScriptPlaySpecificSequence( const char* pAnimationName );
 
@@ -1157,6 +1158,7 @@ protected:
 	void				GiveDefaultItems();
 	bool				SelectSpawnSpotByType( const char *pEntClassName, CBaseEntity* &pSpot );	// "info_player_teamspawn"
 	bool				SelectSpawnSpotByName( const char *pEntName, CBaseEntity* &pSpot );			// named info_player_teamspawn, i.e. "my_blue_offense_respawns"
+	CBaseEntity*		FindTeleporterSpawnOverride( void );											// Find teleporter exit to use as spawn point
 	void				RemoveNemesisRelationships();
 	void				RemoveAllItems();
 

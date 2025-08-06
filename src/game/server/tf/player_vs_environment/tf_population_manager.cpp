@@ -52,7 +52,7 @@ ConVar tf_populator_active_buffer_range( "tf_populator_active_buffer_range", "30
 ConVar tf_mvm_default_sentry_buster_damage_dealt_threshold( "tf_mvm_default_sentry_buster_damage_dealt_threshold", "3000", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY );
 ConVar tf_mvm_default_sentry_buster_kill_threshold( "tf_mvm_default_sentry_buster_kill_threshold", "15", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY );
 
-ConVar bf_mvmvs_invader_bomb_chance ( "bf_mvmvs_invader_bomb_chance ", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Allow Invaders team players to get the bomb at wave start in MvM Versus mode" );
+ConVar bf_mvmvs_invader_bomb_chance( "bf_mvmvs_invader_bomb_chance", "1", FCVAR_REPLICATED | FCVAR_NOTIFY, "Allow Invaders team players to get the bomb at wave start in MvM Versus mode" );
 
 
 void MinibossScaleChangedCallBack( IConVar *pVar, const char *pOldString, float flOldValue )
@@ -1073,7 +1073,7 @@ void CPopulationManager::StartCurrentWave( void )
 	TFGameRules()->State_Transition( GR_STATE_RND_RUNNING );
 
 	// Give Invaders team players a chance to get the bomb at wave start in MvM Versus mode
-	if ( TFGameRules()->IsMannVsMachineMode() && bf_gamemode_mvmvs.GetBool() && bf_mvmvs_invader_bomb_chance .GetBool() )
+	if ( TFGameRules()->IsMannVsMachineMode() && bf_gamemode_mvmvs.GetBool() && bf_mvmvs_invader_bomb_chance.GetBool() )
 	{
 		GiveBombToRandomInvader();
 	}
@@ -1281,14 +1281,9 @@ void CPopulationManager::ScriptEndWave( bool bSuccess )
 		//If told to end in a failure, it will auto-reset without the end screen
 		if ( pWave )
 		{
-			pWave->ForceFinish();
-			WaveEnd( bSuccess );
-			pWave->ForceReset();
-			TFGameRules()->SetAllowBetweenRounds( true );
-			TFGameRules()->State_Transition( GR_STATE_PREROUND );
-			TFGameRules()->PlayerReadyStatus_ResetState();
-			TFObjectiveResource()->SetMannVsMachineBetweenWaves( true );
-			RestorePlayerCurrency();
+			// Use the standard checkpoint restoration mechanism for failures
+			// This is safer than manually manipulating wave states
+			RestoreCheckpoint();
 		}
 	}
 	else

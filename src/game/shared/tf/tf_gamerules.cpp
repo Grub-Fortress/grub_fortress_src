@@ -10094,10 +10094,65 @@ const char *CTFGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 	{
 		return NULL;
 	}
-	
-	// Always return the basic chat format since server-side will handle tag building
-	return "TF_Chat_All";
+
+	const char *pszFormat = NULL;
+
+	// coach?
+	CTFPlayer *pTFPlayer = ToTFPlayer( pPlayer );
+	if ( pTFPlayer && pTFPlayer->IsCoaching() )
+	{
+		pszFormat = "TF_Chat_Coach";
+	}
+	// team only
+	else if ( bTeamOnly == true )
+	{
+		if ( pPlayer->GetTeamNumber() == TEAM_SPECTATOR )
+		{
+			pszFormat = "TF_Chat_Spec";
+		}
+		else
+		{
+			if ( pPlayer->IsAlive() == false && State_Get() != GR_STATE_TEAM_WIN )
+			{
+				pszFormat = "TF_Chat_Team_Dead";
+			}
+			else
+			{
+				const char *chatLocation = GetChatLocation( bTeamOnly, pPlayer );
+				if ( chatLocation && *chatLocation )
+				{
+					pszFormat = "TF_Chat_Team_Loc";
+				}
+				else
+				{
+					pszFormat = "TF_Chat_Team";
+				}
+			}
+		}
+	}
+	// everyone
+	else
+	{	
+		if ( pPlayer->GetTeamNumber() == TEAM_SPECTATOR )
+		{
+			pszFormat = "TF_Chat_AllSpec";	
+		}
+		else
+		{
+			if ( pPlayer->IsAlive() == false && State_Get() != GR_STATE_TEAM_WIN )
+			{
+				pszFormat = "TF_Chat_AllDead";
+			}
+			else
+			{
+				pszFormat = "TF_Chat_All";	
+			}
+		}
+	}
+
+	return pszFormat;
 }
+
 
 VoiceCommandMenuItem_t *CTFGameRules::VoiceCommand( CBaseMultiplayerPlayer *pPlayer, int iMenu, int iItem )
 {

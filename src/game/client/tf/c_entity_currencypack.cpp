@@ -44,6 +44,20 @@ void C_CurrencyPack::OnDataChanged( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 void C_CurrencyPack::ClientThink()
 {
+	C_TFPlayer *pTFPlayer = C_TFPlayer::GetLocalTFPlayer();
+
+	int iHasXrayCash = 0;
+	if ( pTFPlayer && pTFPlayer->IsAlive() )
+	{
+		CALL_ATTRIB_HOOK_INT_ON_OTHER( pTFPlayer, iHasXrayCash, see_cash_through_walls );
+	}
+	
+	bool bShouldGlowForLocalPlayer = iHasXrayCash > 0;
+	if ( m_bShouldGlowForLocalPlayer != bShouldGlowForLocalPlayer )
+	{
+		m_bShouldGlowForLocalPlayer = bShouldGlowForLocalPlayer;
+		UpdateGlowEffect();
+	}
 }
 
 //-----------------------------------------------------------------------------

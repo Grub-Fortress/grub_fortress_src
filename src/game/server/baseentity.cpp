@@ -8684,7 +8684,7 @@ void CC_Ent_Create( const CCommand& args )
 		}
 	}
 	//You can't create players
-	if ( !Q_stricmp( args[1], "player" ) )
+	if ( !Q_stricmp( args[1], "player" ) || !Q_stricmp( args[1], "tf_bot" ) )
 	{
 		Msg( "You cannot create a player\n" );
 		return;
