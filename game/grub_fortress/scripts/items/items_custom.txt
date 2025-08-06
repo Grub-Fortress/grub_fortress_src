@@ -1,7 +1,7 @@
 //Ty BetaM!
 //econ_item_schema.cpp - line 4421
 #base items_rebalance.txt
-#base items_dev.txt
+//#base items_dev.txt
 
 "items_game"
 {
