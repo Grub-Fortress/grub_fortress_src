@@ -191,6 +191,11 @@
 		criteria ConceptPlayerTaunt IsHeavy WeaponIsMinigun
 		response HeavyTauntPrimary
 	}
+	rule HeavyTauntPlayerPrimary
+	{
+		criteria ConceptPlayerTaunt IsHeavy WeaponIsMinigunSingleShot
+		response HeavyTauntPrimary
+	}
 	rule HeavyTauntSaxxy
  	{
  		criteria ConceptPlayerTaunt IsHeavy WeaponIsSaxxy

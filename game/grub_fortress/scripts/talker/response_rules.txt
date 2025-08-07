@@ -360,6 +360,7 @@ criterion "IsOnCappableControlPoint"  "OnCappableControlPoint"	"1"   required
 
 criterion "WeaponIsLaserPointer" "playerweapon" "tf_weapon_laser_pointer" "required"
 criterion "WeaponIsMinigun" "playerweapon" "tf_weapon_minigun" "required"
+criterion "WeaponIsMinigunSingleShot" "playerweapon" "tf_weapon_minigun_singleshot" "required"
 criterion "WeaponIsShotgun" "playerweapon" "tf_weapon_shotgun_secondary" "required"
 criterion "WeaponIsShotgunSoldier" "playerweapon" "tf_weapon_shotgun_soldier" "required"
 criterion "WeaponIsShotgunHwg" "playerweapon" "tf_weapon_shotgun_hwg" "required"

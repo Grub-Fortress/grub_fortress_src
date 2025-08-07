@@ -463,15 +463,15 @@ not sure if it should be used as a weapon"
 			}
 			"attributes"
 			{
-				"override projectile type"
-				{
-					"attribute_class"	"override_projectile_type"
-					"value"				"32"
-				}
+//				"override projectile type"
+//				{
+//					"attribute_class"	"override_projectile_type"
+//					"value"				"32"
+//				}
 				"damage bonus" 
 				{
 					"attribute_class"	"mult_dmg"
-					"value"				"3.5"
+					"value"				"1.5"
 				}			
 				"fire rate penalty"
 				{
@@ -488,11 +488,11 @@ not sure if it should be used as a weapon"
 					"attribute_class"	"mult_minigun_spinup_time"
 					"value"				"1.15"
 				}	
-				"max health additive penalty" 
-				{
-					"attribute_class"	"add_maxhealth"
-					"value"				"-50"
-				}							
+//				"max health additive penalty" 
+//				{
+//					"attribute_class"	"add_maxhealth"
+//					"value"				"-50"
+//				}							
 			}
 			"visuals"
 			{		
@@ -525,11 +525,11 @@ not sure if it should be used as a weapon"
 			}
 			"attributes"
 			{
-				"damage bonus"
-				{
-					"attribute_class"	"mult_dmg"
-					"value"				"1.15"
-				}
+//				"damage bonus"
+//				{
+//					"attribute_class"	"mult_dmg"
+//					"value"				"1.15"
+//				}
 				"weapon spread bonus"
 				{
 					"attribute_class"	"mult_spread_scale"
