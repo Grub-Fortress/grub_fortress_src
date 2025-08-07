@@ -4349,6 +4349,36 @@ void CTFPlayer::Spawn()
 
 	SetMoveType( MOVETYPE_WALK );
 	BaseClass::Spawn();
+	
+	// Check if we should spawn at a teleporter for robot players (do this early before weapon initialization)
+	if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS && TFGameRules() && TFGameRules()->IsMannVsMachineMode() )
+	{
+		// Get our current spawn point location and see if it's near a teleporter
+		Vector myOrigin = GetAbsOrigin();
+		
+		// Find teleporter exits on our team
+		for ( int i = 0; i < IBaseObjectAutoList::AutoList().Count(); ++i )
+		{
+			CBaseObject *pObj = static_cast< CBaseObject* >( IBaseObjectAutoList::AutoList()[i] );
+			if ( pObj->GetType() != OBJ_TELEPORTER || pObj->GetTeamNumber() != GetTeamNumber() )
+				continue;
+
+			CObjectTeleporter *pTeleporter = assert_cast< CObjectTeleporter* >( pObj );
+			if ( pTeleporter->IsEntrance() )
+				continue;
+				
+			// Check if we spawned at this teleporter's location (within a small radius)
+			Vector teleporterOrigin = pTeleporter->GetAbsOrigin();
+			if ( (myOrigin - teleporterOrigin).LengthSqr() < 64.0f * 64.0f ) // 64 unit radius for exact teleporter spawns
+			{
+				// We spawned at this teleporter, offset position above it
+				Vector spawnOrigin = teleporterOrigin;
+				spawnOrigin.z += 32.0f; // Offset 32 units above the teleporter
+				SetAbsOrigin( spawnOrigin );
+				break; // Only adjust position once
+			}
+		}
+	}
 
 	// We have to clear this early, so that the sword knows its max health in ManageRegularWeapons below
 	m_Shared.SetDecapitations( 0 );
@@ -4944,6 +4974,35 @@ void CTFPlayer::Spawn()
 	{
 		ResetMaxHealthDrain();
 		SetHealth( GetMaxHealth() );
+	}
+	
+	// Play teleporter effects for robot players who spawned at teleporters
+	if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS && TFGameRules() && TFGameRules()->IsMannVsMachineMode() )
+	{
+		// Get our current spawn point location and see if it's near a teleporter
+		Vector myOrigin = GetAbsOrigin();
+		
+		// Find teleporter exits on our team
+		for ( int i = 0; i < IBaseObjectAutoList::AutoList().Count(); ++i )
+		{
+			CBaseObject *pObj = static_cast< CBaseObject* >( IBaseObjectAutoList::AutoList()[i] );
+			if ( pObj->GetType() != OBJ_TELEPORTER || pObj->GetTeamNumber() != GetTeamNumber() )
+				continue;
+
+			CObjectTeleporter *pTeleporter = assert_cast< CObjectTeleporter* >( pObj );
+			if ( pTeleporter->IsEntrance() )
+				continue;
+				
+			// Check if we spawned at this teleporter's location (within a small radius)
+			Vector teleporterOrigin = pTeleporter->GetAbsOrigin();
+			if ( (myOrigin - teleporterOrigin).LengthSqr() < 96.0f * 96.0f ) // Slightly larger radius to account for the offset
+			{
+				// We spawned at this teleporter, play effects
+				EmitSound( "MVM.Robot_Teleporter_Deliver" );
+				TeleportEffect();
+				break; // Only play effect once
+			}
+		}
 	}
 
 	SetContextThink( &CTFPlayer::PostSpawnThink, gpGlobals->curtime + 0.1f, "PostSpawnThink" );
@@ -6427,13 +6486,16 @@ void CTFPlayer::PostInventoryApplication( void )
 
 	//MVM Versus - Remove the robo cosmetic if we are not a bot
 	//TODO - Optimize this to only get called if your playermodel is a Robot
-	if ( !TFGameRules()->IsMannVsMachineMode() )
+
+	bool bRealRobot = TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS;
+	if ( !m_bIsRobot && !bRealRobot )
 	{
-		if ( !m_bIsRobot )
-		{
-			GetPlayerClass()->SetCustomModel(NULL, USE_CLASS_ANIMATIONS);
-			UpdateModel();
-		}
+		GetPlayerClass()->SetCustomModel(NULL, USE_CLASS_ANIMATIONS);
+		UpdateModel();
+	}
+	else
+	{
+		MVM_TurnIntoRobot();
 	}
 
 	m_Inventory.ClearClassLoadoutChangeTracking();
@@ -6835,7 +6897,8 @@ CBaseEntity* CTFPlayer::EntSelectSpawnPoint()
 				if ( pTeleporterSpot )
 				{
 					pSpot = pTeleporterSpot;
-					m_pSpawnPoint = dynamic_cast<CTFTeamSpawn*>( pSpot );
+					// Store the teleporter reference directly since it's not a CTFTeamSpawn
+					m_pSpawnPoint = NULL; // Can't cast teleporter to CTFTeamSpawn
 					return pSpot;
 				}
 			}
@@ -7059,12 +7122,6 @@ CBaseEntity* CTFPlayer::FindTeleporterSpawnOverride( void )
 		// Pick a random teleporter if multiple are available
 		int which = RandomInt( 0, teleporterVector.Count() - 1 );
 		CObjectTeleporter *pChosenTeleporter = teleporterVector[ which ];
-		
-		// Play teleporter delivery sound for robot players
-		if ( IsFakeClient() || (TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS) )
-		{
-			EmitSound( "MVM.Robot_Teleporter_Deliver" );
-		}
 		
 		// Create a temporary entity at the teleporter's location to use as spawn point
 		// We return the teleporter itself, which acts as a valid spawn point
@@ -8347,106 +8404,8 @@ bool CTFPlayer::ClientCommand( const CCommand &args )
 	
 	m_flLastAction = gpGlobals->curtime;
 
-	if ( FStrEq( pcmd, "addcond" ) )
-	{
-		if ( UTIL_HandleCheatCmdForPlayer( this ) && args.ArgC() >= 2 )
-		{
-			CTFPlayer *pTargetPlayer = this;
-			if ( args.ArgC() >= 4 )
-			{
-				// Find the matching netname
-				for ( int i = 1; i <= gpGlobals->maxClients; i++ )
-				{
-					CBasePlayer *pPlayer = ToBasePlayer( UTIL_PlayerByIndex(i) );
-					if ( pPlayer )
-					{
-						if ( Q_strstr( pPlayer->GetPlayerName(), args[3] ) )
-						{
-							pTargetPlayer = ToTFPlayer(pPlayer);
-							break;
-						}
-					}
-				}
-			}
-
-			int iCond = atoi( args[1] );
-			if ( args[1][0] != '0' && iCond == 0 )
-			{
-				iCond = GetTFConditionFromName( args[1] );
-			}
-
-			ETFCond eCond = TF_COND_INVALID;
-			if ( iCond >= 0 && iCond < TF_COND_LAST )
-			{
-				eCond = ( ETFCond )iCond;
-			}
-			else
-			{
-				Warning( "Failed to addcond %s to player %s\n", args[1], pTargetPlayer->GetPlayerName() );
-				return true;
-			}
-
-			if ( args.ArgC() >= 3 )
-			{
-				float flDuration = atof( args[2] );
-				pTargetPlayer->m_Shared.AddCond( eCond, flDuration );
-			}
-			else
-			{
-				pTargetPlayer->m_Shared.AddCond( eCond );
-			}
-		}
-		return true;
-	}
-	else if ( FStrEq( pcmd, "removecond" ) )
-	{
-		if ( UTIL_HandleCheatCmdForPlayer( this ) && args.ArgC() >= 2 )
-		{
-			CTFPlayer *pTargetPlayer = this;
-			if ( args.ArgC() >= 3 )
-			{
-				// Find the matching netname
-				for ( int i = 1; i <= gpGlobals->maxClients; i++ )
-				{
-					CBasePlayer *pPlayer = ToBasePlayer( UTIL_PlayerByIndex(i) );
-					if ( pPlayer )
-					{
-						if ( Q_strstr( pPlayer->GetPlayerName(), args[2] ) )
-						{
-							pTargetPlayer = ToTFPlayer(pPlayer);
-							break;
-						}
-					}
-				}
-			}
-
-			if ( FStrEq( args[1], "all" ) )
-			{
-				pTargetPlayer->m_Shared.RemoveAllCond();
-			}
-			else
-			{
-				int iCond = atoi( args[1] );
-				if ( args[1][0] != '0' && iCond == 0 )
-				{
-					iCond = GetTFConditionFromName( args[1] );
-				}
-
-				if ( iCond >= 0 && iCond < TF_COND_LAST )
-				{
-					ETFCond eCond = (ETFCond)iCond;
-					pTargetPlayer->m_Shared.RemoveCond( eCond );
-				}
-				else
-				{
-					Warning( "Failed to removecond %s from player %s\n", args[1], pTargetPlayer->GetPlayerName() );
-				}
-			}
-		}
-		return true;
-	}
 	// Better Fortress - Add attribute shortcuts
-	else if ( FStrEq( pcmd, "addgunattr" ) )
+	if ( FStrEq( pcmd, "addgunattr" ) )
 	{
 		if ( UTIL_HandleCheatCmdForPlayer( this ) && args.ArgC() >= 2 )
 		{
@@ -18851,6 +18810,9 @@ bool CTFPlayer::PlayTauntSceneFromItem( const CEconItemView *pEconItemView )
 				{
 					pProp->SetModel( pszTauntProp );
 
+					//Scale props to player scale
+					pProp->SetModelScale( this->GetModelScale() );
+
 					pProp->m_nSkin = GetTeamNumber() == TF_TEAM_RED ? 0 : 1;
 					DispatchSpawn( pProp );
 					pProp->SetAbsOrigin( GetAbsOrigin() );
@@ -18927,12 +18889,55 @@ bool CTFPlayer::PlayTauntSceneFromItem( const CEconItemView *pEconItemView )
 
 	return false;
 }
-//TODO - TAUNT COMMAND
-/*
-CON_COMMAND_F(give_taunt, "Taunt from ID", FCVAR_CHEAT)
+
+//-----------------------------------------------------------------------------
+// Purpose: Console command to force play taunt by item definition index
+//-----------------------------------------------------------------------------
+CON_COMMAND_F(test_taunt, "Force the player to play a taunt by item definition ID. Usage: test_taunt <id>", FCVAR_CHEAT)
 {
-	PlayTauntSceneFromItem( 1118 )
-}*/
+	if (args.ArgC() < 2)
+	{
+		Msg("Usage: test_taunt <item_definition_id>\n");
+		return;
+	}
+
+	// Check who is calling the command
+	CTFPlayer* pPlayer = ToTFPlayer(UTIL_GetCommandClient());
+	if (!UTIL_HandleCheatCmdForPlayer(pPlayer))
+		return;
+
+	if (!pPlayer)
+		return;
+
+	int iItemID = atoi(args[1]);
+	if (iItemID <= 0)
+	{
+		Msg("Invalid item definition ID: %d\n", iItemID);
+		return;
+	}
+
+	// Verify the item exists in the schema
+	CEconItemDefinition* pItemDef = GetItemSchema()->GetItemDefinition(iItemID);
+	if (!pItemDef)
+	{
+		Msg("Item definition ID %d not found in schema\n", iItemID);
+		return;
+	}
+
+	// Create an EconItemView for this item
+	CEconItemView econItem;
+	econItem.Init(iItemID, AE_UNIQUE, AE_USE_SCRIPT_VALUE, true);
+
+	// Attempt to play the taunt
+	if (!pPlayer->PlayTauntSceneFromItem(&econItem))
+	{
+		Msg("Failed to play taunt for item ID %d (may not be a taunt item or player cannot taunt)\n", iItemID);
+	}
+	else
+	{
+		Msg("Playing taunt for item ID %d\n", iItemID);
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -21705,6 +21710,7 @@ CON_COMMAND_F( tf_crashclients, "testing only, crashes about 50 percent of the c
 	}
 }
 #endif // _DEBUG
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -25164,3 +25170,216 @@ bool CTFPlayer::ScriptPlaySpecificSequence(const char* pAnimationName)
 {
 	return this->PlaySpecificSequence(pAnimationName);
 }
+
+//-----------------------------------------------------------------------------
+// Autocompletion function for addcond command
+//-----------------------------------------------------------------------------
+static int AddCondAutocomplete( const char *partial, char commands[ COMMAND_COMPLETION_MAXITEMS ][ COMMAND_COMPLETION_ITEM_LENGTH ] )
+{
+	if ( Q_strlen( partial ) >= COMMAND_COMPLETION_ITEM_LENGTH )
+	{
+		return 0;
+	}
+	
+	char command[ COMMAND_COMPLETION_ITEM_LENGTH+1 ];
+	Q_strncpy( command, partial, sizeof( command ) );
+	
+	// skip to start of argument
+	char *partialArg = Q_strrchr( command, ' ' );
+	if ( partialArg == NULL )
+	{
+		return 0;
+	}
+	
+	// chop command from partial argument
+	*partialArg = '\000';
+	++partialArg;
+	
+	int partialArgLength = Q_strlen( partialArg );
+
+	int count = 0;
+	for( int i = 0; i < TF_COND_LAST && count < COMMAND_COMPLETION_MAXITEMS; ++i )
+	{
+		const char *conditionName = GetTFConditionName( (ETFCond)i );
+		if ( conditionName && *conditionName && Q_strnicmp( conditionName, partialArg, partialArgLength ) == 0 )
+		{
+			Q_snprintf( commands[count], sizeof( commands[count] ), "%s %s", command, conditionName );
+			count++;
+		}
+	}
+
+	return count;
+}
+
+//-----------------------------------------------------------------------------
+// Autocompletion function for removecond command
+//-----------------------------------------------------------------------------
+static int RemoveCondAutocomplete( const char *partial, char commands[ COMMAND_COMPLETION_MAXITEMS ][ COMMAND_COMPLETION_ITEM_LENGTH ] )
+{
+	if ( Q_strlen( partial ) >= COMMAND_COMPLETION_ITEM_LENGTH )
+	{
+		return 0;
+	}
+	
+	char command[ COMMAND_COMPLETION_ITEM_LENGTH+1 ];
+	Q_strncpy( command, partial, sizeof( command ) );
+	
+	// skip to start of argument
+	char *partialArg = Q_strrchr( command, ' ' );
+	if ( partialArg == NULL )
+	{
+		return 0;
+	}
+	
+	// chop command from partial argument
+	*partialArg = '\000';
+	++partialArg;
+	
+	int partialArgLength = Q_strlen( partialArg );
+
+	int count = 0;
+	
+	// Add "all" option first
+	if ( Q_strnicmp( "all", partialArg, partialArgLength ) == 0 )
+	{
+		Q_snprintf( commands[count], sizeof( commands[count] ), "%s all", command );
+		count++;
+	}
+	
+	// Add condition names
+	for( int i = 0; i < TF_COND_LAST && count < COMMAND_COMPLETION_MAXITEMS; ++i )
+	{
+		const char *conditionName = GetTFConditionName( (ETFCond)i );
+		if ( conditionName && *conditionName && Q_strnicmp( conditionName, partialArg, partialArgLength ) == 0 )
+		{
+			Q_snprintf( commands[count], sizeof( commands[count] ), "%s %s", command, conditionName );
+			count++;
+		}
+	}
+
+	return count;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Add condition to player
+//-----------------------------------------------------------------------------
+void CC_AddCond( const CCommand &args )
+{
+	CTFPlayer *pPlayer = ToTFPlayer( UTIL_GetCommandClient() );
+	if( !UTIL_HandleCheatCmdForPlayer(pPlayer) ) 
+		return;
+
+	if ( args.ArgC() < 2 )
+		return;
+
+	CTFPlayer *pTargetPlayer = pPlayer;
+	if ( args.ArgC() >= 4 )
+	{
+		// Find the matching netname
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		{
+			CBasePlayer *pTestPlayer = ToBasePlayer( UTIL_PlayerByIndex(i) );
+			if ( pTestPlayer )
+			{
+				if ( Q_strstr( pTestPlayer->GetPlayerName(), args[3] ) )
+				{
+					pTargetPlayer = ToTFPlayer(pTestPlayer);
+					break;
+				}
+			}
+		}
+	}
+
+	int iCond = atoi( args[1] );
+	if ( args[1][0] != '0' && iCond == 0 )
+	{
+		iCond = GetTFConditionFromName( args[1] );
+		if ( iCond == TF_COND_INVALID )
+		{
+			Warning( "Failed to addcond - invalid condition name: %s\n", args[1] );
+			return;
+		}
+	}
+
+	ETFCond eCond = TF_COND_INVALID;
+	if ( iCond >= 0 && iCond < TF_COND_LAST )
+	{
+		eCond = ( ETFCond )iCond;
+	}
+	else
+	{
+		Warning( "Failed to addcond %s to player %s\n", args[1], pTargetPlayer->GetPlayerName() );
+		return;
+	}
+
+	if ( args.ArgC() >= 3 )
+	{
+		float flDuration = atof( args[2] );
+		pTargetPlayer->m_Shared.AddCond( eCond, flDuration );
+	}
+	else
+	{
+		pTargetPlayer->m_Shared.AddCond( eCond );
+	}
+}
+static ConCommand addcond( "addcond", CC_AddCond, "Usage: addcond <condition name/id> [duration] [player name]. Add a condition to the player.", FCVAR_NONE, AddCondAutocomplete );
+
+//-----------------------------------------------------------------------------
+// Purpose: Remove condition from player
+//-----------------------------------------------------------------------------
+void CC_RemoveCond( const CCommand &args )
+{
+	CTFPlayer *pPlayer = ToTFPlayer( UTIL_GetCommandClient() );
+	if( !UTIL_HandleCheatCmdForPlayer(pPlayer) ) 
+		return;
+
+	if ( args.ArgC() < 2 )
+		return;
+
+	CTFPlayer *pTargetPlayer = pPlayer;
+	if ( args.ArgC() >= 3 )
+	{
+		// Find the matching netname
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		{
+			CBasePlayer *pTestPlayer = ToBasePlayer( UTIL_PlayerByIndex(i) );
+			if ( pTestPlayer )
+			{
+				if ( Q_strstr( pTestPlayer->GetPlayerName(), args[2] ) )
+				{
+					pTargetPlayer = ToTFPlayer(pTestPlayer);
+					break;
+				}
+			}
+		}
+	}
+
+	if ( FStrEq( args[1], "all" ) )
+	{
+		pTargetPlayer->m_Shared.RemoveAllCond();
+	}
+	else
+	{
+		int iCond = atoi( args[1] );
+		if ( args[1][0] != '0' && iCond == 0 )
+		{
+			iCond = GetTFConditionFromName( args[1] );
+			if ( iCond == TF_COND_INVALID )
+			{
+				Warning( "Failed to removecond - invalid condition name: %s\n", args[1] );
+				return;
+			}
+		}
+
+		if ( iCond >= 0 && iCond < TF_COND_LAST )
+		{
+			ETFCond eCond = (ETFCond)iCond;
+			pTargetPlayer->m_Shared.RemoveCond( eCond );
+		}
+		else
+		{
+			Warning( "Failed to removecond %s from player %s\n", args[1], pTargetPlayer->GetPlayerName() );
+		}
+	}
+}
+static ConCommand removecond( "removecond", CC_RemoveCond, "Usage: removecond <condition name/id/all> [player name]. Remove a condition from the player.", FCVAR_NONE, RemoveCondAutocomplete );

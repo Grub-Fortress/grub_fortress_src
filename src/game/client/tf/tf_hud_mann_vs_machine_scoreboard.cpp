@@ -16,6 +16,7 @@ using namespace vgui;
 extern ConVar tf_mvm_respec_credit_goal;
 extern ConVar tf_mvm_respec_limit;
 extern ConVar tf_scoreboard_alt_class_icons;
+extern ConVar bf_gamemode_mvmvs;
 
 DECLARE_BUILD_FACTORY( CMvMScoreboardEnemyInfo );
 
@@ -94,6 +95,12 @@ CTFHudMannVsMachineScoreboard::CTFHudMannVsMachineScoreboard( Panel *parent, con
 	m_bInitialized = false;
 
 	m_iSquadSurplusTexture = 0;
+
+	// Initialize auto-scroll variables
+	m_flNextScrollTime = 0.0f;
+	m_iScrollDirection = 1;
+	m_iCurrentScrollPos = 0;
+	m_bAutoScrolling = false;
 
 	Q_memset( m_iImageClass, NULL, sizeof( m_iImageClass ) );
 	Q_memset( m_iImageClassAlt, NULL, sizeof( m_iImageClassAlt ) );
@@ -183,6 +190,61 @@ void CTFHudMannVsMachineScoreboard::OnTick ()
 	UpdatePlayerList();
 	UpdateCreditStats();
 	UpdatePopFile();
+	
+	// Handle auto-scrolling if enabled
+	HandleAutoScroll();
+}
+
+//-----------------------------------------------------------------------------
+void CTFHudMannVsMachineScoreboard::HandleAutoScroll()
+{
+	if ( !m_bAutoScrolling )
+		return;
+		
+	float flCurrentTime = gpGlobals->curtime;
+	if ( flCurrentTime < m_flNextScrollTime )
+		return;
+		
+	ScrollBar *pScrollBar = m_pPlayerList->GetScrollBar();
+	if ( !pScrollBar || !pScrollBar->IsVisible() )
+	{
+		m_bAutoScrolling = false;
+		return;
+	}
+	
+	// Get scroll range
+	int nMin, nMax;
+	pScrollBar->GetRange( nMin, nMax );
+	
+	if ( nMax <= nMin )
+	{
+		m_bAutoScrolling = false;
+		return;
+	}
+	
+	// Move scroll position with consistent speed in both directions
+	m_iCurrentScrollPos += m_iScrollDirection * 7; // Faster scroll increment
+	
+	// Check bounds and reverse direction if needed
+	if ( m_iCurrentScrollPos >= nMax )
+	{
+		m_iCurrentScrollPos = nMax;
+		m_iScrollDirection = -1;
+		m_flNextScrollTime = flCurrentTime + 0.03f; // Short pause at bottom
+	}
+	else if ( m_iCurrentScrollPos <= nMin )
+	{
+		m_iCurrentScrollPos = nMin;
+		m_iScrollDirection = 1;
+		m_flNextScrollTime = flCurrentTime + 8.0f; // Short pause at top  
+	}
+	else
+	{
+		m_flNextScrollTime = flCurrentTime + 0.03f; // Fast continuous scroll speed
+	}
+	
+	// Apply scroll position
+	pScrollBar->SetValue( m_iCurrentScrollPos );
 }
 
 //-----------------------------------------------------------------------------
@@ -214,33 +276,97 @@ void CTFHudMannVsMachineScoreboard::InitPlayerList ( IScheme *pScheme )
 		m_pImageList->GetImage(i)->SetSize(scheme()->GetProportionalScaledValueEx( GetScheme(), wide ), scheme()->GetProportionalScaledValueEx( GetScheme(),tall ) );
 	}
 
-	m_pPlayerList->SetVerticalScrollbar( false );
+	m_pPlayerList->SetVerticalScrollbar( true );
 	m_pPlayerList->RemoveAll();
 	m_pPlayerList->RemoveAllSections();
-	m_pPlayerList->AddSection( 0, "Players" );
-	m_pPlayerList->SetSectionAlwaysVisible( 0, true );
-	m_pPlayerList->SetSectionFgColor( 0, Color( 255, 255, 255, 255 ) );
+	
+	// Check if we're in MvM Versus mode
+	bool bMvMVersusMode = TFGameRules() && TFGameRules()->IsMannVsMachineMode() && bf_gamemode_mvmvs.GetBool();
+	
+	if ( bMvMVersusMode )
+	{
+		// Create two sections for MvM Versus: Defenders (humans) and Invaders (robots)
+		m_pPlayerList->AddSection( 0, "#TF_MvM_Defenders" );
+		m_pPlayerList->SetSectionAlwaysVisible( 0, false ); // Will be set dynamically based on player count
+		m_pPlayerList->SetSectionFgColor( 0, Color( 255, 255, 255, 255 ) );
+		
+		m_pPlayerList->AddSection( 1, "#TF_MvM_Invaders" );
+		m_pPlayerList->SetSectionAlwaysVisible( 1, false ); // Will be set dynamically based on player count
+		m_pPlayerList->SetSectionFgColor( 1, Color( 255, 255, 255, 255 ) );
+		
+		// Add columns for Defenders section (section 0) - full columns
+		m_pPlayerList->AddColumnToSection( 0, "medal", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iMedalWidth );
+		m_pPlayerList->AddColumnToSection( 0, "spacer1", "", 0, m_iMedalSpacerWidth );
+		m_pPlayerList->AddColumnToSection( 0, "avatar", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_RIGHT, m_iAvatarWidth );
+		m_pPlayerList->AddColumnToSection( 0, "spacer0", "", 0, m_iSpacerWidth );
+		m_pPlayerList->AddColumnToSection( 0, "name", "#TF_Scoreboard_Name", 0, m_iNameWidth );
+		m_pPlayerList->AddColumnToSection( 0, "class", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iClassWidth );
+		m_pPlayerList->AddColumnToSection( 0, "tour_no", "#TF_MvMScoreboard_Tour", SectionedListPanel::COLUMN_RIGHT, m_iClassWidth );
+		m_pPlayerList->AddColumnToSection( 0, "score", "#TF_Scoreboard_Score", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "damage", "#TF_MvMScoreboard_Damage", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "tank", "#TF_MvMScoreboard_Tank", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "healing", "#TF_MvMScoreboard_Healing", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "support", "#TF_MvMScoreboard_Support", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "credits", "#TF_MvMScoreboard_Money", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "squad_surplus", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "ping", "#TF_Scoreboard_Ping", SectionedListPanel::COLUMN_RIGHT, m_iPingWidth );
+		
+		// Add columns for Invaders section (section 1) - without Tours and Credits
+		m_pPlayerList->AddColumnToSection( 1, "medal", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iMedalWidth );
+		m_pPlayerList->AddColumnToSection( 1, "spacer1", "", 0, m_iMedalSpacerWidth );
+		m_pPlayerList->AddColumnToSection( 1, "avatar", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_RIGHT, m_iAvatarWidth );
+		m_pPlayerList->AddColumnToSection( 1, "spacer0", "", 0, m_iSpacerWidth );
+		m_pPlayerList->AddColumnToSection( 1, "name", "#TF_Scoreboard_Name", 0, m_iNameWidth );
+		m_pPlayerList->AddColumnToSection( 1, "class", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iClassWidth );
+		m_pPlayerList->AddColumnToSection( 1, "score", "#TF_Scoreboard_Score", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 1, "damage", "#TF_MvMScoreboard_Damage", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 1, "tank", "#TF_MvMScoreboard_Tank", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 1, "healing", "#TF_MvMScoreboard_Healing", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 1, "support", "#TF_MvMScoreboard_Support", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 1, "squad_surplus", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 1, "ping", "#TF_Scoreboard_Ping", SectionedListPanel::COLUMN_RIGHT, m_iPingWidth );
+	}
+	else
+	{
+		// Standard MvM mode - single section  
+		m_pPlayerList->AddSection( 0, "Players" );
+		m_pPlayerList->SetSectionAlwaysVisible( 0, true );
+		m_pPlayerList->SetSectionFgColor( 0, Color( 255, 255, 255, 255 ) );
+		
+		m_pPlayerList->AddColumnToSection( 0, "medal", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iMedalWidth );
+		m_pPlayerList->AddColumnToSection( 0, "spacer1", "", 0, m_iMedalSpacerWidth );
+		m_pPlayerList->AddColumnToSection( 0, "avatar", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_RIGHT, m_iAvatarWidth );
+		m_pPlayerList->AddColumnToSection( 0, "spacer0", "", 0, m_iSpacerWidth );
+		m_pPlayerList->AddColumnToSection( 0, "name", "#TF_Scoreboard_Name", 0, m_iNameWidth );
+		m_pPlayerList->AddColumnToSection( 0, "class", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iClassWidth );
+		m_pPlayerList->AddColumnToSection( 0, "tour_no", "#TF_MvMScoreboard_Tour", SectionedListPanel::COLUMN_RIGHT, m_iClassWidth );
+		m_pPlayerList->AddColumnToSection( 0, "score", "#TF_Scoreboard_Score", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "damage", "#TF_MvMScoreboard_Damage", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "tank", "#TF_MvMScoreboard_Tank", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "healing", "#TF_MvMScoreboard_Healing", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "support", "#TF_MvMScoreboard_Support", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "credits", "#TF_MvMScoreboard_Money", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "squad_surplus", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iStatWidth );
+		m_pPlayerList->AddColumnToSection( 0, "ping", "#TF_Scoreboard_Ping", SectionedListPanel::COLUMN_RIGHT, m_iPingWidth );
+	}
+	
 	m_pPlayerList->SetBgColor( Color( 0, 0, 0, 0 ) );
 	m_pPlayerList->SetBorder( NULL );
 
-	m_hScoreFont = pScheme->GetFont( "ScoreboardVerySmall", true );	
-	m_pPlayerList->AddColumnToSection( 0, "medal", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iMedalWidth );
-	m_pPlayerList->AddColumnToSection( 0, "spacer1", "", 0, m_iMedalSpacerWidth );
-	m_pPlayerList->AddColumnToSection( 0, "avatar", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_RIGHT, m_iAvatarWidth );
-	m_pPlayerList->AddColumnToSection( 0, "spacer0", "", 0, m_iSpacerWidth );
-	m_pPlayerList->AddColumnToSection( 0, "name", "#TF_Scoreboard_Name", 0, m_iNameWidth );
-	m_pPlayerList->AddColumnToSection( 0, "class", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iClassWidth );
-	m_pPlayerList->AddColumnToSection( 0, "tour_no", "#TF_MvMScoreboard_Tour", SectionedListPanel::COLUMN_RIGHT, m_iClassWidth );
-	m_pPlayerList->AddColumnToSection( 0, "score", "#TF_Scoreboard_Score", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
-	m_pPlayerList->AddColumnToSection( 0, "damage", "#TF_MvMScoreboard_Damage", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
-	m_pPlayerList->AddColumnToSection( 0, "tank", "#TF_MvMScoreboard_Tank", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
-	m_pPlayerList->AddColumnToSection( 0, "healing", "#TF_MvMScoreboard_Healing", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
-	m_pPlayerList->AddColumnToSection( 0, "support", "#TF_MvMScoreboard_Support", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
-	// m_pPlayerList->AddColumnToSection( 0, "blocked", "Blocked", 0, m_iStatWidth );
-	// m_pPlayerList->AddColumnToSection( 0, "bonus", "Bonus", 0, m_iStatWidth );
-	m_pPlayerList->AddColumnToSection( 0, "credits", "#TF_MvMScoreboard_Money", SectionedListPanel::COLUMN_RIGHT, m_iStatWidth );
-	m_pPlayerList->AddColumnToSection( 0, "squad_surplus", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iStatWidth );
-	m_pPlayerList->AddColumnToSection( 0, "ping", "#TF_Scoreboard_Ping", SectionedListPanel::COLUMN_RIGHT, m_iPingWidth );
+	m_hScoreFont = pScheme->GetFont( "ScoreboardVerySmall", true );
+	
+	// Configure scrollbar properly
+	ScrollBar *pScrollBar = m_pPlayerList->GetScrollBar();
+	if ( pScrollBar )
+	{
+		pScrollBar->SetVisible( true );
+		pScrollBar->SetEnabled( true );
+		pScrollBar->SetWide( 16 ); // Ensure proper width
+	}
+	
+	// Enable mouse input for scrolling
+	m_pPlayerList->SetMouseInputEnabled( true );
+	m_pPlayerList->SetKeyBoardInputEnabled( true );
 
 	m_pPlayerList->SetImageList( m_pImageList, false );
 	m_pPlayerList->SetVisible( true );
@@ -277,6 +403,28 @@ void CTFHudMannVsMachineScoreboard::UpdatePlayerList ()
 	if ( !g_TF_PR )
 		return;
 
+	// Check if we're in MvM Versus mode
+	bool bMvMVersusMode = TFGameRules() && TFGameRules()->IsMannVsMachineMode() && bf_gamemode_mvmvs.GetBool();
+
+	// Count players on each team first to manage section visibility
+	int defenderCount = 0;
+	int invaderCount = 0;
+	
+	if ( bMvMVersusMode )
+	{
+		for( int playerIndex = 1 ; playerIndex <= MAX_PLAYERS; playerIndex++ )
+		{
+			if( !g_PR->IsConnected( playerIndex ) )
+				continue;
+				
+			int playerTeam = g_PR->GetTeam( playerIndex );
+			if ( playerTeam == TF_TEAM_PVE_DEFENDERS )
+				defenderCount++;
+			else if ( playerTeam == TF_TEAM_PVE_INVADERS )
+				invaderCount++;
+		}
+	}
+
 	for( int playerIndex = 1 ; playerIndex <= MAX_PLAYERS; playerIndex++ )
 	{
 		if( !g_PR->IsConnected( playerIndex ) )
@@ -284,9 +432,23 @@ void CTFHudMannVsMachineScoreboard::UpdatePlayerList ()
 			continue;
 		}
 
-		if ( g_PR->GetTeam( playerIndex ) != TF_TEAM_PVE_DEFENDERS ) 
+		int playerTeam = g_PR->GetTeam( playerIndex );
+		
+		// In standard MvM, only show defenders. In MvM Versus, show both teams
+		if ( !bMvMVersusMode )
 		{
-			continue;
+			if ( playerTeam != TF_TEAM_PVE_DEFENDERS ) 
+			{
+				continue;
+			}
+		}
+		else
+		{
+			// In MvM Versus, show both defenders and invaders (but skip spectators, unassigned, etc.)
+			if ( playerTeam != TF_TEAM_PVE_DEFENDERS && playerTeam != TF_TEAM_PVE_INVADERS ) 
+			{
+				continue;
+			}
 		}
 
 		const char *szName = g_TF_PR->GetPlayerName( playerIndex );
@@ -357,7 +519,16 @@ void CTFHudMannVsMachineScoreboard::UpdatePlayerList ()
 		if ( bAlive )
 		{
 			UpdatePlayerAvatar( playerIndex, pKeyValues );
-			fgClr = g_PR->GetTeamColor( TF_TEAM_RED );
+			
+			// In MvM Versus mode, use blue color for Invaders team, red for Defenders
+			if ( bMvMVersusMode && playerTeam == TF_TEAM_PVE_INVADERS )
+			{
+				fgClr = g_PR->GetTeamColor( TF_TEAM_BLUE );
+			}
+			else
+			{
+				fgClr = g_PR->GetTeamColor( TF_TEAM_RED );
+			}
 			bgClr = Color( 0, 0, 0, 0 );
 		}
 		else
@@ -396,13 +567,17 @@ void CTFHudMannVsMachineScoreboard::UpdatePlayerList ()
 					pKeyValues->SetInt( "squad_surplus", 0 );
 				}
 
-				if ( nTourNo > 0 )
+				// Only set tour number for Defenders in MvM Versus mode, or for all players in standard MvM
+				if ( !bMvMVersusMode || playerTeam == TF_TEAM_PVE_DEFENDERS )
 				{
-					pKeyValues->SetString( "tour_no", ConvertScoreboardValueToString( nTourNo ) );
-				}
-				else
-				{
-					pKeyValues->SetString( "tour_no", "" );
+					if ( nTourNo > 0 )
+					{
+						pKeyValues->SetString( "tour_no", ConvertScoreboardValueToString( nTourNo ) );
+					}
+					else
+					{
+						pKeyValues->SetString( "tour_no", "" );
+					}
 				}
 			}
 
@@ -428,10 +603,23 @@ void CTFHudMannVsMachineScoreboard::UpdatePlayerList ()
 			pKeyValues->SetString( "support", ConvertScoreboardValueToString( nSupport ) );
 			//pKeyValues->SetString( "blocked", ConvertScoreboardValueToString( g_TF_PR->GetDamageBlocked( playerIndex ) ) );
 			//pKeyValues->SetString( "bonus", ConvertScoreboardValueToString( g_TF_PR->GetBonusPoints( playerIndex ) ) );
-			pKeyValues->SetString( "credits", ConvertScoreboardValueToString( g_TF_PR->GetCurrencyCollected( playerIndex ) ) );
+			
+			// Only set credits for Defenders in MvM Versus mode, or for all players in standard MvM
+			if ( !bMvMVersusMode || playerTeam == TF_TEAM_PVE_DEFENDERS )
+			{
+				pKeyValues->SetString( "credits", ConvertScoreboardValueToString( g_TF_PR->GetCurrencyCollected( playerIndex ) ) );
+			}
 		}	
 
-		int itemID = m_pPlayerList->AddItem( 0, pKeyValues );
+		// Determine which section to add the player to
+		int sectionIndex = 0; // Default to section 0 for standard MvM
+		if ( bMvMVersusMode )
+		{
+			// In MvM Versus mode: section 0 = Defenders, section 1 = Invaders
+			sectionIndex = (playerTeam == TF_TEAM_PVE_INVADERS) ? 1 : 0;
+		}
+
+		int itemID = m_pPlayerList->AddItem( sectionIndex, pKeyValues );
 			
 		m_pPlayerList->SetItemFgColor( itemID, fgClr );
 		m_pPlayerList->SetItemBgColor( itemID, bgClr );
@@ -440,8 +628,51 @@ void CTFHudMannVsMachineScoreboard::UpdatePlayerList ()
 		pKeyValues->deleteThis();
 	}
 
+	// In MvM Versus mode, manage section visibility based on player counts
+	if ( bMvMVersusMode )
+	{
+		// Only show sections that have players
+		m_pPlayerList->SetSectionAlwaysVisible( 0, defenderCount > 0 );
+		m_pPlayerList->SetSectionAlwaysVisible( 1, invaderCount > 0 );
+	}
+
 	// force the list to PerformLayout() now so we can update our medal images after we return
 	m_pPlayerList->InvalidateLayout( true );
+	
+	// Check if we need auto-scrolling (if there are many players and scrollbar is needed)
+	ScrollBar *pScrollBar = m_pPlayerList->GetScrollBar();
+	if ( pScrollBar )
+	{
+		pScrollBar->InvalidateLayout( true );
+		
+		// Force a layout update to get correct scroll range
+		m_pPlayerList->InvalidateLayout( true );
+		
+		// Get scroll range to see if scrolling is needed
+		int nMin, nMax;
+		pScrollBar->GetRange( nMin, nMax );
+		
+		// Enable auto-scrolling if there's more content than fits
+		if ( nMax > nMin + 10 && pScrollBar->IsVisible() ) // Added buffer of 10 to ensure meaningful scrolling
+		{
+			if ( !m_bAutoScrolling )
+			{
+				// Start auto-scrolling
+				m_bAutoScrolling = true;
+				m_iCurrentScrollPos = nMin;
+				m_iScrollDirection = 1;
+				m_flNextScrollTime = gpGlobals->curtime + 0.5f; // Wait 0.5 seconds before starting
+				pScrollBar->SetValue( m_iCurrentScrollPos );
+			}
+		}
+		else
+		{
+			// No scrolling needed, disable auto-scroll
+			m_bAutoScrolling = false;
+			m_iCurrentScrollPos = nMin;
+			pScrollBar->SetValue( nMin );
+		}
+	}
 }
 //-----------------------------------------------------------------------------
 void CTFHudMannVsMachineScoreboard::UpdatePlayerAvatar( int playerIndex, KeyValues *kv )

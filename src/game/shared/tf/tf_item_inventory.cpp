@@ -49,7 +49,9 @@
 using namespace GCSDK;
 
 #define LOCAL_LOADOUT_FILE		"cfg/local_loadout.txt"
-#define LOCAL_LOADOUT_RESERVE	65536
+
+ConVar bf_cosmetic_restrictions("bf_cosmetic_restrictions", "1", FCVAR_REPLICATED, "Disable holiday restrictions on items.");
+
 #ifdef CLIENT_DLL
 //-----------------------------------------------------------------------------
 CEconNotification_HasNewItems::CEconNotification_HasNewItems() : CEconNotification()
@@ -292,7 +294,7 @@ bool CTFInventoryManager::EquipItemInLoadout( int iClass, int iSlot, itemid_t iI
 		return m_LocalInventory.ClearLoadoutSlot( iClass, iSlot );
 
 	CEconItemView *pItem = m_LocalInventory.GetInventoryItemByItemID( iItemID );
-	if (iItemID < LOCAL_LOADOUT_RESERVE)
+	if (iItemID < 100000)
 	{
 		int count = TFInventoryManager()->GetModItemCount();
 		for (int i = 0; i < count; i++)
@@ -1106,7 +1108,7 @@ void CTFPlayerInventory::EquipLocal(uint64 ulItemID, equipped_class_t unClass, e
 
 	// Unequip whatever was previously in the slot.
 	itemid_t ulPreviousItem = m_LoadoutItems[unClass][unSlot];
-	if (ulPreviousItem != 0 && ulPreviousItem < LOCAL_LOADOUT_RESERVE)
+	if (ulPreviousItem != 0 && ulPreviousItem < 100000)
 	{
 		int count = TFInventoryManager()->GetModItemCount();
 		for (int i = 0; i < count; i++)
@@ -1127,7 +1129,7 @@ void CTFPlayerInventory::EquipLocal(uint64 ulItemID, equipped_class_t unClass, e
 	}
 
 	// Equip the new item and add it to our loadout.
-	if (ulItemID < LOCAL_LOADOUT_RESERVE)
+	if (ulItemID < 100000)
 	{
 		int count = TFInventoryManager()->GetModItemCount();
 		CEconItemView* pItem;
@@ -1558,7 +1560,7 @@ CEconItemView *CTFPlayerInventory::GetItemInLoadout( int iClass, int iSlot )
 			if ( pItem && AreSlotsConsideredIdentical( pItem->GetStaticData()->GetEquipType(), pItem->GetStaticData()->GetLoadoutSlot( iClass ), iSlot ) )
 				return pItem;
 
-			if (m_LoadoutItems[iClass][iSlot] < LOCAL_LOADOUT_RESERVE)
+			if (m_LoadoutItems[iClass][iSlot] < 100000)
 			{
 				int count = TFInventoryManager()->GetModItemCount();
 				for (int i = 0; i < count; i++)

@@ -2281,6 +2281,9 @@ void CWeaponMedigun::OnDataChanged( DataUpdateType_t updateType )
 		{
 			UpdateMedicAutoCallers();
 		}
+		
+		// Update crit heal indicators (independent of auto-caller setting)
+		UpdateCritHealIndicators();
 	}
 }
 
@@ -2576,9 +2579,6 @@ void CWeaponMedigun::UpdateMedicAutoCallers( void )
 		// Throttle this check
 		m_flAutoCallerCheckTime = gpGlobals->curtime + 0.25f;
 	}
-
-	// Update crit heal indicators
-	UpdateCritHealIndicators();
 }
 
 //-----------------------------------------------------------------------------

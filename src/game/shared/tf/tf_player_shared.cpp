@@ -24,6 +24,7 @@
 #include "tf_weapon_wrench.h"
 #include "econ_wearable.h"
 #include "econ_item_system.h"
+#include "econ_item_schema.h"
 #include "tf_weapon_knife.h"
 #include "tf_weapon_syringegun.h"
 #include "tf_weapon_flamethrower.h"
@@ -13650,6 +13651,22 @@ void CTFPlayerShared::RecalculatePlayerBodygroups( void )
 	// Leaving bits on from previous player classes can have weird effects
 	// like if we switch to a class that uses those bits for other things.
 	m_pOuter->m_nBody = 0;
+
+#ifdef CLIENT_DLL
+	// Reset bodygroups to their schema-defined default values
+	// This is especially important when cosmetics are disabled/enabled to restore default bodygroups
+	const CEconItemSchema::BodygroupStateMap_t& mapBodygroupState = GetItemSchema()->GetDefaultBodygroupStateMap();
+	FOR_EACH_DICT_FAST( mapBodygroupState, i )
+	{
+		const char *pszBodygroupName = mapBodygroupState.GetElementName(i);
+		int iBodyGroup = m_pOuter->FindBodygroupByName( pszBodygroupName );
+		if ( iBodyGroup > -1 )
+		{
+			int iState = mapBodygroupState[i];
+			m_pOuter->SetBodygroup( iBodyGroup, iState );
+		}
+	}
+#endif
 
 	// Update our weapon bodygroups that change state purely based on whether they're
 	// equipped or not.

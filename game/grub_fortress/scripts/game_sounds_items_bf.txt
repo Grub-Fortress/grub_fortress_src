@@ -1,0 +1,12 @@
+// ------------------------------------------------------------------------------------ //
+// BIGGER AND BETTER SET - BMMH 1.0
+// ------------------------------------------------------------------------------------ //
+"Weapon_Bmmh.Single"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_92dB"
+	"volume"	"0.8"
+
+	"wave"		")weapons\weapon_bmmh_single.wav"
+}
+

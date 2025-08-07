@@ -16,20 +16,6 @@
 #include "item_selection_criteria.h"
 #include "checksum_sha1.h"
 
-#ifdef CLIENT_DLL
-#include "engine/IEngineSound.h"
-#include "cdll_client_int.h"
-#include "vgui_controls/MessageBox.h"
-#include "vgui/IVGui.h"
-#include "vgui/ISurface.h"
-#include "cdll_int.h"
-#endif
-
-#ifdef GAME_DLL
-#include "engine/iserverplugin.h"
-#include "eiface.h"
-#endif
-
 #include <google/protobuf/text_format.h>
 #include <string.h>
 
@@ -38,12 +24,6 @@
 #include "materialsystem/itexturecompositor.h"
 
 #include "econ_paintkit.h"
-
-#ifdef CLIENT_DLL
-#include "vgui_controls/MessageBox.h"
-#include "vgui/IVGui.h"
-#include "vgui/ISurface.h"
-#endif
 
 #if ( defined( _MSC_VER ) && _MSC_VER >= 1900 )
 #define timezone _timezone
@@ -1081,6 +1061,7 @@ bool CEconLootListDefinition::AddLootlistJob( KeyValues *pLootlistJobKV, CEconIt
 bool lootlist_attrib_t::BInitFromKV( const char *pszContext, KeyValues *pKVKey, CEconItemSchema &pschema, CUtlVector<CUtlString> *pVecErrors )
 {
 	SCHEMA_INIT_SUBSTEP( m_staticAttrib.BInitFromKV_MultiLine( pszContext, pKVKey, pVecErrors ) );
+
 
 	m_flWeight = pKVKey->GetFloat( "weight" );
 
@@ -3358,13 +3339,10 @@ bool CEconItemDefinition::BInitFromKV( KeyValues *pKVItem, CUtlVector<CUtlString
 				static_attrib_t staticAttrib;
 
 				SCHEMA_INIT_SUBSTEP( staticAttrib.BInitFromKV_SingleLine( GetDefinitionName(), pKVKey, pVecErrors, false ) );
-				if (!staticAttrib.bShouldDelete) // Thanks Kepler
-				{
-					m_vecStaticAttributes.AddToTail(staticAttrib);
+				m_vecStaticAttributes.AddToTail( staticAttrib );
 
-					// Does this attribute specify a tag to apply to this item definition?
-					Assert(staticAttrib.GetAttributeDefinition());
-				}
+				// Does this attribute specify a tag to apply to this item definition?
+				Assert( staticAttrib.GetAttributeDefinition() );
 			}
 		}
 	}
@@ -3378,15 +3356,10 @@ bool CEconItemDefinition::BInitFromKV( KeyValues *pKVItem, CUtlVector<CUtlString
 			static_attrib_t staticAttrib;
 
 			SCHEMA_INIT_SUBSTEP( staticAttrib.BInitFromKV_MultiLine( GetDefinitionName(), pKVKey, pVecErrors ) );
+			m_vecStaticAttributes.AddToTail( staticAttrib );
 
-			// Only add if we shouldn't delete the attribute // Thanks Kepler
-			if (!staticAttrib.bShouldDelete)
-			{
-				m_vecStaticAttributes.AddToTail(staticAttrib);
-
-				// Does this attribute specify a tag to apply to this item definition?
-				Assert(staticAttrib.GetAttributeDefinition());
-			}
+			// Does this attribute specify a tag to apply to this item definition?
+			Assert( staticAttrib.GetAttributeDefinition() );
 		}
 	}
 
@@ -3462,13 +3435,6 @@ bool static_attrib_t::BInitFromKV_MultiLine( const char *pszContext, KeyValues *
 		pAttrType->InitializeNewEconAttributeValue( &m_value );
 
 		const char *pszValue = pKVAttribute->GetString( "value", NULL );
-
-		// Found an attribute to delete // Thanks Kepler
-		if ( strcmp(pszValue, "delete") == 0 )
-		{
-			bShouldDelete = true;
-		}
-
 		const bool bSuccessfullyLoadedValue = pAttrType->BConvertStringToEconAttributeValue( pAttrDef, pszValue, &m_value, true );
 
 		SCHEMA_INIT_CHECK(
@@ -3501,13 +3467,6 @@ bool static_attrib_t::BInitFromKV_SingleLine( const char *pszContext, KeyValues 
 		pAttrType->InitializeNewEconAttributeValue( &m_value );
 
 		const char *pszValue = pKVAttribute->GetString();
-
-		// Found an attribute to delete // Thanks Kepler
-		if (strcmp(pszValue, "delete") == 0)
-		{
-			bShouldDelete = true;
-		}
-
 		const bool bSuccessfullyLoadedValue = pAttrType->BConvertStringToEconAttributeValue( pAttrDef, pszValue, &m_value, bEnableTerribleBackwardsCompatibilitySchemaParsingCode );
 
 		SCHEMA_INIT_CHECK(
@@ -4452,21 +4411,15 @@ bool CEconItemSchema::BInitBinaryBuffer( CUtlBuffer &buffer, CUtlVector<CUtlStri
 	return false;
 }
 
-unsigned char g_sha1ItemSchemaText[ k_cubHash ];
-
 //-----------------------------------------------------------------------------
 // Initializes the schema, given KV in text form
 //-----------------------------------------------------------------------------
 bool CEconItemSchema::BInitTextBuffer( CUtlBuffer &buffer, CUtlVector<CUtlString> *pVecErrors /* = NULL */ )
 {
-	// Save off the hash into a global variable, so VAC can check it
-	// later
-	GenerateHash( g_sha1ItemSchemaText, buffer.Base(), buffer.TellPut() );
-
 	Reset();
 	m_pKVRawDefinition = new KeyValues( "CEconItemSchema" );
 	//if ( m_pKVRawDefinition->LoadFromBuffer( NULL, buffer ) )
-	if ( m_pKVRawDefinition->LoadFromFile( g_pFullFileSystem, "scripts/items/items_custom.txt", "GAME" ) )
+	if (m_pKVRawDefinition->LoadFromFile(g_pFullFileSystem, "scripts/items/items_custom.txt", "GAME"))
 	{
 		return BInitSchema( m_pKVRawDefinition, pVecErrors )
 			&& BPostSchemaInit( pVecErrors );
@@ -7061,7 +7014,6 @@ void CEconItemSchema::Validate( CValidator &validator, const char *pchName )
 
 bool CEconItemSchema::BPostSchemaInit( CUtlVector<CUtlString> *pVecErrors )
 {
-
 	// We need the protodefs to be initialized
 	if ( !GetProtoScriptObjDefManager()->BDefinitionsLoaded() )
 	{
@@ -7243,3 +7195,4 @@ const CEconItemCollectionDefinition *CEconItemSchema::GetPaintKitCollectionFromI
 
 	return pCollection;
 }
+

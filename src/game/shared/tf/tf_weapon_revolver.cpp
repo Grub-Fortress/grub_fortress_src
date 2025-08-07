@@ -40,6 +40,7 @@ BEGIN_DATADESC( CTFRevolver )
 END_DATADESC()
 #endif
 
+CREATE_SIMPLE_WEAPON_TABLE( TFRevolver_Secondary, tf_weapon_revolver_secondary )
 
 //=============================================================================
 //

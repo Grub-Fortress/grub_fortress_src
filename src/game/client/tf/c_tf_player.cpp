@@ -243,6 +243,9 @@ void bf_disable_cosmetics_changed( IConVar *var, const char *pOldValue, float fl
 			C_TFPlayer *pPlayer = ToTFPlayer( UTIL_PlayerByIndex( i ) );
 			if ( pPlayer )
 			{
+				// Force bodygroups to recalculate to reset to defaults when cosmetics are disabled
+				pPlayer->SetBodygroupsDirty();
+				
 				for ( int j = 0; j < pPlayer->GetNumWearables(); j++ )
 				{
 					C_EconWearable *pWearable = pPlayer->GetWearable( j );
@@ -9176,20 +9179,10 @@ void C_TFPlayer::ValidateModelIndex( void )
 	}
 	else
 	{
-		int usingRobotCosmetic = 0;
-		CALL_ATTRIB_HOOK_INT( usingRobotCosmetic, robotrobotrobotrobot );
 		C_TFPlayerClass *pClass = GetPlayerClass();
-
-		// MVM Versus - use robot model when using robot cosmetics
-		if ( usingRobotCosmetic && pClass )
+		if ( pClass )
 		{
-			int nRobotClassIndex = GetPlayerClass()->GetClassIndex();
-			SetModelIndex( modelinfo->GetModelIndex( g_szBotModels[ nRobotClassIndex ] ) );
-			SetBloodColor( DONT_BLEED );
-		}
-		else if ( pClass )
-		{
-			SetModelIndex( modelinfo->GetModelIndex( pClass->GetModelName() ) );
+			m_nModelIndex = modelinfo->GetModelIndex( pClass->GetModelName() );
 		}
 	}
 
@@ -10795,7 +10788,7 @@ void C_TFPlayer::UpdateMVMEyeGlowEffect( bool bVisible )
 	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() )
 	{
 		// Actual robots (bots on invader team)
-		if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+		if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS || usingRobotCosmetic )
 		{
 			bShouldHaveEyeGlow = true;
 		}

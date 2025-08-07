@@ -52,6 +52,9 @@
 #include "dota_animation.h"
 #endif
 
+#include "networkstringtable_gamedll.h"
+INetworkStringTable *g_StringTableDownloadables = NULL;
+
 extern ScriptClassDesc_t * GetScriptDesc( CBaseEntity * );
 
 extern CServerGameDLL g_ServerGameDLL;
@@ -2317,6 +2320,82 @@ static float ScriptTraceLinePlayersIncluded( const Vector &vecStart, const Vecto
 		return tr.fraction;
 	}
 }
+bool ScriptAddFileToDownloadsTable( const char *pszFileName )
+{
+	if ( !pszFileName || !*pszFileName )
+	{
+		Log_Warning( LOG_VScript, "ScriptAddFileToDownloadsTable: NULL/empty file name\n" );
+		return false;
+	}
+	
+	if ( filesystem->FileExists( pszFileName ) )
+	{
+		//DevMsg( "ScriptAddFileToDownloadsTable: Adding file '%s' to downloadables table.\n", pszFileName );
+		
+		bool save = engine->LockNetworkStringTables( false );
+		g_StringTableDownloadables->AddString( true, pszFileName );
+		engine->LockNetworkStringTables( save );
+		return true;
+	}
+	else
+	{
+		DevMsg( "ScriptAddFileToDownloadsTable: Could not find file '%s'. Ignoring...\n", pszFileName );
+		return false;
+	}
+
+	return false;
+}
+
+bool ScriptIsFileInDownloadsTable( const char *pszFileName )
+{
+	if ( !pszFileName || !*pszFileName )
+	{
+		Log_Warning( LOG_VScript, "ScriptIsFileInDownloadsTable: NULL/empty file name\n" );
+		return false;
+	}
+	int nIndex = g_StringTableDownloadables->FindStringIndex( pszFileName );
+	if ( nIndex != INVALID_STRING_INDEX )
+		return true;
+
+	return false;
+}
+
+int ScriptGetDownloadsTableLength()
+{
+	return g_StringTableDownloadables->GetNumStrings();
+}
+
+static const char *ScriptGetStringFromDownloadsTable( int id )
+{
+	int nStrings = g_StringTableDownloadables->GetNumStrings();
+	if ( id < nStrings )
+	{
+		return g_StringTableDownloadables->GetString( id );
+	}
+	return NULL;
+}
+
+// Reference: https://forums.alliedmods.net/showthread.php?p=1438773
+bool ScriptRemoveFileFromDownloadsTable( const char* pszFileToRemove )
+{
+	if ( !pszFileToRemove || !*pszFileToRemove )
+	{
+		Log_Warning( LOG_VScript, "ScriptRemoveFileFromDownloadsTable: NULL/empty file name\n" );
+		return false;
+	}
+
+	int nIndex = g_StringTableDownloadables->FindStringIndex( pszFileToRemove );
+	if ( nIndex != INVALID_STRING_INDEX )
+	{
+		DevMsg( "ScriptRemoveFileFromDownloadsTable: Removing file '%s' from the downloadables table.\n", pszFileToRemove );
+		bool save = engine->LockNetworkStringTables( false );
+		g_StringTableDownloadables->SetStringUserData( nIndex, 0, NULL );
+		engine->LockNetworkStringTables( save );
+		return true;
+	}
+
+	return false;
+}
 
 #include "usermessages.h"
 
@@ -2632,6 +2711,11 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptDispatchParticleEffect, "DispatchParticleEffect", "Dispatches a one-off particle system" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptDispatchEffect, "DispatchEffect", "Dispatches a client effect");
 				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptSetSkyboxTexture, "SetSkyboxTexture", "Sets the current skybox texture" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptAddFileToDownloadsTable, "AddFileToDownloadsTable", "Adds a file to the downloads table, returns false if the file does not exist." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptIsFileInDownloadsTable, "IsFileInDownloadsTable", "Checks if the file is in the downloads table." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptGetDownloadsTableLength, "GetDownloadsTableLength", "Get the length of the downloads table." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptGetStringFromDownloadsTable, "GetStringFromDownloadsTable", "Get a string from the downloads table by id, returns null if a string is not found." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptRemoveFileFromDownloadsTable, "RemoveFileFromDownloadsTable", "Removes a file in the downloads table ( WARNING: EXPENSIVE! )." );
 
 #if defined ( PORTAL2 )
 				ScriptRegisterFunction( g_pScriptVM, SetDucking, "Set the level of an audio ducking channel" );
@@ -3531,6 +3615,8 @@ DECLARE_SCRIPT_CONST_NAMED( Server, "ConstantNamingConvention", "Constants are n
 REGISTER_SCRIPT_CONST_TABLE( Server )
 #endif
 				g_pScriptVM->SetValue( "Constants", vConstantsTable );
+				// Store the Downloads String Table.
+				g_StringTableDownloadables = networkstringtable->FindTable( "downloadables" );
 
 				if ( scriptLanguage == SL_SQUIRREL )
 				{

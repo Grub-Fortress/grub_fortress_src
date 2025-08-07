@@ -98,7 +98,7 @@ ConVar tf_dingaling_lasthit_pitchmaxdmg( "tf_dingaling_lasthit_pitchmaxdmg", "10
 ConVar tf_dingaling_lasthit_pitch_override( "tf_dingaling_lasthit_pitch_override", "-1", FCVAR_NONE, "If set, pitch for last hit sounds." );
 
 ConVar tf_dingalingaling_repeat_delay( "tf_dingalingaling_repeat_delay", "0.0", FCVAR_ARCHIVE, "Desired repeat delay of the hit sound.  Set to 0 to play a sound for every instance of damage dealt.", true, 0.f, false, 0.f );
-ConVar tf_metal_allclass("tf_metal_allclass", "0", FCVAR_CHEAT, "Everyone uses metal");
+ConVar bf_metal_allclass("bf_metal_allclass", "0", FCVAR_CHEAT, "Everyone uses metal");
 
 ConVar hud_damagemeter( "hud_damagemeter", "0", FCVAR_CHEAT, "Display damage-per-second information in the lower right corner of the screen." );
 ConVar hud_damagemeter_period( "hud_damagemeter_period", "0", FCVAR_NONE, "When set to zero, average damage-per-second across all recent damage events, otherwise average damage across defined period (number of seconds)." );
@@ -277,7 +277,7 @@ public:
 	virtual bool ShouldDraw( void ) OVERRIDE
 	{
 		C_TFPlayer *pPlayer = C_TFPlayer::GetLocalTFPlayer();
-		if ( !tf_metal_allclass.GetBool() )
+		if ( !bf_metal_allclass.GetBool() )
 		{
 			if (!pPlayer || !pPlayer->IsAlive() || !pPlayer->IsPlayerClass(TF_CLASS_ENGINEER))
 			{

@@ -145,6 +145,7 @@ public:
 	CAttributeList				*GetAttributeList( void ) { return m_AttributeManager.GetItem()->GetAttributeList(); }
 	virtual void				ReapplyProvision( void );
 	float						ScriptGetAttribute( const char *pName, float flFallbackValue );
+	const char					*ScriptGetDefinitionString( const char *pszName );
 
 	void AddAttribute( const char *pszAttributeName, float flVal, float flDuration )
 	{

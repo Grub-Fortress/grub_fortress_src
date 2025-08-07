@@ -463,6 +463,9 @@ void CTFBat_Wood::LaunchBall( void )
 	if ( !pPlayer )
 		return;
 
+	int iInfiniteAmmo = 0;
+	CALL_ATTRIB_HOOK_INT( iInfiniteAmmo, has_infinite_ammo );
+
 #if GAME_DLL
 	// Make a ball.
 	CBaseEntity* pBall = CreateBall();
@@ -474,10 +477,11 @@ void CTFBat_Wood::LaunchBall( void )
 		WeaponSound( BURST );
 	}
 	WeaponSound( SPECIAL2 );
-	pPlayer->RemoveAmmo( 1, TF_AMMO_GRENADES1 );
+	if ( !iInfiniteAmmo )
+		pPlayer->RemoveAmmo( 1, TF_AMMO_GRENADES1 );
 #endif
-
-	StartEffectBarRegen();
+	if ( !iInfiniteAmmo )
+		StartEffectBarRegen();
 }
 
 // SERVER ONLY --

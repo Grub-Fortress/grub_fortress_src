@@ -74,7 +74,7 @@ private:
 	void UpdateCreditStats();
 	void UpdateCreditSpend();
 	void UpdatePopFile();
-
+	void HandleAutoScroll();
 
 	bool m_bInitialized;
 	char m_popfile[ MAX_PATH ];
@@ -108,6 +108,12 @@ private:
 	int		m_iDisplayedWave;
 
 	vgui::HFont m_hScoreFont;	
+
+	// Auto-scroll variables for when there are too many players
+	float m_flNextScrollTime;
+	int m_iScrollDirection; // 1 for down, -1 for up
+	int m_iCurrentScrollPos;
+	bool m_bAutoScrolling;
 
 	//380
 	CPanelAnimationVarAliasType( int, m_iMedalWidth, "medal_width", "20", "proportional_int" );

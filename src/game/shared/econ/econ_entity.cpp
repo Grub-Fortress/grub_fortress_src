@@ -88,6 +88,7 @@ BEGIN_ENT_SCRIPTDESC( CEconEntity, CBaseAnimating, "Econ Entity" )
 	DEFINE_SCRIPTFUNC( RemoveAttribute, "Remove an attribute to the entity" )
 	DEFINE_SCRIPTFUNC( ReapplyProvision, "Flush any attribute changes we provide onto our owner" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetAttribute, "GetAttribute", "Get an attribute float from the entity" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetDefinitionString, "GetDefinitionString", "Gets the string value of a key from the item" )
 END_SCRIPTDESC();
 #endif
 
@@ -325,6 +326,18 @@ float CEconEntity::ScriptGetAttribute( const char *pName, float flFallbackValue 
 	}
 
 	return flFallbackValue;
+}
+
+const char *CEconEntity::ScriptGetDefinitionString( const char *pszName )
+{
+	CEconItemView* pItem = GetAttributeContainer()->GetItem();
+	if ( pItem )
+	{
+		const char *pszStr = pItem->GetDefinitionString( pszName, NULL );
+		return pszStr;
+	}
+
+	return NULL;
 }
 
 //-----------------------------------------------------------------------------
