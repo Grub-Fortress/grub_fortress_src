@@ -18,6 +18,7 @@
 // Client specific.
 #ifdef CLIENT_DLL
 #define CTFMinigun C_TFMinigun
+#define CTFMinigun_SingleShot C_TFMinigun_SingleShot
 #endif
 
 #ifdef GAME_DLL
@@ -202,6 +203,16 @@ private:
 
 	MinigunState_t		m_iPrevMinigunState;
 #endif
+};
+
+//=============================================================================
+// Singleshot Minigun
+class CTFMinigun_SingleShot : public CTFMinigun
+{
+public:
+	DECLARE_CLASS(CTFMinigun_SingleShot, CTFMinigun);
+	DECLARE_NETWORKCLASS();
+	DECLARE_PREDICTABLE();
 };
 
 #endif // TF_WEAPON_MINIGUN_H
