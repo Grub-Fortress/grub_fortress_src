@@ -1,1 +1,0 @@
-These scripts show off vscript functions that are added by Better Fortress 2.

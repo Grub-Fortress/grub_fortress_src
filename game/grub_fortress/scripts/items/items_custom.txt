@@ -471,7 +471,7 @@ not sure if it should be used as a weapon"
 				"damage bonus" 
 				{
 					"attribute_class"	"mult_dmg"
-					"value"				"1.5"
+					"value"				"3.5"
 				}			
 				"fire rate penalty"
 				{
@@ -525,11 +525,6 @@ not sure if it should be used as a weapon"
 			}
 			"attributes"
 			{
-//				"damage bonus"
-//				{
-//					"attribute_class"	"mult_dmg"
-//					"value"				"1.15"
-//				}
 				"weapon spread bonus"
 				{
 					"attribute_class"	"mult_spread_scale"
@@ -538,12 +533,17 @@ not sure if it should be used as a weapon"
 				"fire rate penalty"
 				{
 					"attribute_class"	"mult_postfiredelay"
-					"value"				"4"
+					"value"				"2.5"
 				}
 				"minigun spinup time decreased"
 				{
 					"attribute_class"	"mult_minigun_spinup_time"
 					"value"				"0.5"
+				}
+				"damage penalty"
+				{
+					"attribute_class"	"mult_dmg"
+					"value"				"0.85"
 				}	
 				"maxammo primary reduced"
 				{
