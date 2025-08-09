@@ -50,8 +50,6 @@ using namespace GCSDK;
 
 #define LOCAL_LOADOUT_FILE		"cfg/local_loadout.txt"
 
-ConVar bf_cosmetic_restrictions("bf_cosmetic_restrictions", "0", FCVAR_REPLICATED || FCVAR_DEVELOPMENTONLY, "Disable holiday restrictions on items.");
-
 #ifdef CLIENT_DLL
 //-----------------------------------------------------------------------------
 CEconNotification_HasNewItems::CEconNotification_HasNewItems() : CEconNotification()

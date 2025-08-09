@@ -471,13 +471,13 @@ not sure if it should be used as a weapon"
 				"damage bonus" 
 				{
 					"attribute_class"	"mult_dmg"
-					"value"				"3.5"
+					"value"				"2"
 				}			
-				"fire rate penalty"
-				{
-					"attribute_class"	"mult_postfiredelay"
-					"value"				"1.5"
-				}		
+//				"fire rate penalty"
+//				{
+//					"attribute_class"	"mult_postfiredelay"
+//					"value"				"1.5"
+//				}		
 				"maxammo primary reduced" 
 				{
 					"attribute_class"	"mult_maxammo_primary"
@@ -488,11 +488,11 @@ not sure if it should be used as a weapon"
 					"attribute_class"	"mult_minigun_spinup_time"
 					"value"				"1.15"
 				}	
-				"max health additive penalty" 
-				{
-					"attribute_class"	"add_maxhealth"
-					"value"				"-50"
-				}							
+//				"max health additive penalty" 
+//				{
+//					"attribute_class"	"add_maxhealth"
+//					"value"				"-50"
+//				}							
 			}
 			"visuals"
 			{		

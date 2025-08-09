@@ -1296,7 +1296,7 @@ public:
 	int			GetInventoryImagePosition( int iIndex ) const	{ Assert( iIndex >= 0 && iIndex < 2); return m_iInventoryImagePosition[iIndex]; }
 	int			GetInventoryImageSize( int iIndex ) const	{ Assert( iIndex >= 0 && iIndex < 2); return m_iInventoryImageSize[iIndex]; }
 	int			GetDropType( void ) const			{ return m_iDropType; }
-	const char	*GetHolidayRestriction( void ) const	{ ConVarRef bf_cosmetic_restrictions("bf_cosmetic_restrictions"); if ( bf_cosmetic_restrictions.GetBool() ) { return m_pszHolidayRestriction; } else { return NULL; } }
+	const char	*GetHolidayRestriction( void ) const	{ return m_pszHolidayRestriction; }
 	int			GetVisionFilterFlags( void ) const	{ return m_nVisionFilterFlags; }
 	int			GetSubType( void ) const	{ return m_iSubType; }
 	item_capabilities_t GetCapabilities( void ) const { return m_iCapabilities; }
