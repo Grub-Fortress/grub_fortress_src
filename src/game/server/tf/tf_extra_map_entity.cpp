@@ -134,14 +134,9 @@ void CExtraMapEntity::SpawnExtraModel( void )
 
 	// Better Fortress 2 - i loved these teasers, and i am sure everyone did back in the day...
 	KeyValues *pFileKV = new KeyValues( "models" );
-	/*
+
 	if ( !pFileKV->LoadFromFile( g_pFullFileSystem, "scripts/extra_models.txt", "MOD" ) )
 		return;
-	*/
-	if ( !pFileKV->LoadFromFile( g_pFullFileSystem, "scripts/bf_extra_models.txt", "GAME" ) )
-		return;
-
-
 
 	// See if we have an entry for this map.
 	KeyValues *pMapKV = pFileKV->FindKey( pszMapName );
