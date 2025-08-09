@@ -463,11 +463,11 @@ not sure if it should be used as a weapon"
 			}
 			"attributes"
 			{
-//				"override projectile type"
-//				{
-//					"attribute_class"	"override_projectile_type"
-//					"value"				"32"
-//				}
+				"override projectile type"
+				{
+					"attribute_class"	"override_projectile_type"
+					"value"				"32"
+				}
 				"damage bonus" 
 				{
 					"attribute_class"	"mult_dmg"
@@ -488,11 +488,11 @@ not sure if it should be used as a weapon"
 					"attribute_class"	"mult_minigun_spinup_time"
 					"value"				"1.15"
 				}	
-//				"max health additive penalty" 
-//				{
-//					"attribute_class"	"add_maxhealth"
-//					"value"				"-50"
-//				}							
+				"max health additive penalty" 
+				{
+					"attribute_class"	"add_maxhealth"
+					"value"				"-50"
+				}							
 			}
 			"visuals"
 			{		
@@ -513,6 +513,7 @@ not sure if it should be used as a weapon"
 			"moditem"					"1"
 			"item_description"			"(Credits : Haau, kibbleknight)"
 			"propername"				"0"
+			"anim_slot"					"primary"
 			"item_name"					"The Big Owen"
 			"item_logname"				"bigowen"
 			"item_iconname"				"bigowen"
