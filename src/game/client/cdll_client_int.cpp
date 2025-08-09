@@ -1816,6 +1816,19 @@ void CHLClient::ResetStringTablePointers()
 #endif
 }
 
+#ifdef SDK_TEMP_PATCH
+static void ClearClientDynamicModelList()
+{
+	// engine bugfix: clear out client dynamic model list for listen servers
+	// TODO remove this when the engine is updated
+	struct CModelInfo : IVModelInfoClient
+	{
+		CUtlVector< model_t* > m_vecDynamicModels;
+	};
+	static_cast<CModelInfo*>( modelinfo )->m_vecDynamicModels.Purge();
+}
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: Per level de-init
 //-----------------------------------------------------------------------------
@@ -1866,6 +1879,9 @@ void CHLClient::LevelShutdown( void )
 	internalCenterPrint->Clear();
 
 	messagechars->Clear();
+#ifdef SDK_TEMP_PATCH
+	ClearClientDynamicModelList();
+#endif
 
 #ifndef TF_CLIENT_DLL
 	// don't want to do this for TF2 because we have particle systems in our

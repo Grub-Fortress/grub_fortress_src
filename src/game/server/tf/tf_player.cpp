@@ -6,6 +6,8 @@
 //=============================================================================
 
 #include "cbase.h"
+#include "tier1/strtools.h"
+#include <cctype>
 #include "tf_player.h"
 #include "tf_gamerules.h"
 #include "tf_gamestats.h"
@@ -4975,9 +4977,14 @@ void CTFPlayer::Spawn()
 		ResetMaxHealthDrain();
 		SetHealth( GetMaxHealth() );
 	}
+
+	extern ConVar tf_teleporter_fov_time;
+	extern ConVar tf_teleporter_fov_start;
+	extern ConVar tf_mvm_engineer_teleporter_uber_duration;
 	
+	// MVM Versus - Add robot engineer teleports as new spawnpoints! Bots are handled in automatic somewhere else, so we exclude them
 	// Play teleporter effects for robot players who spawned at teleporters
-	if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS && TFGameRules() && TFGameRules()->IsMannVsMachineMode() )
+	if ( GetTeamNumber() == TF_TEAM_PVE_INVADERS && TFGameRules() && TFGameRules()->IsMannVsMachineMode() && !IsBot() )
 	{
 		// Get our current spawn point location and see if it's near a teleporter
 		Vector myOrigin = GetAbsOrigin();
@@ -5000,6 +5007,13 @@ void CTFPlayer::Spawn()
 				// We spawned at this teleporter, play effects
 				EmitSound( "MVM.Robot_Teleporter_Deliver" );
 				TeleportEffect();
+				SetFOV( this, 0, tf_teleporter_fov_time.GetFloat(), tf_teleporter_fov_start.GetInt() );
+				SpeakConceptIfAllowed( MP_CONCEPT_TELEPORTED );
+				float flUberTime = tf_mvm_engineer_teleporter_uber_duration.GetFloat();
+				m_Shared.AddCond( TF_COND_INVULNERABLE, flUberTime );
+				m_Shared.AddCond( TF_COND_INVULNERABLE_WEARINGOFF, flUberTime );
+				color32 fadeColor = {255,255,255,100};
+				UTIL_ScreenFade( this, fadeColor, 0.25, 0.4, FFADE_IN );
 				break; // Only play effect once
 			}
 		}
@@ -18893,21 +18907,60 @@ bool CTFPlayer::PlayTauntSceneFromItem( const CEconItemView *pEconItemView )
 //-----------------------------------------------------------------------------
 // Purpose: Console command to force play taunt by item definition index
 //-----------------------------------------------------------------------------
-CON_COMMAND_F(test_taunt, "Force the player to play a taunt by item definition ID. Usage: test_taunt <id>", FCVAR_CHEAT)
+CON_COMMAND_F(give_taunt, "[TESTING ONLY] Force the player to play a taunt by item definition ID. Usage: give_taunt <item_definition_id> [unusual_effect_id] [player_name]", FCVAR_NONE )
 {
-	if (args.ArgC() < 2)
-	{
-		Msg("Usage: test_taunt <item_definition_id>\n");
+	// Check who is calling the command
+	CTFPlayer* pPlayer = ToTFPlayer(UTIL_GetCommandClient());
+	if ( !UTIL_PlayerIsModDev(pPlayer) )
+	{ 
+		Msg("Sorry but your not a Dev team little timmy.\n");
 		return;
 	}
 
-	// Check who is calling the command
-	CTFPlayer* pPlayer = ToTFPlayer(UTIL_GetCommandClient());
-	if (!UTIL_HandleCheatCmdForPlayer(pPlayer))
+	if (args.ArgC() < 2)
+	{
+		Msg("Usage: give_taunt <item_definition_id> [unusual_effect_id] [player_name]\n");
 		return;
+	}
 
-	if (!pPlayer)
-		return;
+	if (args.ArgC() < 3)
+	{
+
+		// Player name specified, find the target
+		const char* pszPlayerName = args[3];
+		pPlayer = NULL;
+		
+		// Search for player by name
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pTestPlayer = UTIL_PlayerByIndex(i);
+			if (pTestPlayer && !pTestPlayer->IsBot() && Q_stristr(pTestPlayer->GetPlayerName(), pszPlayerName))
+			{
+				pPlayer = ToTFPlayer(pTestPlayer);
+				break;
+			}
+		}
+		
+		// If no human player found, search bots
+		if (!pPlayer)
+		{
+			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			{
+				CBasePlayer* pTestPlayer = UTIL_PlayerByIndex(i);
+				if (pTestPlayer && pTestPlayer->IsBot() && Q_stristr(pTestPlayer->GetPlayerName(), pszPlayerName))
+				{
+					pPlayer = ToTFPlayer(pTestPlayer);
+					break;
+				}
+			}
+		}
+		
+		if (!pPlayer)
+		{
+			Msg("Player '%s' not found\n", pszPlayerName);
+			return;
+		}
+	}
 
 	int iItemID = atoi(args[1]);
 	if (iItemID <= 0)
@@ -18927,6 +18980,14 @@ CON_COMMAND_F(test_taunt, "Force the player to play a taunt by item definition I
 	// Create an EconItemView for this item
 	CEconItemView econItem;
 	econItem.Init(iItemID, AE_UNIQUE, AE_USE_SCRIPT_VALUE, true);
+	if( args.ArgC() > 2 && Q_strlen(args[2]) > 0 && isdigit(args[2][0]) )
+	{
+		int iUnusualID = atoi(args[2]);
+		float fUnusualID; 
+		memcpy(&fUnusualID, &iUnusualID, sizeof(float) ); // this is stupid, thanks SDK being buggy :)
+		static CSchemaAttributeDefHandle pAttrDef_TauntAttachParticleIndex( "bf taunt attach particle index" );
+		pPlayer->GetAttributeList()->SetRuntimeAttributeValue(pAttrDef_TauntAttachParticleIndex, fUnusualID );
+	}
 
 	// Attempt to play the taunt
 	if (!pPlayer->PlayTauntSceneFromItem(&econItem))
@@ -18935,7 +18996,7 @@ CON_COMMAND_F(test_taunt, "Force the player to play a taunt by item definition I
 	}
 	else
 	{
-		Msg("Playing taunt for item ID %d\n", iItemID);
+		Msg("Playing taunt for item ID %d on player %s\n", iItemID, pPlayer->GetPlayerName());
 	}
 }
 
@@ -19501,6 +19562,9 @@ void CTFPlayer::StopTaunt( bool bForceRemoveProp /* = true */ )
 	m_nActiveTauntSlot = LOADOUT_POSITION_INVALID;
 	m_iTauntItemDefIndex = INVALID_ITEM_DEF_INDEX;
 	m_TauntStage = TAUNT_NONE;
+
+	static CSchemaAttributeDefHandle pAttrDef_TauntAttachParticleIndex( "bf taunt attach particle index" );
+	GetAttributeList()->RemoveAttribute( pAttrDef_TauntAttachParticleIndex );
 }
 
 //-----------------------------------------------------------------------------
@@ -19614,6 +19678,34 @@ void CTFPlayer::HandleTauntCommand( int iTauntSlot )
 			}
 			else
 			{
+				// Before accepting partner taunt, try to find our own compatible taunt item
+				// to preserve our unusual effects during partner taunt
+				const GameItemDefinition_t *pInitiatorItemDef = initiator->m_TauntEconItemView.GetItemDefinition();
+				if ( pInitiatorItemDef && pInitiatorItemDef->GetTauntData() && pInitiatorItemDef->GetTauntData()->IsPartnerTaunt() )
+				{
+					// Look through our taunt slots for a matching partner taunt
+					for ( int iSlot = LOADOUT_POSITION_TAUNT; iSlot <= LOADOUT_POSITION_TAUNT8; iSlot++ )
+					{
+						CEconItemView* pOurTauntItem = GetEquippedItemForLoadoutSlot( iSlot );
+						if ( pOurTauntItem && pOurTauntItem->IsValid() )
+						{
+							const GameItemDefinition_t *pOurItemDef = pOurTauntItem->GetItemDefinition();
+							if ( pOurItemDef && pOurItemDef->GetTauntData() && pOurItemDef->GetTauntData()->IsPartnerTaunt() )
+							{
+								// Check if it's the same taunt type (same item def index or compatible partner taunt)
+								if ( pOurItemDef->GetDefinitionIndex() == pInitiatorItemDef->GetDefinitionIndex() ||
+									 (V_stristr(pInitiatorItemDef->GetDefinitionName(), "High Five") && V_stristr(pOurItemDef->GetDefinitionName(), "High Five")) )
+								{
+									// Set up our TauntEconItemView so we keep our unusual effects
+									m_TauntEconItemView = *pOurTauntItem;
+									m_iTauntItemDefIndex = pOurTauntItem->GetItemDefIndex();
+									break;
+								}
+							}
+						}
+					}
+				}
+				
 				AcceptTauntWithPartner( initiator );
 			}
 			return;
@@ -23790,7 +23882,14 @@ void CTFPlayer::AcceptTauntWithPartner( CTFPlayer *initiator )
 
 		return;
 	}
-	m_TauntEconItemView = initiator->m_TauntEconItemView;
+	// Preserve each player's own TauntEconItemView for partner taunts
+	// so that unusual effects from both players can be displayed
+	// Don't copy the initiator's TauntEconItemView - keep our own if we have one
+	if ( !m_TauntEconItemView.IsValid() )
+	{
+		// If we don't have our own taunt item, fall back to the initiator's
+		m_TauntEconItemView = initiator->m_TauntEconItemView;
+	}
 
 	int initiatorConcept = MP_CONCEPT_HIGHFIVE_SUCCESS_FULL;
 	int ourConcept = MP_CONCEPT_HIGHFIVE_SUCCESS;

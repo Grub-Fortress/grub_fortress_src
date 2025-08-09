@@ -1,0 +1,17 @@
+#base extra_models.txt
+
+"models"
+{
+	"ctf_2fort"
+	{
+		"bf_sign"
+		{
+			"0"
+			{
+				"location"		"-62 -3154 -126"
+				"rotation"		"0 0 4"
+				"model"			"models/props_teaser/update_eotl_poster001.mdl"
+			}	
+		}
+	}
+}

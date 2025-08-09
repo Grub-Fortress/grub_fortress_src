@@ -1010,6 +1010,20 @@ float CTFWeaponBaseGun::GetProjectileDamage( void )
 
 #endif
 
+	// Apply half-health damage bonuses/penalties
+	if ( pPlayer )
+	{
+		float flHalfHealth = pPlayer->GetMaxHealth() * 0.5f;
+		if ( pPlayer->GetHealth() < flHalfHealth )
+		{
+			CALL_ATTRIB_HOOK_FLOAT( flDamage, mult_dmg_bonus_while_half_dead );
+		}
+		else
+		{
+			CALL_ATTRIB_HOOK_FLOAT( flDamage, mult_dmg_penalty_while_half_alive );
+		}
+	}
+
 	return flDamage;
 }
 

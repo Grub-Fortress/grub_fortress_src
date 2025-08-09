@@ -124,7 +124,7 @@ ConVar tf_invuln_time( "tf_invuln_time", "1.0", FCVAR_DEVELOPMENTONLY | FCVAR_RE
 extern ConVar tf_player_movement_restart_freeze;
 extern ConVar mp_tournament_readymode_countdown;
 extern ConVar tf_max_charge_speed;
-ConVar tf_mvm_footstep_sounds( "tf_mvm_footstep_sounds", "1", FCVAR_REPLICATED, "Replaces the Giants footsteps with Unique unused ones" );
+ConVar bf_mvm_footstep_sounds( "bf_mvm_footstep_sounds", "1", FCVAR_REPLICATED, "Replaces the Giants footsteps with Unique unused ones" );
 
 ConVar tf_always_loser( "tf_always_loser", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Force loserstate to true." );
 
@@ -3851,6 +3851,33 @@ void CTFPlayerShared::OnRemoveMadMilk( void )
 //-----------------------------------------------------------------------------
 CTFPlayerShared::taunt_particle_state_t CTFPlayerShared::GetClientTauntParticleDesiredState() const
 {
+	CEconItemAttributeDefinition *pAttrib = GetItemSchema()->GetAttributeDefinitionByName( "bf taunt attach particle index" );
+	CAttributeList *pAttrList = m_pOuter->GetAttributeList();
+	uint32 unUnusualEffectIndex;
+	if ( ::FindAttribute_UnsafeBitwiseCast<attrib_value_t>( pAttrList, pAttrib, &unUnusualEffectIndex ) )
+	{
+		const attachedparticlesystem_t *pParticleSystem = GetItemSchema()->GetAttributeControlledParticleSystem( unUnusualEffectIndex );
+		if ( pParticleSystem )
+		{
+			// TF Team Color Particles
+			if ( m_pOuter->GetTeamNumber() == TF_TEAM_BLUE && V_stristr( pParticleSystem->pszSystemName, "_teamcolor_red" ) )
+			{
+				static char pBlue[256];
+				V_StrSubst( pParticleSystem->pszSystemName, "_teamcolor_red", "_teamcolor_blue", pBlue, 256 );
+				pParticleSystem = GetItemSchema()->FindAttributeControlledParticleSystem( pBlue );
+			}
+			else if ( m_pOuter->GetTeamNumber() == TF_TEAM_RED && V_stristr( pParticleSystem->pszSystemName, "_teamcolor_blue" ) )
+			{
+				// Guard against accidentally giving out the blue team color (support tool)
+				static char pRed[256];
+				V_StrSubst( pParticleSystem->pszSystemName, "_teamcolor_blue", "_teamcolor_red", pRed, 256 );
+				pParticleSystem = GetItemSchema()->FindAttributeControlledParticleSystem( pRed );
+			}
+
+			return taunt_particle_state_t( pParticleSystem->pszSystemName, pParticleSystem->fRefireTime );
+		}
+	}
+
 	const itemid_t unTauntSourceItemID = GetTauntSourceItemID();
 	if ( unTauntSourceItemID != INVALID_ITEM_ID )
 	{
@@ -12004,7 +12031,7 @@ const char *CTFPlayer::GetOverrideStepSound( const char *pszBaseStepSoundName )
 
 	int iOverrideFootstepSoundSet = kFootstepSoundSet_Default;
 	CALL_ATTRIB_HOOK_INT( iOverrideFootstepSoundSet, override_footstep_sound_set );
-	bool MVMUnusedFootsteps = tf_mvm_footstep_sounds.GetBool();
+	bool MVMUnusedFootsteps = bf_mvm_footstep_sounds.GetBool();
 
 	// we need to do this here or it does not function otherwise.
 	switch( iOverrideFootstepSoundSet )

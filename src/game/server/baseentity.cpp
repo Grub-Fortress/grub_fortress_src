@@ -312,6 +312,26 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CBaseEntity, DT_BaseEntity )
 
 END_SEND_TABLE()
 
+#ifdef SDK_TEMP_PATCH
+//Ficool2 Temp Fix
+static bool g_bInRegisterModelLoadCallback = false;
+static void MarkDynamicModelLoadedStringTable( const model_t* pModel )
+{
+	// engine bugfix: ensure this dynamic model is marked as loaded in the string table
+	// TODO remove this when the engine is updated
+	extern INetworkStringTable* g_pStringTableDynamicModels;
+	if ( g_pStringTableDynamicModels )
+	{
+		const char* pModelName = modelinfo->GetModelName( pModel );
+		int nIdx = g_pStringTableDynamicModels->FindStringIndex( pModelName );
+		if ( nIdx != INVALID_STRING_INDEX )
+		{
+			bool bLoaded = true;
+			g_pStringTableDynamicModels->SetStringUserData( nIdx, sizeof( bLoaded ), &bLoaded );
+		}
+	}
+}
+#endif
 
 // dynamic models
 class CBaseEntityModelLoadProxy
@@ -329,7 +349,16 @@ protected:
 public:
 	explicit CBaseEntityModelLoadProxy( CBaseEntity *pEntity ) : m_pHandler( new Handler( pEntity ) ) { }
 	~CBaseEntityModelLoadProxy() { delete m_pHandler; }
+#ifdef SDK_TEMP_PATCH
+	void Register( int nModelIndex ) const 
+	{ 
+		g_bInRegisterModelLoadCallback = true;
+		modelinfo->RegisterModelLoadCallback( nModelIndex, m_pHandler ); 
+		g_bInRegisterModelLoadCallback = false;
+	}
+#else
 	void Register( int nModelIndex ) const { modelinfo->RegisterModelLoadCallback( nModelIndex, m_pHandler ); }
+#endif
 	operator CBaseEntity * () const { return m_pHandler->m_pEntity; }
 
 private:
@@ -341,6 +370,9 @@ static CUtlHashtable< CBaseEntityModelLoadProxy, empty_t, PointerHashFunctor, Po
 
 void CBaseEntityModelLoadProxy::Handler::OnModelLoadComplete( const model_t *pModel )
 {
+#ifdef SDK_TEMP_PATCH
+	MarkDynamicModelLoadedStringTable( pModel );
+#endif
 	m_pEntity->OnModelLoadComplete( pModel );
 	sg_DynamicLoadHandlers.Remove( m_pEntity ); // NOTE: destroys *this!
 }
@@ -6470,12 +6502,17 @@ static ConCommand ent_pause("ent_pause", CC_Ent_Pause, "Toggles pausing of input
 //------------------------------------------------------------------------------
 void CC_Ent_Picker( void )
 {
+	//Check who is calling the command
+	CBasePlayer *pPlayer = UTIL_GetCommandClient();
+	if( !UTIL_HandleCheatCmdForPlayer(pPlayer) ) 
+		return;
+
 	CBaseEntity::m_bInDebugSelect = CBaseEntity::m_bInDebugSelect ? false : true;
 
 	// Remember the player that's making this request
 	CBaseEntity::m_nDebugPlayer = UTIL_GetCommandClientIndex();
 }
-static ConCommand picker("picker", CC_Ent_Picker, "Toggles 'picker' mode.  When picker is on, the bounding box, pivot and debugging text is displayed for whatever entity the player is looking at.\n\tArguments:	full - enables all debug information", FCVAR_CHEAT);
+static ConCommand picker("picker", CC_Ent_Picker, "Toggles 'picker' mode.  When picker is on, the bounding box, pivot and debugging text is displayed for whatever entity the player is looking at.\n\tArguments:	full - enables all debug information", FCVAR_NONE);
 
 //------------------------------------------------------------------------------
 // Purpose : 
@@ -6484,9 +6521,13 @@ static ConCommand picker("picker", CC_Ent_Picker, "Toggles 'picker' mode.  When 
 //------------------------------------------------------------------------------
 void CC_Ent_Pivot( const CCommand& args )
 {
-	SetDebugBits(UTIL_GetCommandClient(),args[1],OVERLAY_PIVOT_BIT);
+	//Check who is calling the command
+	CBasePlayer *pPlayer = UTIL_GetCommandClient();
+	if( !UTIL_HandleCheatCmdForPlayer(pPlayer) ) 
+		return;
+	SetDebugBits(pPlayer,args[1],OVERLAY_PIVOT_BIT);
 }
-static ConCommand ent_pivot("ent_pivot", CC_Ent_Pivot, "Displays the pivot for the given entity(ies).\n\t(y=up=green, z=forward=blue, x=left=red). \n\tArguments:   	{entity_name} / {class_name} / no argument picks what player is looking at ", FCVAR_CHEAT);
+static ConCommand ent_pivot("ent_pivot", CC_Ent_Pivot, "Displays the pivot for the given entity(ies).\n\t(y=up=green, z=forward=blue, x=left=red). \n\tArguments:   	{entity_name} / {class_name} / no argument picks what player is looking at ", FCVAR_NONE);
 
 //------------------------------------------------------------------------------
 // Purpose : 

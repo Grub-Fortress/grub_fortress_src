@@ -14,8 +14,8 @@ struct EntityWhiteList_t
 	const char *pszEntName;
 };
 
-ConVar bf_teaserprops("bf_teaserprops", "0", FCVAR_REPLICATED, "Enable teaser props on mapspawn.");
-ConVar bf_teaserprops_type("bf_teaserprops_type", "0", FCVAR_REPLICATED, "Which teaser you want to spawn with?");
+ConVar bf_teaserprops("bf_teaserprops", "1", FCVAR_REPLICATED, "Enable teaser props on mapspawn.");
+ConVar bf_teaserprops_type("bf_teaserprops_type", "mvm", FCVAR_REPLICATED, "Which teaser you want to spawn with?");
 
 // limit the entities that can be created using this method
 EntityWhiteList_t g_szEntityWhiteList[] =
@@ -24,6 +24,18 @@ EntityWhiteList_t g_szEntityWhiteList[] =
 	{ "carrier", "entity_carrier" },
 	{ "sign", "entity_sign" },
 	{ "saucer", "entity_saucer" },
+	//Mod Entries
+	{ "bf_sign", "entity_sign" },
+};
+
+//Prop Lists
+static const char* s_pszTeaserMDL_Invasion[] =
+{
+	"models/props_teaser/update_invasion_poster002.mdl",
+	"models/props_teaser/update_invasion_poster001.mdl",
+	"models/egypt/palm_tree/palm_tree.mdl",
+	"models/props_spytech/control_room_console01.mdl",
+	"models/props_spytech/work_table001.mdl",
 };
 
 
@@ -120,9 +132,16 @@ void CExtraMapEntity::SpawnExtraModel( void )
 	if ( !pszMapName || !pszMapName[0] )
 		return;
 
+	// Better Fortress 2 - i loved these teasers, and i am sure everyone did back in the day...
 	KeyValues *pFileKV = new KeyValues( "models" );
+	/*
 	if ( !pFileKV->LoadFromFile( g_pFullFileSystem, "scripts/extra_models.txt", "MOD" ) )
 		return;
+	*/
+	if ( !pFileKV->LoadFromFile( g_pFullFileSystem, "scripts/bf_extra_models.txt", "GAME" ) )
+		return;
+
+
 
 	// See if we have an entry for this map.
 	KeyValues *pMapKV = pFileKV->FindKey( pszMapName );
@@ -170,6 +189,14 @@ void CExtraMapEntity::SpawnExtraModel( void )
 
 				if ( ( flChance > 0.0f ) && ( RandomFloat( 0, 1 ) < flChance ) )
 				{
+					//If MVM, but no MVM Sign
+					if ( !V_strcmp( "mvm", bf_teaserprops_type.GetString() ) && V_strcmp( "models/props_teaser/update_eotl_poster001.mdl", szModelName ) || V_strcmp( ENTITYCARRIER_DEFAULT_MODEL, szModelName ) )
+						return;
+
+					//if Grocket, but not Grocket
+					if ( !V_strcmp( "grocket", bf_teaserprops_type.GetString() ) && V_strcmp( ENTITYROCKET_DEFAULT_MODEL, szModelName ) )
+						return;
+
 					CExtraMapEntity *pExtraMapEntity = static_cast< CExtraMapEntity* >( CBaseEntity::CreateNoSpawn( pszEntName, loc, rot ) );
 					if ( pExtraMapEntity )
 					{
@@ -190,7 +217,7 @@ void CExtraMapEntity::SpawnExtraModel( void )
 //-----------------------------------------------------------------------------
 void CExtraMapEntity_Rocket::Spawn( void )
 {
-	if (bf_teaserprops_type.GetInt() == 0)
+	if ( !V_strcmp( "grocket", bf_teaserprops_type.GetString() ) )
 	{
 
 		BaseClass::Spawn();
@@ -211,7 +238,7 @@ void CExtraMapEntity_Rocket::Precache_Internal( void )
 //-----------------------------------------------------------------------------
 void CExtraMapEntity_Carrier::Spawn( void )
 {
-	if (bf_teaserprops_type.GetInt() == 1)
+	if ( !V_strcmp( "mvm", bf_teaserprops_type.GetString() ) )
 	{
 
 		BaseClass::Spawn();
@@ -226,14 +253,12 @@ void CExtraMapEntity_Carrier::Spawn( void )
 //-----------------------------------------------------------------------------
 void CExtraMapEntity_Sign::Spawn( void )
 {
-	if (bf_teaserprops_type.GetInt() == 2)
-	{
+		
+	BaseClass::Spawn();
 
-		BaseClass::Spawn();
+	SetSolid(SOLID_NONE);
+	AddEffects(EF_NOSHADOW);
 
-		SetSolid(SOLID_NONE);
-		AddEffects(EF_NOSHADOW);
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -241,7 +266,7 @@ void CExtraMapEntity_Sign::Spawn( void )
 //-----------------------------------------------------------------------------
 void CExtraMapEntity_Saucer::Spawn( void )
 {
-	if (bf_teaserprops_type.GetInt() == 2)
+	if ( !V_strcmp( "invasion", bf_teaserprops_type.GetString() ) )
 	{
 
 		BaseClass::Spawn();

@@ -34,6 +34,7 @@
 #include <tier0/memdbgon.h>
 
 DECLARE_BUILD_FACTORY( CTFPlayerModelPanel );
+#define SCENE_LERP_TIME 0.1f
 
 char g_szSceneTmpName[256];
 
@@ -475,7 +476,7 @@ CChoreoScene *LoadSceneForModel( const char *filename, IChoreoEventCallback *pCa
 
 		if ( bSetEndTime )
 		{
-			*flSceneEndTime += 0.1f; // give time for lerp to idle pose
+			*flSceneEndTime += SCENE_LERP_TIME; // give time for lerp to idle pose
 		}
 	}
 
@@ -916,33 +917,26 @@ void CTFPlayerModelPanel::EquipAllWearables( CEconItemView *pHeldItem )
 	UpdateWeaponBodygroups( false );
 
 	// Now equip each of our wearables
-	FOR_EACH_VEC(m_ItemsToCarry, i)
+	FOR_EACH_VEC( m_ItemsToCarry, i )
 	{
-		CEconItemView* pItem = m_ItemsToCarry[i];
-		int iSlot = pItem->GetStaticData()->GetLoadoutSlot(m_iCurrentClassIndex);
-
-		// Skip items in HEAD, MISC, and MISC2 slots
-		if (iSlot == LOADOUT_POSITION_HEAD || iSlot == LOADOUT_POSITION_MISC || iSlot == LOADOUT_POSITION_MISC2)
-			continue;
-
+		CEconItemView *pItem = m_ItemsToCarry[i];
 		// If it's a wearable item, we put it on.
-		if (pItem->GetStaticData()->IsAWearable())
+		if ( pItem->GetStaticData()->IsAWearable() )
 		{
-			EquipItem(pItem);
+			EquipItem( pItem );
 		}
 
 		// Then see if there's an extra wearable we need to attach for this item
-		const char* pszAttached = pItem->GetExtraWearableModel();
-		if (pszAttached && pszAttached[0])
+		const char *pszAttached = pItem->GetExtraWearableModel();
+		if ( pszAttached && pszAttached[ 0 ] )
 		{
-			const char* pszViewModelAttached = pItem->GetExtraWearableViewModel();
-			if (m_pHeldItem == pItem || pszViewModelAttached == NULL || pszViewModelAttached[0] == '\0' || pszViewModelAttached[0] == '?')
+			const char *pszViewModelAttached = pItem->GetExtraWearableViewModel();
+			if ( pHeldItem == pItem || pszViewModelAttached == NULL || pszViewModelAttached[ 0 ] == '\0' || pszViewModelAttached[ 0 ] == '?' )
 			{
-				LoadAndAttachAdditionalModel(pszAttached, pItem);
+				LoadAndAttachAdditionalModel( pszAttached, pItem );
 			}
 		}
 	}
-
 
 	UpdateWeaponBodygroups( true );
 
@@ -2334,11 +2328,11 @@ void CTFPlayerModelPanel::SetupFlexWeights( void )
 		// Advance time
 		if ( m_flLastTickTime < FLT_EPSILON )
 		{
-			m_flLastTickTime = m_RootMDL.m_MDL.m_flTime - 0.1;
+			m_flLastTickTime = m_RootMDL.m_MDL.m_flTime - SCENE_LERP_TIME;
 		}
 
 		m_flSceneTime += (m_RootMDL.m_MDL.m_flTime - m_flLastTickTime);
-		m_flSceneTime = Max( m_flSceneTime, -0.1f );
+		m_flSceneTime = Max( m_flSceneTime, -SCENE_LERP_TIME );
 		m_flLastTickTime = m_RootMDL.m_MDL.m_flTime;
 
 		if ( m_flSceneEndTime > FLT_EPSILON && m_flSceneTime > m_flSceneEndTime )
