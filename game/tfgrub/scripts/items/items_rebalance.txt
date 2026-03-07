@@ -614,37 +614,17 @@
 				"spy"					"1"
 			}
 		}
-//		"307" // Ullapool Caber (CURRENTLY BROKEN, TAKE A LOOK AT IT LATER)
-// 		{
-// 			"attributes"
-// 			{
-// 				"dmg falloff decreased"
-// 				{
-// 					"attribute_class"	"mult_dmg_falloff"
-// 					"value"				"0"
-// 				}
-// 			}
-// 			"visuals"
-// 			{
-// 				"animation_replacement"
-// 				{
-// 					"ACT_VM_DRAW" 					"ACT_MELEE_ALLCLASS_VM_DRAW"
-// 					"ACT_VM_HOLSTER"				"ACT_MELEE_ALLCLASS_VM_HOLSTER"
-// 					"ACT_VM_IDLE" 					"ACT_MELEE_ALLCLASS_VM_IDLE"
-// 					"ACT_VM_PULLBACK"				"ACT_MELEE_ALLCLASS_VM_PULLBACK"
-// 					"ACT_VM_PRIMARYATTACK" 			"ACT_MELEE_ALLCLASS_VM_PRIMARYATTACK"
-// 					"ACT_VM_DRYFIRE"				"ACT_MELEE_ALLCLASS_VM_DRYFIRE"
-// 					"ACT_VM_SWINGHARD"				"ACT_MELEE_ALLCLASS_VM_SWINGHARD"
-// 					"ACT_VM_HITCENTER"				"ACT_MELEE_ALLCLASS_VM_HITCENTER"
-// 					"ACT_VM_IDLE_TO_LOWERED"		"ACT_MELEE_ALLCLASS_VM_IDLE_TO_LOWERED"
-// 					"ACT_VM_IDLE_LOWERED"			"ACT_MELEE_ALLCLASS_VM_IDLE_LOWERED"
-// 					"ACT_VM_LOWERED_TO_IDLE"		"ACT_MELEE_ALLCLASS_VM_LOWERED_TO_IDLE"
-// 					"ACT_MELEE_VM_INSPECT_START"	"ACT_MELEE_ALLCLASS_VM_INSPECT_START"
-// 					"ACT_MELEE_VM_INSPECT_IDLE"		"ACT_MELEE_ALLCLASS_VM_INSPECT_IDLE"
-// 					"ACT_MELEE_VM_INSPECT_END"		"ACT_MELEE_ALLCLASS_VM_INSPECT_END"
-// 				}
-// 			}
-// 		}
+		"307" // Ullapool Caber
+ 		{
+ 			"attributes"
+ 			{
+				"damage bonus"
+				{
+					"attribute_class"	"mult_dmg"
+					"value"	"1.1"
+				}
+			}
+		}
 		"310" // The Warrior's Spirit
 		{
 			"attributes"
