@@ -10,7 +10,7 @@
 			"prefab"					"weapon_pda"
 			"item_name"					"PDA: Bi-Directional Teleporters"
 			"item_quality"				"unique"
-			"moditem" 					"1"
+			"experimentalitem" 			"1"
 			"attach_to_hands"			"1"
 			"used_by_classes"
 			{
@@ -54,7 +54,7 @@
 			"name"						"The Small Man's Clipper"
 			"prefab"					"weapon_pistol"	
 			"show_in_armory"			"1"
-			"moditem"					"1"
+			"stagingitem"				"1"
 			"item_type_name"			"#TF_Weapon_PEP_Pistol"
 			"item_name"					"The Small Man's Clipper"
 			"item_quality"				"unique"
@@ -111,7 +111,7 @@
 			"name"							"The Lockwood"
 			"prefab"						"weapon_revolver"
 			"show_in_armory"				"1"
-			"moditem"						"1"
+			"stagingitem"					"1"
 			"item_type_name"				"#TF_Weapon_Revolver"
 			"item_name"						"The Lockwood"
 			"item_quality"					"unique"
@@ -160,7 +160,7 @@
 			"name"						"The Shell Grinder"
 			"prefab"					"weapon_shotgun"
 			"show_in_armory"			"1"
-			"moditem"					"1"
+			"stagingitem"				"1"
 			"item_type_name"			"#TF_Weapon_shotgun"
 			"item_name"					"The Shell Grinder"
 			"item_quality"				"unique"
@@ -218,7 +218,7 @@
 			"name"						"Syringe Gun Prototype"
 			"prefab"					"weapon_syringegun"
 			"show_in_armory"			"1"
-			"moditem"					"1"
+			"experimentalitem"			"1"
 			"item_name"					"Syringe Gun Prototype"
 			"item_quality"				"unique"
 			"attributes"
@@ -226,7 +226,7 @@
 				"add uber charge on hit"
 				{
 					"attribute_class"	"add_onhit_ubercharge"
-					"value"	"0.01"
+					"value"				"0.01"
 				}
 				"clip size penalty"
 				{
@@ -251,7 +251,7 @@
 			"prefab"					"weapon_pda"
 			"item_name"					"PDA: Mini-Dispenser"
 			"item_quality"				"unique"
-			"moditem" 					"1"
+			"stagingitem" 				"1"
 			"attach_to_hands"			"1"
 			"used_by_classes"
 			{
@@ -295,7 +295,7 @@
 			"name"						"The Welcoming Embrace"
 			"prefab"					"weapon_shotgun"
 			"show_in_armory"			"1"
-			"moditem"					"1"
+			"stagingitem"				"1"
 			"item_type_name"			"#TF_Weapon_shotgun"
 			"item_name"					"The Welcoming Embrace"
 			"item_quality"				"unique"
@@ -350,7 +350,7 @@
 			"name"						"The Frontline"
 			"prefab"					"weapon_minigun"
 			"show_in_armory"				"1"
-			"moditem"					"1"
+			"stagingitem"				"1"
 			"item_type_name"				"#TF_Weapon_minigun"
 			"item_name"					"The Frontline"
 			"item_quality"					"unique"
@@ -397,117 +397,117 @@
 				}
 			}	
 		}
-//		"34009" // PDA: SpeedPad
-// 		{
-// 			"name"						"PDA: SpeedPad"
-// 			"prefab"					"weapon_pda"
-// 			"item_name"					"PDA: SpeedPad"
-// 			"item_quality"				"unique"
-// 			"moditem" 					"1"
-// 			"attach_to_hands"			"1"
-// 			"used_by_classes"
-// 			{
-// 				"engineer"				"1"
-// 			}
-// 			"static_attrs"
-// 			{
-// 				"min_viewmodel_offset"					"10 0 -10"				
-// 			}
-// 			"attributes"
-// 			{
-// 				"mod pda builds speedpads"
-// 				{
-// 					"attribute_class"	"pda_builds_speedpads"
-// 					"value"				"1"
-// 				}
-// 			}
-// 			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
-// 			"drop_sound"			"ui/item_metal_weapon_drop.wav"
-// 			"visuals"
-// 			{
-// 				"animation_replacement"
-// 				{
-// 					"ACT_VM_IDLE"	"ACT_ENGINEER_PDA1_VM_IDLE"
-// 					"ACT_VM_DRAW"	"ACT_ENGINEER_PDA1_VM_DRAW"
-// 				}
-// 			}
-// 		}
-// 		"34010" // PDA: JumpPad
-// 		{
-// 			"name"						"PDA: JumpPad"
-// 			"prefab"					"weapon_pda"
-// 			"item_name"					"PDA: JumpPad"
-// 			"item_quality"				"unique"
-// 			"moditem" 					"1"
-// 			"attach_to_hands"			"1"
-// 			"used_by_classes"
-// 			{
-// 				"engineer"				"1"
-// 			}
-// 			"static_attrs"
-// 			{
-// 				"min_viewmodel_offset"					"10 0 -10"				
-// 			}
-// 			"attributes"
-// 			{
-// 				"mod pda builds jumppads"
-// 				{
-// 					"attribute_class"	"pda_builds_jumppads"
-// 					"value"				"1"
-// 				}
-// 			}
-// 			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
-// 			"drop_sound"			"ui/item_metal_weapon_drop.wav"
-// 			"visuals"
-// 			{
-// 				"animation_replacement"
-// 				{
-// 					"ACT_VM_IDLE"	"ACT_ENGINEER_PDA1_VM_IDLE"
-// 					"ACT_VM_DRAW"	"ACT_ENGINEER_PDA1_VM_DRAW"
-// 				}
-// 			}
-// 		}
-// 		"34011" // PDA: Jump-Speed-Pad
-// 		{
-// 			"name"				"PDA: Jump-Speed-Pad"
-// 			"prefab"					"weapon_pda"
-// 			"item_name"					"PDA: Jump-Speed-Pad"
-// 			"item_quality"				"unique"
-// 			"moditem" 					"1"
-// 			"attach_to_hands"			"1"
-// 			"used_by_classes"
-// 			{
-// 				"engineer"				"1"
-// 			}
-// 			"static_attrs"
-// 			{
-// 				"min_viewmodel_offset"					"10 0 -10"				
-// 			}
-// 			"attributes"
-// 			{
-// 				"mod pda builds pads"
-// 				{
-// 					"attribute_class"	"pda_builds_pads"
-// 					"value"				"1"
-// 				}
-// 			}
-// 			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
-// 			"drop_sound"			"ui/item_metal_weapon_drop.wav"
-// 			"visuals"
-// 			{
-// 				"animation_replacement"
-// 				{
-// 					"ACT_VM_IDLE"	"ACT_ENGINEER_PDA1_VM_IDLE"
-// 					"ACT_VM_DRAW"	"ACT_ENGINEER_PDA1_VM_DRAW"
-// 				}
-// 			}
-// 		}
+		"34009" // PDA: SpeedPad
+		{
+			"name"						"PDA: SpeedPad"
+			"prefab"					"weapon_pda"
+			"item_name"					"PDA: SpeedPad"
+			"item_quality"				"unique"
+			"experimentalitem" 			"1"
+			"attach_to_hands"			"1"
+			"used_by_classes"
+			{
+				"engineer"				"1"
+			}
+			"static_attrs"
+			{
+				"min_viewmodel_offset"					"10 0 -10"				
+			}
+			"attributes"
+			{
+				"mod pda builds speedpads"
+				{
+					"attribute_class"	"pda_builds_speedpads"
+					"value"				"1"
+				}
+			}
+			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
+			"drop_sound"			"ui/item_metal_weapon_drop.wav"
+			"visuals"
+			{
+				"animation_replacement"
+				{
+					"ACT_VM_IDLE"	"ACT_ENGINEER_PDA1_VM_IDLE"
+					"ACT_VM_DRAW"	"ACT_ENGINEER_PDA1_VM_DRAW"
+				}
+			}
+		}
+		"34010" // PDA: JumpPad
+		{
+			"name"						"PDA: JumpPad"
+			"prefab"					"weapon_pda"
+			"item_name"					"PDA: JumpPad"
+			"item_quality"				"unique"
+			"experimentalitem" 			"1"
+			"attach_to_hands"			"1"
+			"used_by_classes"
+			{
+				"engineer"				"1"
+			}
+			"static_attrs"
+			{
+				"min_viewmodel_offset"					"10 0 -10"				
+			}
+			"attributes"
+			{
+				"mod pda builds jumppads"
+				{
+					"attribute_class"	"pda_builds_jumppads"
+					"value"				"1"
+				}
+			}
+			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
+			"drop_sound"			"ui/item_metal_weapon_drop.wav"
+			"visuals"
+			{
+				"animation_replacement"
+				{
+					"ACT_VM_IDLE"	"ACT_ENGINEER_PDA1_VM_IDLE"
+					"ACT_VM_DRAW"	"ACT_ENGINEER_PDA1_VM_DRAW"
+				}
+			}
+		}
+		"34011" // PDA: Jump-Speed-Pad
+		{
+			"name"				"PDA: Jump-Speed-Pad"
+			"prefab"					"weapon_pda"
+			"item_name"					"PDA: Jump-Speed-Pad"
+			"item_quality"				"unique"
+			"experimentalitem" 			"1"
+			"attach_to_hands"			"1"
+			"used_by_classes"
+			{
+				"engineer"				"1"
+			}
+			"static_attrs"
+			{
+				"min_viewmodel_offset"					"10 0 -10"				
+			}
+			"attributes"
+			{
+				"mod pda builds pads"
+				{
+					"attribute_class"	"pda_builds_pads"
+					"value"				"1"
+				}
+			}
+			"mouse_pressed_sound"	"ui/item_metal_weapon_pickup.wav"
+			"drop_sound"			"ui/item_metal_weapon_drop.wav"
+			"visuals"
+			{
+				"animation_replacement"
+				{
+					"ACT_VM_IDLE"	"ACT_ENGINEER_PDA1_VM_IDLE"
+					"ACT_VM_DRAW"	"ACT_ENGINEER_PDA1_VM_DRAW"
+				}
+			}
+		}
 		"34012"
 		{
 			"name"						"The Fancy-Mann's Bottle"
 			"prefab"					"weapon_bottle"
 			"show_in_armory"			"1"
-			"moditem"					"1"
+			"stagingitem"				"1"
 			"item_name"					"The Fancy-Mann's Bottle"
 			"item_logname"				"fancymannsbottle"
 			"item_slot"					"melee"
@@ -554,7 +554,7 @@
 			"item_logname"	"leadpipe"
 			"item_iconname"	"leadpipe"
 			"show_in_armory"	"1"
-			"moditem"			"1"
+			"stagingitem"		"1"
 			"usable_by_bots"			"1"
 			"item_type_name"	"#TFGRUB_Weapon_Leadpipe"
 			"item_name"	"Leadpipe Beta 1"
@@ -616,7 +616,7 @@
 			"name"							"Enforcer Rework Concept 1"
 			"prefab"						"weapon_revolver"
 			"show_in_armory"				"1"
-			"moditem"						"1"
+			"stagingitem"					"1"
 			"item_type_name"				"#TF_Weapon_Revolver"
 			"item_name"						"Enforcer Rework Concept 1"
 			"item_quality"					"unique"

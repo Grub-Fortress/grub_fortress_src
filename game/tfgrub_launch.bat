@@ -1,6 +1,8 @@
 @echo off
 title Grub Fortress Launcher
 
+set "EXECUTABLE=tfgrub_win64.exe"
+
 :menu
 cls
 echo ===============================
@@ -13,8 +15,8 @@ echo 3) Devmode (Devtest map)
 echo 4) LUX Disabled
 echo 5) Insecure
 echo 6) Steam
-echo 7) Old menu
-echo 8) Older menu
+echo 7) No Staging Items
+echo 8) Experimental Items
 echo 9) Tools
 echo.
 echo Q) Quit
@@ -36,39 +38,39 @@ if /i "%choice%"=="Q" exit
 goto menu
 
 :option1
-start "" "tfgrub_win64.exe"
+start "" "%EXECUTABLE%"
 goto end
 
 :option2
-start "" "tfgrub_win64.exe" -dev -multirun -novid +mp_disable_respawn_times 1 +maxplayers 25
+start "" "%EXECUTABLE%" -dev -multirun -novid +mp_disable_respawn_times 1 +maxplayers 25
 goto end
 
 :option3
-start "" "tfgrub_win64.exe" -dev -multirun -novid +mp_disable_respawn_times 1 +maxplayers 25 +map devtest
+start "" "%EXECUTABLE%" -dev -multirun -novid +mp_disable_respawn_times 1 +maxplayers 25 +map devtest
 goto end
 
 :option4
-start "" "tfgrub_win64.exe" -nolux
+start "" "%EXECUTABLE%" -nolux
 goto end
 
 :option5
-start "" "tfgrub_win64.exe" -novid -insecure
+start "" "%EXECUTABLE%" -novid -insecure
 goto end
 
 :option6
-start "" "tfgrub_win64.exe" -novid -steam
+start "" "%EXECUTABLE%" -novid -steam
 goto end
 
 :option7
-start "" "tfgrub_win64.exe" -oldmenu
+start "" "%EXECUTABLE%" -nostaging_items
 goto end
 
 :option8
-start "" "tfgrub_win64.exe" -oldermenu
+start "" "%EXECUTABLE%" -experimental_items
 goto end
 
 :option9
-start "" "tfgrub_win64.exe" -tools -nop4 +sv_lan 1 +map devtest +mp_disable_respawn_times 1
+start "" "%EXECUTABLE%" -tools -nop4 +sv_lan 1 +map devtest +mp_disable_respawn_times 1
 goto end
 
 :end

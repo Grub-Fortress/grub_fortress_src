@@ -3183,6 +3183,14 @@ bool CEconItemDefinition::BInitFromKV( KeyValues *pKVItem, CUtlVector<CUtlString
 	m_bShouldShowInArmory = m_pKVItem->GetInt( "show_in_armory", 0 ) != 0;
 	m_bBaseItem = m_pKVItem->GetInt( "baseitem", 0 ) != 0;
 	m_bModItem = m_pKVItem->GetInt("moditem", 0) != 0;
+	if ( !m_bModItem && !CommandLine()->FindParm( "-nostaging_items") )
+	{
+		m_bModItem = m_pKVItem->GetInt( "stagingitem", 0 ) != 0;
+	}
+	if ( !m_bModItem && CommandLine()->FindParm( "-experimental_items") )
+	{
+		m_bModItem = m_pKVItem->GetInt( "experimentalitem", 0 ) != 0;
+	}
 	m_bUsableByBots = m_pKVItem->GetInt("usable_by_bots", 0) != 0;
 	m_pszItemLogClassname = m_pKVItem->GetString( "item_logname", NULL );
 	m_pszItemIconClassname = m_pKVItem->GetString( "item_iconname", NULL );
