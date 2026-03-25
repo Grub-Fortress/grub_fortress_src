@@ -125,20 +125,34 @@ DESCRIPTION INFO_OPTIONS
 	"ficool2"
 	{
 		"Ficool2 - 3rd person chat bubble, chat selection fix, Fix inefficient lookup by name"
-		"https://github.com/ficool2"
+		"github.com/ficool2"
 		{ BOOL }
 		{ "1" }
 	}
 	"Horiuchi"
 	{
 		"Horiuchi - Visual timer for vote duration"
-		"https://github.com/horiuchii"
+		"github.com/horiuchii"
 		{ BOOL }
 		{ "1" }
 	}
-	"ttrf_old_menu"
+	"MasterOfRespawn"
 	{
-		"Toru the Red Fox - Old TF2 Main menu code"
+		"MasterOfRespawn - Add payload race behavior to tf_bots"
+		"github.com/ValveSoftware/source-sdk-2013/pull/1738"
+		{ BOOL }
+		{ "1" }
+	}
+	"LordofCreepers"
+	{
+		"LordofCreepers - Make engineer bots care about teleporters"
+		"github.com/ValveSoftware/source-sdk-2013/pull/915"
+		{ BOOL }
+		{ "1" }
+	}
+	"ttrf_old_menu_code"
+	{
+		"Toru the Red Fox - Old TF2 Main menu code ported to the SDK"
 		"github.com/TorutheRedFox/source-sdk-2013"
 		{ BOOL }
 		{ "1" }
