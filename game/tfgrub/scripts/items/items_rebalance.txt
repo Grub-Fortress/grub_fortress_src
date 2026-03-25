@@ -125,6 +125,7 @@
 		}
 		"weapon_crusaders_crossbow" // The Crusader's Crossbow
 		{
+			"enabled"	"0"	
 			"attributes"
 			{
 				"reload time increased"
@@ -919,12 +920,12 @@
 				"damage penalty"
 				{
 					"attribute_class"	"mult_dmg"
-					"value"				"0.33"
+					"value"				"0.5"
 				}
 				"projectile speed decreased"
 				{	
 					"attribute_class"	"mult_projectile_speed"
-					"value"				"0.5"
+					"value"				"0.65"
 				}
 			}
 		}

@@ -5381,7 +5381,7 @@ bool CEconItemSchema::BInitItems( KeyValues *pKVItems, CUtlVector<CUtlString> *p
 				}
 				if ( pItemDef->IsModItem() )
 				{
-					m_mapModItems.Insert(nItemIndex, pItemDef);
+					m_mapModItems.Insert( nItemIndex, pItemDef );
 				}
 
 				// Cache off bundles for the link phase below.
