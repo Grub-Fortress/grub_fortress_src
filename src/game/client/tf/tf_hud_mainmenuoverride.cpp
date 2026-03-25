@@ -53,6 +53,7 @@
 #include "icommandline.h"
 #include "vgui/ISystem.h"
 #include "report_player_dialog.h"
+#include <vgui_controls/MessageBox.h>
 
 #include "c_tf_gamestats.h"
 
@@ -3421,5 +3422,9 @@ CON_COMMAND(showquitconfirmdialog, "Show a quit confirmation dialog")
 
 void CHudMainMenuOverride::ShowBetaPopup()
 {
-	ShowMessageBox( "#TFGrub_BetaPopupTitle", "#TFGrub_BetaPopupMessage", "#GameUI_OK" );
+//	ShowMessageBox( "#TFGrub_BetaPopupTitle", "#TFGrub_BetaPopupMessage", "#GameUI_OK" ); // Old TF2 Styled logic, I personally didn't like how it looked -Grub
+	vgui::MessageBox *pBox = new vgui::MessageBox( "#TFGrub_BetaPopupTitle", "#TFGrub_BetaPopupMessage", GetParent() );
+
+	pBox->SetOKButtonText("#GameUI_OK");
+	pBox->DoModal();
 }
