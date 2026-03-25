@@ -949,7 +949,7 @@ bool CTFBot::GetWeightDesiredClassToSpawn( CUtlVector< ETFClass > &vecClassToSpa
 	}
 	else if ( TFGameRules()->GetGameType() == TF_GAMETYPE_ESCORT )
 	{
-		if ( GetTeamNumber() == TF_TEAM_RED )
+		if ( !TFGameRules()->HasMultipleTrains() && GetTeamNumber() == TF_TEAM_RED )
 		{
 			desiredRoster = defenseRoster;
 		}
@@ -1150,7 +1150,7 @@ ETFClass CTFBot::GetPresetClassToSpawn() const
 	}
 	else if ( TFGameRules()->GetGameType() == TF_GAMETYPE_ESCORT )
 	{
-		if ( GetTeamNumber() == TF_TEAM_RED )
+		if ( !TFGameRules()->HasMultipleTrains() && GetTeamNumber() == TF_TEAM_RED )
 		{
 			desiredRoster = defenseRoster;
 		}
@@ -2383,11 +2383,11 @@ void CTFBot::SetupSniperSpotAccumulation( void )
 	if ( TFGameRules()->GetGameType() == TF_GAMETYPE_ESCORT )
 	{
 		// try to find a payload cart to guard
-		CTeamTrainWatcher *trainWatcher = TFGameRules()->GetPayloadToPush( GetTeamNumber() );
+		CTeamTrainWatcher *trainWatcher = TFGameRules()->GetPayloadToBlock( GetTeamNumber() );
 
 		if ( !trainWatcher )
 		{
-			trainWatcher = TFGameRules()->GetPayloadToBlock( GetTeamNumber() );
+			trainWatcher = TFGameRules()->GetPayloadToPush( GetTeamNumber() );
 		}
 
 		if ( trainWatcher )
