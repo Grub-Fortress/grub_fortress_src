@@ -80,7 +80,7 @@ QueryResultType CTFBotEngineerBuild::ShouldHurry( const INextBot *meBot ) const
 
 	if ( mySentry && myDispenser && !mySentry->IsBuilding() && !myDispenser->IsBuilding() && me->GetActiveTFWeapon() && me->GetActiveTFWeapon()->GetWeaponID() == TF_WEAPON_WRENCH )
 	{
-		if ( me->IsAmmoLow() && myDispenser->GetAvailableMetal() <= 0 )
+		if ( me->IsAmmoLow() && ( myDispenser->GetAvailableMetal() <= 0 || me->GetDistanceBetween( myDispenser ) > myDispenser->GetDispenserRadius() ) )
 		{
 			// we're totally out of metal - collect some nearby
 			return ANSWER_NO;
