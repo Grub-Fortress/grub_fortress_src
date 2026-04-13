@@ -948,17 +948,17 @@ void CHudMainMenuOverride::ApplySchemeSettings(IScheme* scheme)
 
 	RemoveAllMenuEntries();
 
-	const char* pszMenuRes = "resource/UI/MainMenu_Newer.res";
+	const char* pszMenuRes = "resource/UI/MainMenu_TFGrub.res";
 
-	if ( CommandLine()->FindParm( "-oldermenu" ) != 0 )
-	{
-		pszMenuRes = "resource/UI/MainMenu.res";
-	}
+	//if ( CommandLine()->FindParm( "-oldermenu" ) != 0 )
+	//{
+	//	pszMenuRes = "resource/UI/MainMenu.res";
+	//}
 
-	else if ( CommandLine()->FindParm( "-oldmenu" ) != 0 )
-	{
-		pszMenuRes = "resource/UI/MainMenu_New.res";
-	}
+	//else if ( CommandLine()->FindParm( "-oldmenu" ) != 0 )
+	//{
+	//	pszMenuRes = "resource/UI/MainMenu_New.res";
+	//}
 
 	LoadControlSettings(pszMenuRes, NULL, NULL, pConditions);
 
@@ -1194,17 +1194,17 @@ void CHudMainMenuOverride::LoadMenuEntries(void)
 {
 	KeyValues* datafile = new KeyValues("GameMenu");
 	datafile->UsesEscapeSequences(true);	// VGUI uses escape sequences
-	const char* pszMenuFile = "Resource/GameMenu_Grub_Newer.res";
+	const char* pszMenuFile = "Resource/GameMenu_TFGrub.res";
 
-	if ( CommandLine()->FindParm( "-oldermenu" ) != 0 )
-	{
-		pszMenuFile = "Resource/GameMenu_Grub.res";
-	}
+	//if ( CommandLine()->FindParm( "-oldermenu" ) != 0 )
+	//{
+	//	pszMenuFile = "Resource/GameMenu_Grub.res";
+	//}
 
-	else if ( CommandLine()->FindParm( "-oldmenu" ) != 0 )
-	{
-		pszMenuFile = "Resource/GameMenu_Grub_New.res";
-	}
+	//else if ( CommandLine()->FindParm( "-oldmenu" ) != 0 )
+	//{
+	//	pszMenuFile = "Resource/GameMenu_Grub_New.res";
+	//}
 
 
 	bool bLoaded = datafile->LoadFromFile( g_pFullFileSystem, pszMenuFile, "custom_mod" );
