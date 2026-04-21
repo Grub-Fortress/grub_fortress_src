@@ -54,6 +54,7 @@ void CreateCrossbowBoltTF( const Vector &vecOrigin, const Vector &vecDirection, 
 		pszModelName = g_pszArrowModels[MODEL_ARROW_REGULAR];
 		break;
 	case TF_PROJECTILE_BUILDING_REPAIR_BOLT:
+	case TF_PROJECTILE_RAILGUN_BEAM:
 		pszModelName = g_pszArrowModels[MODEL_ARROW_BUILDING_REPAIR];
 		flDirOffset = -2.0f;
 		break;

@@ -542,6 +542,57 @@
 				}
 			}
 		}
+		"34013"
+		{
+			"name"						"Railgun"
+			"item_class"				"tf_weapon_railgun"
+			"show_in_armory"			"1"
+			"experimentalitem"			"1"
+			"item_name"					"Railgun"
+			"item_logname"				"railgun"
+			"item_slot"					"secondary"
+			"item_quality"				"unique"
+			"image_inventory"			"backpack/weapons/c_models/c_pistol"
+			"model_player"				"models/weapons/c_models/c_pistol/c_pistol.mdl"
+			"attach_to_hands"			"1"
+			"static_attrs"
+			{
+				"min_viewmodel_offset"	"10 0 -10"
+				"ragdolls become ash"	"1"
+			}
+			"used_by_classes"
+			{
+				"engineer"				"1"
+			}
+			"attributes"
+			{
+				"fire rate penalty"
+				{
+					"attribute_class"	"mult_postfiredelay"
+					"value"				"2"
+				}
+				"projectile has gravity"
+				{
+					"attribute_class"	"projectile_has_gravity"
+					"value"				"0.0001"
+				}
+				"damage bonus"
+				{
+					"attribute_class"	"mult_dmg"
+					"value"				"3"
+				}
+				"maxammo secondary reduced"
+				{
+					"attribute_class"	"mult_maxammo_secondary"
+					"value"				"0.3"
+				}
+				"is experimental item"
+				{
+					"attribute_class"	"is_experimental_item_DISPLAY"
+					"value"				"1"
+				}
+			}
+		}
 		"35000" // Leadpipe Beta 1
 		{
 			"name"	"Leadpipe Beta 1"

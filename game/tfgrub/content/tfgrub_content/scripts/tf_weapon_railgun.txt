@@ -1,0 +1,81 @@
+"WeaponData"
+{
+	"printname"		"#TF_Weapon_Railgun"
+	"BuiltRightHanded"		"0"
+	"weight"		"2"
+	"WeaponType"		"secondary"
+	"ITEM_FLAG_NOITEMPICKUP"		"1"
+	"damage"		"15"
+	"range"		"4096"
+	"BulletsPerShot"		"1"
+	"Spread"		"0"
+	"TimeFireDelay"		"0.150000"
+	"TimeIdle"		"5.000000"
+	"TimeIdleEmpty"		"0.250000"
+	"TimeReload"		"0.500000"
+	"projectileType"		"projectile_railgun_beam"
+//	"BrassModel"		"models/weapons/shells/shell_pistol.mdl"
+	"UseRapidFireCrits"		"1"
+	"TracerEffect"		"bullet_pistol_tracer01"
+	"HasTeamSkins_Viewmodel"		"1"
+	"primary_ammo"		"TF_AMMO_SECONDARY"
+	"secondary_ammo"		"None"
+	"clip_size"		"-1"
+	"default_clip"		"12"
+	"bucket"		"1"
+	"bucket_position"		"0"
+	"Viewmodel"		"models/weapons/c_models/c_pistol/c_pistol.mdl"
+	"Playermodel"		"models/weapons/c_models/c_pistol/c_pistol.mdl"
+	"anim_prefix"		"ac"
+	"MuzzleFlashParticleEffect"		"muzzle_pistol"
+	"SoundData"
+	{
+		"reload"		"Weapon_Pistol.WorldReload"
+		"empty"		"Weapon_Pistol.ClipEmpty"
+		"single_shot"		"Weapon_Pistol.Single"
+		"burst"		"Weapon_Pistol.SingleCrit"
+	}
+	"TextureData"
+	{
+		"weapon"
+		{
+			"file"		"sprites/bucket_pistol"
+			"x"		"0"
+			"y"		"0"
+			"width"		"200"
+			"height"		"128"
+		}
+		"weapon_s"
+		{
+			"file"		"sprites/bucket_pistol"
+			"x"		"0"
+			"y"		"0"
+			"width"		"200"
+			"height"		"128"
+		}
+		"Ammo"
+		{
+			"file"		"sprites/a_icons1"
+			"x"		"55"
+			"y"		"60"
+			"width"		"73"
+			"height"		"15"
+		}
+		"crosshair"
+		{
+			"file"		"sprites/crosshairs"
+			"x"		"0"
+			"y"		"0"
+			"width"		"32"
+			"height"		"32"
+		}
+		"autoaim"
+		{
+			"file"		"sprites/crosshairs"
+			"x"		"0"
+			"y"		"48"
+			"width"		"24"
+			"height"		"24"
+		}
+	}
+}

@@ -33,6 +33,11 @@ IMPLEMENT_NETWORKCLASS_ALIASED( TFProjectile_GrapplingHook, DT_TFProjectile_Grap
 BEGIN_NETWORK_TABLE( C_TFProjectile_GrapplingHook, DT_TFProjectile_GrapplingHook )
 END_NETWORK_TABLE()
 
+IMPLEMENT_NETWORKCLASS_ALIASED(TFProjectile_Railgun_Beam, DT_TFProjectile_Railgun_Beam)
+
+BEGIN_NETWORK_TABLE( C_TFProjectile_Railgun_Beam, DT_TFProjectile_Railgun_Beam)
+END_NETWORK_TABLE()
+
 #define NEAR_MISS_THRESHOLD 120
 
 //-----------------------------------------------------------------------------

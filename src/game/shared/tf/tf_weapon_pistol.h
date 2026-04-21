@@ -18,7 +18,9 @@
 #define CTFPistol_Scout C_TFPistol_Scout
 #define CTFPistol_ScoutPrimary C_TFPistol_ScoutPrimary
 #define CTFPistol_ScoutSecondary C_TFPistol_ScoutSecondary
+#define CTFRailgun C_TFRailgun
 #endif
+
 
 // We allow the pistol to fire as fast as the player can click.
 // This is the minimum time between shots.
@@ -103,6 +105,19 @@ public:
 	virtual int		GetWeaponID( void ) const			{ return TF_WEAPON_HANDGUN_SCOUT_SECONDARY; }
 
 	virtual int		GetDamageType( void ) const;
+};
+
+class CTFRailgun : public CTFPistol
+{
+public:
+	DECLARE_CLASS( CTFRailgun, CTFPistol );
+	DECLARE_NETWORKCLASS(); 
+	DECLARE_PREDICTABLE();
+
+	virtual int		GetWeaponID( void ) const			{ return TF_WEAPON_RAILGUN; }
+	virtual float	GetProjectileSpeed( void );
+	virtual float   GetProjectileGravity( void );
+	virtual bool	IsViewModelFlipped( void );
 };
 
 #endif // TF_WEAPON_PISTOL_H

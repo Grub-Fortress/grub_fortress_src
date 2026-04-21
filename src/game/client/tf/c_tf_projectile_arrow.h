@@ -86,4 +86,10 @@ private:
 	CHandle< C_RopeKeyframe > m_hRope;
 };
 
+class C_TFProjectile_Railgun_Beam : public C_TFProjectile_Arrow
+{
+	DECLARE_CLASS( C_TFProjectile_Railgun_Beam, C_TFProjectile_Arrow );
+	DECLARE_NETWORKCLASS();
+};
+
 #endif // C_TF_PROJECTILE_ARROW_H

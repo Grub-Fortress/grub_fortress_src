@@ -90,6 +90,18 @@ BEGIN_DATADESC( CTFProjectile_GrapplingHook )
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
+LINK_ENTITY_TO_CLASS( tf_projectile_railgun_beam, CTFProjectile_Railgun_Beam );
+PRECACHE_WEAPON_REGISTER( tf_projectile_railgun_beam );
+
+IMPLEMENT_NETWORKCLASS_ALIASED( TFProjectile_Railgun_Beam, DT_TFProjectile_Railgun_Beam )
+
+BEGIN_NETWORK_TABLE( CTFProjectile_Railgun_Beam, DT_TFProjectile_Railgun_Beam )
+END_NETWORK_TABLE()
+
+BEGIN_DATADESC( CTFProjectile_Railgun_Beam )
+END_DATADESC()
+
+//-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
 CTFProjectile_Arrow::CTFProjectile_Arrow()
@@ -224,6 +236,11 @@ void CTFProjectile_Arrow::Spawn()
 	{
 		SetModel( g_pszArrowModels[MODEL_GRAPPLINGHOOK] );
 	}
+	else if ( m_iProjectileType == TF_PROJECTILE_RAILGUN_BEAM )
+	{
+		SetModel( g_pszArrowModels[MODEL_ARROW_BUILDING_REPAIR] );
+		m_iWeaponId = TF_WEAPON_RAILGUN;
+	}
 	else
 	{
 		SetModel( g_pszArrowModels[MODEL_ARROW_REGULAR] );
@@ -304,6 +321,7 @@ bool CTFProjectile_Arrow::CanHeadshot()
 	if ( m_iProjectileType == TF_PROJECTILE_BUILDING_REPAIR_BOLT 
 		|| m_iProjectileType == TF_PROJECTILE_HEALING_BOLT 
 		|| m_iProjectileType == TF_PROJECTILE_FESTIVE_HEALING_BOLT 
+		|| m_iProjectileType == TF_PROJECTILE_RAILGUN_BEAM
 	) {
 		return false;
 	}
@@ -1081,6 +1099,7 @@ void CTFProjectile_Arrow::CreateTrail( void )
 		switch ( m_iProjectileType )
 		{
 			case TF_PROJECTILE_BUILDING_REPAIR_BOLT:
+			case TF_PROJECTILE_RAILGUN_BEAM:
 				width = 5;
 				break;
 			case TF_PROJECTILE_HEALING_BOLT:
@@ -1513,4 +1532,11 @@ void CTFProjectile_GrapplingHook::StopImpactFleshSoundLoop()
 		controller.SoundDestroy( m_pImpactFleshSoundLoop );
 		m_pImpactFleshSoundLoop = NULL;
 	}
+}
+
+void CTFProjectile_Railgun_Beam::InitArrow( const QAngle &vecAngles, const float fSpeed, const float fGravity, ProjectileType_t projectileType, CBaseEntity *pOwner, CBaseEntity *pScorer )
+{
+	BaseClass::InitArrow( vecAngles, fSpeed, fGravity, projectileType, pOwner, pScorer );
+
+	SetGravity( 0.f );
 }

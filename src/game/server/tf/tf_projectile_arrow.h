@@ -168,4 +168,17 @@ private:
 	CSoundPatch *m_pImpactFleshSoundLoop;
 };
 
+class CTFProjectile_Railgun_Beam : public CTFProjectile_Arrow
+{
+public:
+
+	DECLARE_CLASS( CTFProjectile_Railgun_Beam, CTFProjectile_Arrow );
+	DECLARE_NETWORKCLASS();
+	DECLARE_DATADESC();
+
+	virtual void	InitArrow( const QAngle &vecAngles, const float fSpeed, const float fGravity, ProjectileType_t projectileType, CBaseEntity *pOwner = NULL, CBaseEntity *pScorer = NULL ) OVERRIDE;
+
+	virtual bool CanHeadshot() { return false; }
+};
+
 #endif	//TF_PROJECTILE_ARROW_H

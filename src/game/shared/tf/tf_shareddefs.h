@@ -521,7 +521,12 @@ enum ETFWeaponType
 	TF_WEAPON_JAR_GAS,
 	TF_WEAPON_GRENADE_JAR_GAS,
 	TF_WEAPON_FLAME_BALL,
-	TF_WEAPON_BMMH,
+	TF_WEAPON_BMMH, // KEEP FOR THE SCRAPBALL PROJECTILE I DON'T FEEL LIKE REMOVING -Grub
+
+	//--------------------------------------------------------------------------------------
+	//	TF:Grub Weapons
+	//--------------------------------------------------------------------------------------
+	TF_WEAPON_RAILGUN,
 
 	//
 	// ADD NEW WEAPONS HERE TO AVOID BREAKING DEMOS
@@ -585,6 +590,7 @@ enum ProjectileType_t
 	TF_PROJECTILE_FLAME_BALL,	
 	TF_PROJECTILE_PIPEBOMB_ROLLER,
 	TF_PROJECTILE_NAIL,
+	TF_PROJECTILE_RAILGUN_BEAM,
 
 	// Add new entries here!
 

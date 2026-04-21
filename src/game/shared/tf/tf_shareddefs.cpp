@@ -765,6 +765,7 @@ const char *g_aWeaponNames[] =
 	"TF_WEAPON_GRENADE_JAR_GAS",
 	"TF_WEPON_FLAME_BALL",
 	"TF_WEAPON_BMMH",
+	"TF_WEAPON_RAILGUN",
 };
 COMPILE_TIME_ASSERT( ARRAYSIZE( g_aWeaponNames ) == TF_WEAPON_COUNT );
 
@@ -1036,6 +1037,7 @@ const char *g_szProjectileNames[] =
 	"tf_projectile_balloffire",
 	"projectile_pipe_remote_roller",
 	"projectile_nail",
+	"projectile_railgun_beam",
 
 };
 COMPILE_TIME_ASSERT( ARRAYSIZE( g_szProjectileNames ) == TF_NUM_PROJECTILES );
@@ -1076,6 +1078,7 @@ int g_iProjectileWeapons[] =
 	TF_WEAPON_FLAME_BALL,
 	TF_PROJECTILE_PIPEBOMB_ROLLER,
 	TF_PROJECTILE_NAIL,
+	TF_PROJECTILE_RAILGUN_BEAM,
 
 };
 

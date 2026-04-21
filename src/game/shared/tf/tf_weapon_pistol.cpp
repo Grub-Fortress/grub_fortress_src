@@ -35,6 +35,7 @@ END_PREDICTION_DATA()
 
 LINK_ENTITY_TO_CLASS( tf_weapon_pistol, CTFPistol );
 PRECACHE_WEAPON_REGISTER( tf_weapon_pistol );
+CREATE_SIMPLE_WEAPON_TABLE( TFRailgun, tf_weapon_railgun )
 
 // Server specific.
 #ifndef CLIENT_DLL
@@ -262,4 +263,22 @@ int	CTFPistol_ScoutSecondary::GetDamageType( void ) const
 		return BaseClass::GetDamageType() | DMG_USE_HITLOCATIONS;	
 	}
 	return BaseClass::GetDamageType();
+}
+
+//-----------------------------------------------------------------------------
+float CTFRailgun::GetProjectileSpeed( void )
+{
+	return 1200.f;
+}
+
+//-----------------------------------------------------------------------------
+float CTFRailgun::GetProjectileGravity( void )
+{
+	return 0.f;
+}
+
+//-----------------------------------------------------------------------------
+bool CTFRailgun::IsViewModelFlipped( void )
+{
+	return !BaseClass::IsViewModelFlipped(); // Invert because arrows are backwards by default.
 }
