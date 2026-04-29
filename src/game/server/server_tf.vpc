@@ -385,8 +385,6 @@ $Project "Server (Grub Fortress)"
 				$File	"$SRCDIR\game\shared\tf\tf_dropped_weapon.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_dropped_weapon.h"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_bat.cpp"
-				$File	"$SRCDIR\game\shared\tf\tf_weapon_bat_wood.cpp"
-				$File	"$SRCDIR\game\shared\tf\tf_weapon_bat_giftwrap.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_bat.h"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_bonesaw.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_bonesaw.h"
@@ -503,6 +501,13 @@ $Project "Server (Grub Fortress)"
 
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_nailgun.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_nailgun.h"
+				
+				// Code separation
+				
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_bat_wood.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_bat_giftwrap.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_crossbow.cpp"
+
 			}
 
 			$Folder	"Raid"
