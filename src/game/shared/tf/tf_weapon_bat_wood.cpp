@@ -28,9 +28,6 @@
 #include "tf_gamerules.h"
 #endif
 extern ConVar friendlyfire;
-const float DEFAULT_ORNAMENT_EXPLODE_RADIUS = 50.0f;
-const float DEFAULT_ORNAMENT_EXPLODE_DAMAGE_MULT = 0.9f;
-
 //=============================================================================
 //
 // Weapon Bat Wood tables.
