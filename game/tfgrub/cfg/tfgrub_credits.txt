@@ -122,6 +122,20 @@ DESCRIPTION INFO_OPTIONS
 		{ BOOL }
 		{ "1" }
 	}
+	"hactica"
+	{
+		"Hactica - Ultimate Weapon Animation Fixes"
+		"gamebanana.com/wips/86367"
+		{ BOOL }
+		{ "1" }
+	}
+	"chickenman"
+	{
+		"Chickenman - Sniper Hand Fix"
+		"gamebanana.com/mods/439875"
+		{ BOOL }
+		{ "1" }
+	}
 	"ficool2"
 	{
 		"Ficool2 - 3rd person chat bubble, chat selection fix, Fix inefficient lookup by name"
@@ -150,6 +164,13 @@ DESCRIPTION INFO_OPTIONS
 		{ BOOL }
 		{ "1" }
 	}
+	"YourSourceBoiii"
+	{
+		"YourSourceBoiii - chat filter for voice commands"
+		"github.com/ValveSoftware/source-sdk-2013/pull/1884"
+		{ BOOL }
+		{ "1" }
+	}
 	"ttrf_old_menu_code"
 	{
 		"Toru the Red Fox - Old TF2 Main menu code ported to the SDK"
@@ -161,20 +182,6 @@ DESCRIPTION INFO_OPTIONS
 	{
 		"Solo Fortress 2, Kepler - Item schema delete attribute support"
 		"moddb.com/mods/solo-fortress-2"
-		{ BOOL }
-		{ "1" }
-	}
-	"hactica"
-	{
-		"Hactica - Ultimate Weapon Animation Fixes"
-		"gamebanana.com/wips/86367"
-		{ BOOL }
-		{ "1" }
-	}
-	"chickenman"
-	{
-		"Chickenman - Sniper Hand Fix"
-		"gamebanana.com/mods/439875"
 		{ BOOL }
 		{ "1" }
 	}

@@ -36,7 +36,7 @@
 #ifndef _XBOX
 ConVar hud_saytext_time( "hud_saytext_time", "12", 0 );
 ConVar cl_showtextmsg( "cl_showtextmsg", "1", 0, "Enable/disable text messages printing on the screen." );
-ConVar cl_chatfilters( "cl_chatfilters", "63", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Stores the chat filter settings " );
+ConVar cl_chatfilters( "cl_chatfilters", "127", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Stores the chat filter settings " );
 ConVar cl_chatfilter_version( "cl_chatfilter_version", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE | FCVAR_HIDDEN, "Stores the chat filter version" );
 ConVar cl_mute_all_comms("cl_mute_all_comms", "1", FCVAR_ARCHIVE, "If 1, then all communications from a player will be blocked when that player is muted, including chat messages.");
 ConVar cl_enable_text_chat( "cl_enable_text_chat", "1", FCVAR_ARCHIVE, "Enable text chat in this game" );
@@ -46,7 +46,7 @@ ConVar cf_sound_chatping ( "cf_sound_chatping", "0", FCVAR_NONE, "The Chat will 
 ConVar cf_sound_chatping_file ( "cf_sound_chatping_file", "HudChat.Message", FCVAR_NONE, "The sound for the Chat that will play everytime someone finishes typing." );
 
 
-const int kChatFilterVersion = 1;
+const int kChatFilterVersion = 2;
 
 Color g_ColorBlue( 153, 204, 255, 255 );
 Color g_ColorRed( 255, 63, 63, 255 );
@@ -507,6 +507,7 @@ CHudChatFilterPanel::CHudChatFilterPanel( vgui::Panel *pParent, const char *pNam
     // HPE_END
     //=============================================================================
     
+	new CHudChatFilterCheckButton( this, "voicecommand_button", "Sky is blue?", CHAT_FILTER_VOICECOMMAND );
 }
 
 void CHudChatFilterPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
@@ -1022,7 +1023,7 @@ void CBaseHudChat::MsgFunc_VoiceSubtitle( bf_read &msg )
 	const wchar_t *pVoicePrefix = g_pVGuiLocalize->Find( "#Voice" );
 	g_pVGuiLocalize->ConvertUnicodeToANSI( pVoicePrefix, szPrefix, sizeof(szPrefix) );
 	
-	ChatPrintf( client, CHAT_FILTER_NONE, "%c(%s) %s%c: %s", COLOR_PLAYERNAME, szPrefix, GetDisplayedSubtitlePlayerName( client ), COLOR_NORMAL, ConvertCRtoNL( szString ) );
+	ChatPrintf( client, CHAT_FILTER_VOICECOMMAND, "%c(%s) %s%c: %s", COLOR_PLAYERNAME, szPrefix, GetDisplayedSubtitlePlayerName( client ), COLOR_NORMAL, ConvertCRtoNL( szString ) );
 
 	SetVoiceSubtitleState( false );
 }
@@ -1712,8 +1713,10 @@ void CBaseHudChat::LevelInit( const char *newmap )
 	switch ( cl_chatfilter_version.GetInt() )
 	{
 	case 0:
-		m_iFilterFlags |= CHAT_FILTER_ACHIEVEMENT;
+		m_iFilterFlags |= CHAT_FILTER_ACHIEVEMENT + CHAT_FILTER_VOICECOMMAND;
 		// fall through
+	case 1:
+		m_iFilterFlags |= CHAT_FILTER_VOICECOMMAND;
 	case kChatFilterVersion:
 		break;
 	}
