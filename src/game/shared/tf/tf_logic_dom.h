@@ -1,10 +1,10 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: Entities for use in the Robot Destruction TF2 game mode.
+// Purpose: Entities for use in the Domination TF:Grub game mode. (Modified PD logic)
 //
 //=========================================================================//
-#ifndef PLAYER_DESTRUCTION_H
-#define PLAYER_DESTRUCTION_H
+#ifndef DOMINATION_H
+#define DOMINATION_H
 #pragma once
 
 #include "cbase.h"
@@ -12,7 +12,6 @@
 
 #ifdef CLIENT_DLL
 	#define CTFDomLogic C_TFDomLogic
-	#define CDomDispenser C_DomDispenser
 #endif
 
 //-----------------------------------------------------------------------------
@@ -79,4 +78,4 @@ private:
 #endif
 };
 
-#endif// PLAYER_DESTRUCTION_H
+#endif// DOMINATION_H
