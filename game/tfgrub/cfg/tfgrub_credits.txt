@@ -143,6 +143,13 @@ DESCRIPTION INFO_OPTIONS
 		{ BOOL }
 		{ "1" }
 	}
+	"copperpixel-tf2c"
+	{
+		"Copperpixel - TF2C Custom SkyBox Renderer"
+		"github.com/mapbase-source/source-sdk-2013/pull/534"
+		{ BOOL }
+		{ "1" }
+	}
 	"Horiuchi"
 	{
 		"Horiuchi - Visual timer for vote duration"
