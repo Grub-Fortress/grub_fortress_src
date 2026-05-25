@@ -125,7 +125,6 @@
 		}
 		"weapon_crusaders_crossbow" // The Crusader's Crossbow
 		{
-			"enabled"	"0"	
 			"attributes"
 			{
 				"reload time increased"
@@ -861,6 +860,17 @@
 				{
 					"attribute_class"	"crit_dmg_falloff"
 					"value"				"1"
+				}
+			}
+		}
+		"593" // The Third Degree
+		{
+			"attributes"
+			{
+				"fire rate penalty"
+				{
+					"attribute_class"	"mult_postfiredelay"
+					"value"	"1.25"
 				}
 			}
 		}
