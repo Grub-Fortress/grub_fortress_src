@@ -80,7 +80,7 @@ bool CHealthKit::MyTouch( CBasePlayer *pPlayer )
 		bool bIsSandvichOwner = (GetOwnerEntity() == pPlayer) && bIsAnyHeavyWithSandvichEquippedPickingUp;
 
 		// Check if Sandvich owner can receive health if the ConVar is enabled
-		if (bIsSandvichOwner && !tfgrub_lunchbox_owner_can_heal.GetBool())
+		if ( bIsSandvichOwner && !tfgrub_lunchbox_owner_can_heal.GetBool() )
 		{
 			if ( pPlayer->GiveAmmo( 1, TF_AMMO_GRENADES1, false ) )
 			{

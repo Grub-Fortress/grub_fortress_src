@@ -296,7 +296,7 @@
 		"FieldName"		"loadout_preset_panel"
 		"zpos"			"20"
 		"wide"			"225"
-		"tall"			"25"
+		"tall"			"15"
 		"autoResize"	"0"
 		"pinCorner"		"0"
 		"visible"		"1"
