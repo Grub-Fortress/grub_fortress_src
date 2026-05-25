@@ -1286,6 +1286,10 @@ void CHLClient::PostInit()
 		r_lightmap_bicubic.SetValue( info.m_nMaxDXSupportLevel >= 95 || ( info.m_nMaxDXSupportLevel >= 90 && IsLinux() ) );
 		r_lightmap_bicubic_set.SetValue( true );
 	}
+#ifdef TF_CLIENT_DLL
+	CommandLine()->AppendParm( "-nostartupsound", "" );
+#endif
+
 }
 
 //-----------------------------------------------------------------------------

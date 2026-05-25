@@ -178,6 +178,13 @@ DESCRIPTION INFO_OPTIONS
 		{ BOOL }
 		{ "1" }
 	}
+	"tf2gr"
+	{
+		"Team Fortress 2: Gold Rush - ''playgamesound'' support on the menu, and making the startup sound a sound script"
+		"tf2goldrush.com - github.com/goldrush-bkup/TF2-GoldRush"
+		{ BOOL }
+		{ "1" }
+	}
 	"ttrf_old_menu_code"
 	{
 		"Toru the Red Fox - Old TF2 Main menu code ported to the SDK"

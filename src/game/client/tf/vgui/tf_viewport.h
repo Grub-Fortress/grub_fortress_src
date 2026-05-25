@@ -48,6 +48,8 @@ public:
 private:
 	void CenterWindow( vgui::Frame *win );
 
+	// TF2:GR Code
+	bool m_bPlayGameStartupMusic;
 };
 
 

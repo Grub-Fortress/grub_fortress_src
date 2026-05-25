@@ -1,0 +1,38 @@
+"music.gamestartup"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"	"1.00"
+	"rndwave"
+	{
+		"wave"	"#ui/gamestartup1.mp3"	// Team Fortress 2
+		"wave"	"#ui/gamestartup2.mp3"	// Playing with Danger
+		"wave"	"#ui/gamestartup3.mp3"	// Rocket Jump Waltz
+		"wave"	"#ui/gamestartup4.mp3"	// The Art of War
+		"wave"	"#ui/gamestartup5.mp3"	// Faster Than a Speeding Bullet
+		"wave"	"#ui/gamestartup6.mp3"	// Petite Chou-Fleur
+		"wave"	"#ui/gamestartup7.mp3"	// Right Behind You
+		"wave"	"#ui/gamestartup8.mp3"	// Intruder Alert
+		"wave"	"#ui/gamestartup9.mp3"	// Drunken Pipe-Bomb
+		"wave"	"#ui/gamestartup10.mp3"	// More Gun
+		"wave"	"#ui/gamestartup11.mp3"	// A Little Heart to Heart
+		"wave"	"#ui/gamestartup12.mp3"	// MEDIC!
+		"wave"	"#ui/gamestartup13.mp3"	// Archimedes
+		"wave"	"#ui/gamestartup14.mp3"	// Dreams of Cruelty
+		"wave"	"#ui/gamestartup15.mp3"	// The Calm
+//		"wave"	"#ui/gamestartup16.mp3"	// ROBOTS! 							// EXCLUDED
+		"wave"	"#ui/gamestartup17.mp3"	// Dapper Cadaver
+		"wave"	"#ui/gamestartup18.mp3"	// Rise of the Living Bread
+		"wave"	"#ui/gamestartup19.mp3"	// Red Bread
+		"wave"	"#ui/gamestartup20.mp3"	// Three Days To Live
+		"wave"	"#ui/gamestartup21.mp3"	// Seduce Me!
+		"wave"	"#ui/gamestartup22.mp3"	// Stink Lines
+		"wave"	"#ui/gamestartup23.mp3"	// It Hates Me So Much
+//		"wave"	"#ui/gamestartup24.mp3"	// Soldier of Dance 				// EXCLUDED
+//		"wave"	"#ui/gamestartup25.mp3"	// RED Triumphs! 					// EXCLUDED
+//		"wave"	"#ui/gamestartup26.mp3"	// BLU Triumphs! 					// EXCLUDED
+//		"wave"	"#ui/gamestartup27.mp3"	// Yeti Park 						// EXCLUDED
+//		"wave"	"#ui/gamestartup28.mp3"	// Saxton's Dillema 				// EXCLUDED
+		"wave"	"#ui/gamestartup29.mp3"	// Mercenary Park
+	}
+}

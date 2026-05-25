@@ -236,6 +236,9 @@ CON_COMMAND( togglescores, "Toggles score panel")
 TFViewport::TFViewport()
 {
 	ivgui()->AddTickSignal( GetVPanel(), 0 );
+	
+	// TF2:GR Code
+	m_bPlayGameStartupMusic = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -252,6 +255,9 @@ TFViewport::~TFViewport()
 void TFViewport::Start( IGameUIFuncs *pGameUIFuncs, IGameEventManager2 * pGameEventManager )
 {
 	BaseClass::Start( pGameUIFuncs, pGameEventManager );
+
+	// TF2:GR Code
+	m_bPlayGameStartupMusic = true;
 }
 
 void TFViewport::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -460,4 +466,12 @@ void TFViewport::OnScreenSizeChanged( int iOldWide, int iOldTall )
 void TFViewport::OnTick()
 {
 	m_pAnimController->UpdateAnimations( gpGlobals->curtime );
+
+	// TF2:GR Code
+	if ( m_bPlayGameStartupMusic )
+	{
+		engine->ClientCmd_Unrestricted( "playgamesound music.gamestartup" );
+
+		m_bPlayGameStartupMusic = false;
+	}
 }
