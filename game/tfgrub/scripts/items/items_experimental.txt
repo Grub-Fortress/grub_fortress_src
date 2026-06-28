@@ -593,6 +593,49 @@
 				}
 			}
 		}
+		"34014" // Mortar Launcher
+		{
+			"tags"
+			{
+				"can_deal_gib_damage"	"1"
+				"can_deal_damage"		"1"
+				"can_be_equipped_by_soldier_or_demo"	"1"
+				"can_deal_posthumous_damage"	"1"
+				"can_deal_critical_damage"	"1"
+				"can_deal_long_distance_damage"	"1"
+			}
+			"name"						"Mortar Launcher"
+			"item_name"					"Mortar Launcher"
+			"experimentalitem"			"1"
+			"usable_by_bots"			"0"
+			"base_item_name"			"Mortar Launcher"
+			"enabled"					"1"
+			"item_quality"				"unique"
+			"item_class"				"tf_weapon_rocketlauncher_mortar"
+			"craft_class"				"weapon"
+			"craft_material_type"		"weapon"
+			"item_type_name"			"#TF_Weapon_RocketLauncher"
+			"item_slot"					"primary"
+			"item_quality"				"normal"
+			"image_inventory"			"backpack/weapons/w_models/w_rocketlauncher"
+			"image_inventory_size_w"	"128"
+			"image_inventory_size_h"	"82"
+			"attach_to_hands"			"1"
+			"inspect_panel_dist"		"68"
+			"model_player"				"models/weapons/c_models/c_rpg/c_rpg.mdl"
+			"used_by_classes"
+			{
+				"soldier"	"1"
+			}
+			"static_attrs"
+			{
+				"weapon_stattrak_module_scale"			"1"
+				"min_viewmodel_offset"					"10 -3 -10"
+			}
+			"mouse_pressed_sound"	"ui/item_heavy_gun_pickup.wav"
+			"drop_sound"		"ui/item_heavy_gun_drop.wav"
+			"particle_suffix"		"rocketlauncher"
+		}
 		"35000" // Leadpipe Beta 1
 		{
 			"name"	"Leadpipe Beta 1"
