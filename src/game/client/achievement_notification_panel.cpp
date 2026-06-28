@@ -22,6 +22,7 @@
 #include "iachievementmgr.h"
 #include "fmtstr.h"
 #include "baseachievement.h"
+#include "c_tf_player.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -251,7 +252,19 @@ void CAchievementNotificationPanel::ShowNextNotification()
 	int iIconWidth = m_pIcon->GetWide();
 	int iSpacing = XRES( 10 );
 	int iPanelWidth = iSpacing + iIconWidth + iSpacing + iTextWidth + iSpacing;
-	int iPanelX = GetWide() - iPanelWidth;
+//	int iPanelX = GetWide() - iPanelWidth;
+	int iPanelX = XRES( 20 );
+
+	int iPopupX = 0;
+	int iPopupY = YRES( 20 );
+
+	C_TFPlayer *pPlayer = C_TFPlayer::GetLocalTFPlayer();
+	if ( pPlayer && pPlayer->IsPlayerClass( TF_CLASS_ENGINEER ) )
+	{
+		iPopupY += YRES( 160 );
+	}
+
+	SetPos( iPopupX, iPopupY );
 	int iIconX = iPanelX + iSpacing;
 	int iTextX = iIconX + iIconWidth + iSpacing;
 	// resize all the elements
