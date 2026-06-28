@@ -1087,7 +1087,7 @@ void CHudMainMenuOverride::ApplySchemeSettings(IScheme* scheme)
 	RemoveAllMenuEntries();
 	LoadMenuEntries();
 
-	UpdateNotifications();
+//	UpdateNotifications();
 	UpdatePromotionalCodes();
 
 	ScheduleTrainingCheck(false);
@@ -1868,7 +1868,7 @@ void CHudMainMenuOverride::SetMOTDVisible(bool bVisible)
 	else
 	{
 		SetMOTDButtonVisible(true);
-		UpdateNotifications();
+//		UpdateNotifications();
 	}
 }
 
@@ -2072,7 +2072,7 @@ void CHudMainMenuOverride::SetNotificationsPanelVisible(bool bVisible)
 
 		if (bHasNotifications)
 		{
-			UpdateNotifications();
+//			UpdateNotifications();
 		}
 
 		m_pNotificationsPanel->SetVisible(bVisible);
@@ -2439,7 +2439,7 @@ void CHudMainMenuOverride::OnCommand(const char* command)
 		}
 		else
 		{
-			UpdateNotifications();
+//			UpdateNotifications();
 		}
 	}
 	else if (!Q_stricmp(command, "test_anim"))
