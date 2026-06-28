@@ -1,15 +1,17 @@
-// Scout:
+// ==========================================================
+//							Scout:
+// ==========================================================
 // 45 - Force-a-Nature
 // 772 - Baby Face's Blaster
 // 1103 - Back Scatter
-// 46 - Bonk! Atomic Punch
-// 163 - Crit-a-Cola
 // 222 - Mad Milk
 // 44 - Sandman
 // 317 - Candy Cane
 // 325 - Boston Basher
 // 648 - Wrap Assassin
-// Soldier:
+// ==========================================================
+//							Soldier:
+// ==========================================================
 // 127 - Direct Hit
 // 228 - Black Box
 // 414 - Liberty Launcher
@@ -18,7 +20,9 @@
 // 354 - Concheror
 // 444 - The Mantreads
 // 128 - Equalizer
-// Pyro:
+// ==========================================================
+//							Pyro:
+// ==========================================================
 // 40 - Backburner
 // 215 - Degreaser
 // 39 - Flare gun
@@ -29,20 +33,20 @@
 // 348 - Sharpened Volcano Fragment
 // 593 - Third Degree
 // 813 - Neon Annihilator
-// Demoman:
+// ==========================================================
+//							Demoman:
+// ==========================================================
 // 308 - Loch-n-Load
 // 1151 - Iron Bomber
 // 130 - Scottish Resistance
-// 131 - Charge n Targe
-// 406 - Splendid Screen
-// 608 - Bootlegger
-// 1099 - Tide Turner
 // 1150 - Quickiebomb Launcher
 // 132 - Eyelander
 // 172 - Scotsman's Skullcutter
 // 327 - Claidheamohmor
 // 404 - Persian Persuader
-// Heavy:
+// ==========================================================
+//							Heavy:
+// ==========================================================
 // 41 - Natascha
 // 312 - Brass Beast
 // 424 - Tomislav
@@ -52,19 +56,25 @@
 // 310 - Warrior's Spirit
 // 331 - Fists of Steel
 // 426 - Eviction Notice
-// Engineer:
+// ==========================================================
+//							Engineer:
+// ==========================================================
 // 141 - Frontier Justice
 // 527 - Widowmaker
 // 155 - Southern Hospitality
 // 329 - Jag
-// Medic:
+// ==========================================================
+//							Medic:
+// ==========================================================
 // 36 - Blutsauger
 // 412 - Overdose
 // 35 - Kritzkrieg
 // 411 - Quick-Fix
 // 37 - Ubersaw
 // 304 - Amputator
-// Sniper:
+// ==========================================================
+//							Sniper:
+// ==========================================================
 // 402 - Bazaar Bargain
 // 526 - Machina
 // 752 - Hitman's Heatmaker
@@ -76,14 +86,18 @@
 // 171 = Tribalman's Shiv
 // 232 - Bushwacka
 // 401 - Shahanshah
-// Spy:
+// ==========================================================
+//							Spy:
+// ==========================================================
 // 61 - Ambassador
 // 224 - Letranger
 // 460 - Enforcer
 // 525 - Diamondback
 // 461 - Big Earner
 // 60 - Cloak and Dagger
-// Multiclass:
+// ==========================================================
+//							Multiclass:
+// ==========================================================
 // 133 - Gunboats
 // 154 - Pain Train
 // 357 - Half-Zatoichi
@@ -107,14 +121,6 @@
 			"usable_by_bots"			"1"
 		}
 		"1103" // Back Scatter
-		{
-			"usable_by_bots"			"1"
-		}
-		"46" // Bonk! Atomic Punch
-		{
-			"usable_by_bots"			"1"
-		}
-		"163" // Crit-a-Cola
 		{
 			"usable_by_bots"			"1"
 		}
@@ -222,22 +228,6 @@
 			"usable_by_bots"			"1"
 		}
 		"130" // Scottish Resistance
-		{
-			"usable_by_bots"			"1"
-		}
-		"131" // Charge n Targe
-		{
-			"usable_by_bots"			"1"
-		}
-		"406" // Splendid Screen
-		{
-			"usable_by_bots"			"1"
-		}
-		"608" // Bootlegger
-		{
-			"usable_by_bots"			"1"
-		}
-		"1099" // Tide Turner
 		{
 			"usable_by_bots"			"1"
 		}
