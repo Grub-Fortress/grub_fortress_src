@@ -921,7 +921,6 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	InitCRTMemDebug();
 	MathLib_Init( 2.2f, 2.2f, 0.0f, 2.0f );
 
-
 #ifdef SIXENSE
 	g_pSixenseInput = new SixenseInput;
 #endif
@@ -1012,6 +1011,9 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		Error("The game's directory must have the exact name \"tfgrub\" in order for the mod to work correctly. Please change it.");
 	}
 
+	if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 90 )
+		Error( "TF:Grub has a minimum requirement of DirectX 9.0 to run properly.\nPlease launch the game with -dxlevel 90 or higher" );
+
 	if (!g_pMatSystemSurface)
 		return false;
 
@@ -1085,6 +1087,12 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	IGameSystem::Add( CustomTextureToolCacheGameSystem() );
 	IGameSystem::Add( TFSharedContentManager() );
 	#endif
+
+	// HACK (I think): Loading the localization for tf2 and then later the overrides through cdll_client_int.cpp instead 
+	// of using AdditionalLocalization for TF2 to make sure TF:Grub can override TF2 localization strings
+	// - Grub
+	g_pVGuiLocalize->AddFile("resource/tf_%language%.txt");
+	g_pVGuiLocalize->AddFile("resource/tf_override_%language%.txt");
 
 #if defined( TF_CLIENT_DLL )
 	if ( g_AbuseReportMgr != NULL )
