@@ -19,7 +19,7 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup Python (Windows)
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
@@ -35,15 +35,15 @@ jobs:
             ${{ runner.os }}-msvc-
       #-- end caching
 
-      - name: Setup MSBuild (Windows only)
+      - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Generate project files (Windows)
+      - name: Generate project files
         run: ${{ env.build_script }}
         shell: cmd
         working-directory: src
 
-      - name: Build (Windows only)
+      - name: Build
         working-directory: src
         run: ${{ env.build_cmd }}
 
@@ -91,23 +91,23 @@ jobs:
         with:
           submodules: true
           
-      - name: Install Python (Linux)
+      - name: Install Python
         run: sudo apt-get install -y python3
 
       #-- caching
-      - name: Setup ccache (Linux)
+      - name: Setup ccache
         run: |
           sudo apt-get update
           sudo apt-get install -y ccache
           echo 'export PATH="/usr/lib/ccache:$PATH"' >> $GITHUB_ENV
 
-      - name: ~/.ccache stuff (Linux)
+      - name: ~/.ccache stuff
         run: |
           if [ ! -d ~/.ccache ]; then
             mkdir ~/.ccache
           fi
 
-      - name: Restore ccache cache (Linux)
+      - name: Restore ccache cache
         uses: actions/cache@v4
         with:
           path: ~/.ccache
@@ -115,7 +115,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-ccache-
       
-      - name: Make build script executable (Linux)
+      - name: Make build script executable
         run: chmod +x ./buildtfgrubprojects
         working-directory: src
 
@@ -124,7 +124,7 @@ jobs:
           sudo apt-get install -y g++-multilib ninja-build lib32z1-dev podman file
 
       # Set 64-bit compilation environment
-      - name: Set 64-bit build environment (Linux)
+      - name: Set 64-bit build environment
         run: |
           echo "CFLAGS=-m64" >> $GITHUB_ENV
           echo "CXXFLAGS=-m64" >> $GITHUB_ENV
@@ -132,19 +132,19 @@ jobs:
           echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
         shell: bash
 
-      - name: Clean previous builds (Linux)
+      - name: Clean previous builds
         run: |
           cd src
           rm -rf _vpc_/
         shell: bash
 
-      - name: Build (Linux)
+      - name: Build
         run: ${{ env.build_script }}
         working-directory: src
         shell: bash
 
       # Verify all libraries are 64-bit
-      - name: Verify library architecture (Linux)
+      - name: Verify library architecture
         run: |
           echo "Verifying all .so files are 64-bit..."
           
@@ -192,7 +192,7 @@ jobs:
           echo "All binaries verified as 64-bit ✓"
         shell: bash
 
-      - name: Clean and strip (Linux)
+      - name: Clean and strip
         run: |
           find game/tfgrub/bin/linux64 -type f -executable -exec strip --strip-all {} +
           if [ -f game/tfgrub_linux64 ]; then
@@ -200,7 +200,7 @@ jobs:
           fi
         shell: bash
 
-      - name: Save ccache (Linux)
+      - name: Save ccache
         uses: actions/cache@v4
         with:
           path: ~/.ccache
@@ -225,7 +225,7 @@ jobs:
           path: game/tfgrub/
           
   publish_dev_build:
-    name: Push Windows Dev Build
+    name: push-windows
     needs: build-windows
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && needs.build-windows.result == 'success'
