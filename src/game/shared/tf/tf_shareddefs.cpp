@@ -525,7 +525,7 @@ static const char *s_aGameTypeNames[] =
 	"#GameType_Passtime",
 	"#GameType_PlayerDestruction",
 	"#GameType_RaidMode",
-	"#GameType_BringTheBomb"
+	"#Gametype_Bd"
 };
 COMPILE_TIME_ASSERT( TF_GAMETYPE_COUNT == ARRAYSIZE( s_aGameTypeNames ) );
 

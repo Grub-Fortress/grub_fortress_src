@@ -497,6 +497,10 @@ void CTFMapInfoMenu::LoadMapPage()
 				{
 					pszDescription = "#default_zi_description";
 				}
+				else if ( MapHasPrefix( m_szMapName, "dom_" ) )
+				{
+					pszDescription = "#default_dom_description";
+				}
 				else if ( TFGameRules() )
 				{
 					if ( TFGameRules()->IsMannVsMachineMode() )

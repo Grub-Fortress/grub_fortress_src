@@ -127,13 +127,14 @@ CServerFinderDialog::CServerFinderDialog(vgui::Panel *parent) : BaseClass(NULL, 
 	m_pDmgSpread->AddItem("#TF_Quickplay_DamageSpread_Enabled", NULL);
 	m_pDmgSpread->AddItem("#TF_Quickplay_DamageSpread_DontCare", NULL);
 
-	m_pGamemode = new ComboBox(this, "Gamemode", 12, false);
+	m_pGamemode = new ComboBox(this, "Gamemode", 13, false);
 	m_pGamemode->AddItem("#Serverfinder_AnyGamemode", NULL);
 	m_pGamemode->AddItem("#Gametype_CTF", NULL);
 	m_pGamemode->AddItem("#Gametype_CP", NULL);
 	m_pGamemode->AddItem("#Gametype_Escort", NULL);
 	m_pGamemode->AddItem("#Gametype_Koth", NULL);
 	m_pGamemode->AddItem("#Gametype_Bd", NULL);
+	m_pGamemode->AddItem("#Gametype_Dom", NULL);
 	m_pGamemode->AddItem("#Gametype_Arena", NULL);
 	m_pGamemode->AddItem("#GameType_TerritorialControl", NULL);
 	m_pGamemode->AddItem("#Gametype_PlayerDestruction", NULL);
@@ -584,6 +585,11 @@ void CServerFinderDialog::ServerResponded(gameserveritem_ex_t serverex)
 			invalid = true;
 		break;
 
+	case eGamemodeDom:
+		if (!StringHasPrefix(serverMap, "dom_"))
+			invalid = true;
+		break;
+
 	case eGamemodeArena:
 		if (!StringHasPrefix(serverMap, "arena_"))
 			invalid = true;
@@ -619,42 +625,44 @@ void CServerFinderDialog::ServerResponded(gameserveritem_ex_t serverex)
 			invalid = true;
 		break;
 
-//		case eGamemodeAny:
-//			break;
-//		case eGamemodeCTF:
-//			requiredTags.CopyAndAddToTail("ctf");
-//			break;
-//		case eGamemodeCP:
-//			requiredTags.CopyAndAddToTail("cp");
-//			break;
-//		case eGamemodeArena:
-//			requiredTags.CopyAndAddToTail("arena");
-//			break;
-//		case eGamemodeSD:
-//			requiredTags.CopyAndAddToTail("sd");
-//			break;
-//		case eGamemodeMVM:
-//			requiredTags.CopyAndAddToTail("mvm");
-//			break;
-//		case eGamemodePayload:
-//			requiredTags.CopyAndAddToTail("payload");
-//			break;
-//		case eGamemodeRD:
-//			requiredTags.CopyAndAddToTail("rd");
-//			break;
-//		case eGamemodePD:
-//			requiredTags.CopyAndAddToTail("pd");
-//			break;
-//		case eGamemodeTC:
-//			requiredTags.CopyAndAddToTail("tc");
-//			break;
-//		case eGamemodePasstime:
-//			requiredTags.CopyAndAddToTail("passtime");
-//			break;
-//		case eGamemodeMisc:
-//			requiredTags.CopyAndAddToTail("misc");
-//			break;
-
+		// older variant of the gamemode checker		
+/*
+		case eGamemodeAny:
+			break;
+		case eGamemodeCTF:
+			requiredTags.CopyAndAddToTail("ctf");
+			break;
+		case eGamemodeCP:
+			requiredTags.CopyAndAddToTail("cp");
+			break;
+		case eGamemodeArena:
+			requiredTags.CopyAndAddToTail("arena");
+			break;
+		case eGamemodeSD:
+			requiredTags.CopyAndAddToTail("sd");
+			break;
+		case eGamemodeMVM:
+			requiredTags.CopyAndAddToTail("mvm");
+			break;
+		case eGamemodePayload:
+			requiredTags.CopyAndAddToTail("payload");
+			break;
+		case eGamemodeRD:
+			requiredTags.CopyAndAddToTail("rd");
+			break;
+		case eGamemodePD:
+			requiredTags.CopyAndAddToTail("pd");
+			break;
+		case eGamemodeTC:
+			requiredTags.CopyAndAddToTail("tc");
+			break;
+		case eGamemodePasstime:
+			requiredTags.CopyAndAddToTail("passtime");
+			break;
+		case eGamemodeMisc:
+			requiredTags.CopyAndAddToTail("misc");
+			break;
+*/
 		default:
 			Assert(false);
 	}

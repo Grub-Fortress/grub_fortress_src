@@ -19308,7 +19308,7 @@ const char *GetMapType( const char *mapName )
 		{
 			return "#Gametype_Koth";
 		}
-		else if ( !Q_strnicmp( mapName, "bd_", 5 ) )
+		else if ( !Q_strnicmp( mapName, "bd_", 3 ) )
 		{
 			return "#Gametype_Bd";
 		}
@@ -19341,6 +19341,10 @@ const char *GetMapType( const char *mapName )
 		else if ( !Q_strnicmp( mapName, "pd_", 3 ) )
 		{
 			return "#Gametype_PlayerDestruction";
+		}
+		else if ( !Q_strnicmp( mapName, "dom_", 4 ) )
+		{
+			return "#Gametype_Dom";
 		}
 		else
 		{

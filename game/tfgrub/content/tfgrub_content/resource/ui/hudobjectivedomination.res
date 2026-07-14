@@ -5,7 +5,7 @@
 		"ControlName"		"EditablePanel"
 		"fieldName"			"ObjectiveStatusRobotDestruction"
 		"xpos"				"0"
-		"ypos"				"-425"
+		"ypos"				"-415"
 		"zpos"				"1"
 		"wide"				"f0"
 		"tall"				"480"
@@ -48,13 +48,10 @@
 	{
 		"ControlName"	"CExLabel"
 		"fieldName"		"PlayingTo"
-		"xpos"			"c-70"	[$WIN32]
-		"xpos"			"c-60"	[$X360]
-		"ypos"			"r28"	[$WIN32]
-		"ypos"			"r48"	[$X360]
+		"xpos"			"c-70"
+		"ypos"			"r42"
 		"zpos"			"4"
-		"wide"			"140"	[$WIN32]
-		"wide"			"120"	[$X360]
+		"wide"			"140"
 		"tall"			"30"
 		"visible"		"1"
 		"enabled"		"1"
@@ -85,19 +82,74 @@
 	{
 		"ControlName"	"CTFImagePanel"
 		"fieldName"		"PlayingToBG"
-		"xpos"			"c-75"	[$WIN32]
-		"xpos"			"c-70"	[$X360]
-		"ypos"			"r31"	[$WIN32]
-		"ypos"			"r51"	[$X360]
+		"xpos"			"c-75"
+		"ypos"			"r45"
 		"zpos"			"3"
-		"wide"			"150"	[$WIN32]
-		"wide"			"140"	[$X360]
-		"tall"			"38"	[$WIN32]
-		"tall"			"35"	[$X360]
+		"wide"			"150"
+		"tall"			"38"
 		"visible"		"1"
 		"enabled"		"1"
 		"image"			"../hud/objectives_flagpanel_bg_playingto"
 		"image_hidef"	"../hud/objectives_flagpanel_bg_playingto_hidef"
+		"scaleImage"	"1"	
+		
+		"if_hybrid"
+		{
+			"visible"	"0"
+		}
+		
+		"if_mvm"
+		{
+			"visible"	"0"
+		}
+		
+		"if_specialdelivery"
+		{
+			"visible"	"0"
+		}
+	}
+	
+	"BG_Blue"
+	{
+		"ControlName"	"ScalableImagePanel"
+		"fieldName"		"BG"
+		"xpos"			"c-150"
+		"ypos"			"r50"
+		"zpos"			"-1"
+		"wide"			"80"
+		"tall"			"35"
+		"visible"		"1"
+		"enabled"		"1"
+		"image"			"../hud/objectives_timepanel_blue_bg"
+		"scaleImage"	"1"	
+		
+		"if_hybrid"
+		{
+			"visible"	"0"
+		}
+		
+		"if_mvm"
+		{
+			"visible"	"0"
+		}
+		
+		"if_specialdelivery"
+		{
+			"visible"	"0"
+		}
+	}
+	"BG_Red"
+	{
+		"ControlName"	"ScalableImagePanel"
+		"fieldName"		"BG"
+		"xpos"			"c70"
+		"ypos"			"r50"
+		"zpos"			"-1"
+		"wide"			"80"
+		"tall"			"35"
+		"visible"		"1"
+		"enabled"		"1"
+		"image"			"../hud/objectives_timepanel_red_bg"
 		"scaleImage"	"1"	
 		
 		"if_hybrid"
@@ -263,8 +315,8 @@
 			"zpos"					"1"
 			"wide"					"300"
 			"tall"					"60"
-			"visible"				"1"
-			"enabled"				"1"
+			"visible"				"0"
+			"enabled"				"0"
 			"proportionalToParent"	"1"
 		
 			"ScoreOutline"
@@ -576,7 +628,7 @@
 		{
 			"ControlName"		"EditablePanel"
 			"fieldName"			"BlueScoreValueContainer"
-			"xpos"				"80"
+			"xpos"				"60"
 			"ypos"				"r48"
 			"zpos"				"10"
 			"wide"				"60"
@@ -597,7 +649,7 @@
 				"tall"			"35"
 				"visible"		"1"
 				"enabled"		"1"
-				"textAlignment"	"west"	
+				"textAlignment"	"center"	
 				"labelText"		"%score%"
 				"font"			"HudFontMediumBold"
 				"font_hidef"	"HudFontGiant"
@@ -617,7 +669,7 @@
 				"tall"			"35"
 				"visible"		"1"
 				"enabled"		"1"
-				"textAlignment"	"west"	
+				"textAlignment"	"center"	
 				"labelText"		"%score%"
 				"font"			"HudFontMediumBold"
 				"font_hidef"	"HudFontGiant"
@@ -631,7 +683,7 @@
 		{
 			"ControlName"		"EditablePanel"
 			"fieldName"			"RedScoreValueContainer"
-			"xpos"				"r140"
+			"xpos"				"r120"
 			"ypos"				"r48"
 			"zpos"				"10"
 			"wide"				"60"
@@ -652,7 +704,7 @@
 				"tall"			"35"
 				"visible"		"1"
 				"enabled"		"1"
-				"textAlignment"	"east"	
+				"textAlignment"	"center"	
 				"labelText"		"%score%"
 				"font"			"HudFontMediumBold"
 				"font_hidef"	"HudFontGiant"
@@ -672,7 +724,7 @@
 				"tall"			"35"
 				"visible"		"1"
 				"enabled"		"1"
-				"textAlignment"	"east"	
+				"textAlignment"	"center"	
 				"labelText"		"%score%"
 				"font"			"HudFontMediumBold"
 				"font_hidef"	"HudFontGiant"

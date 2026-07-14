@@ -77,6 +77,7 @@ enum EGamemodes
 	eGamemodePayload,
 	eGamemodeKOTH,
 	eGamemodeBd,
+	eGamemodeDom,
 	eGamemodeArena,
 	eGamemodeTC,
 	eGamemodePD,
