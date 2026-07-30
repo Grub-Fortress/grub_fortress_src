@@ -12669,9 +12669,6 @@ bool CTFPlayer::EndClassSpecialSkill( void )
 //-----------------------------------------------------------------------------
 bool CTFPlayer::CanPickupBuilding( CBaseObject *pPickupObject )
 {
-	ConVarRef tfgrub_can_pickup_buildings("tfgrub_can_pickup_buildings");
-		return tfgrub_can_pickup_buildings.GetBool();
-
 	if ( !pPickupObject )
 		return false;
 
@@ -12760,7 +12757,8 @@ bool CTFPlayer::CanPickupBuilding( CBaseObject *pPickupObject )
 		} // switch
 	}
 
-	return true;
+	ConVarRef tfgrub_can_pickup_buildings("tfgrub_can_pickup_buildings");
+	return tfgrub_can_pickup_buildings.GetBool();
 }
 
 //-----------------------------------------------------------------------------
