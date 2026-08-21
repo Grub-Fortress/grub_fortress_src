@@ -12,6 +12,7 @@
 // Client specific.
 #ifdef CLIENT_DLL
 #include "view.h"
+#include "prediction.h"
 #include "beamdraw.h"
 #include "vgui/ISurface.h"
 #include <vgui/ILocalize.h>
@@ -35,7 +36,6 @@ void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
 #define TF_WEAPON_SNIPERRIFLE_UNCHARGE_PER_SEC	75.0
 #define	TF_WEAPON_SNIPERRIFLE_DAMAGE_MIN		50
 #define TF_WEAPON_SNIPERRIFLE_DAMAGE_MAX		150
-#define TF_WEAPON_SNIPERRIFLE_RELOAD_TIME		1.5f
 #define TF_WEAPON_SNIPERRIFLE_ZOOM_TIME			0.3f
 
 #define TF_WEAPON_SNIPERRIFLE_NO_CRIT_AFTER_ZOOM_TIME	0.2f
@@ -45,9 +45,13 @@ void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
 #define SNIPER_CHARGE_BEAM_RED		"tfc_sniper_charge_red"
 #define SNIPER_CHARGE_BEAM_BLUE		"tfc_sniper_charge_blue"
 
+#define SNIPER_ZOOM_IN_SOUND		"Weapon_SniperRifle.ZoomIn"
+#define SNIPER_ZOOM_OUT_SOUND		"Weapon_SniperRifle.ZoomOut"
+
 #ifdef CLIENT_DLL
 ConVar tf_sniper_fullcharge_bell( "tf_sniper_fullcharge_bell", "0", FCVAR_ARCHIVE );
 ConVar tf_hide_aiming_laser( "tf_hide_aiming_laser", "1", FCVAR_ARCHIVE );
+ConVar tfgrub_sniper_zoom_sounds( "tfgrub_sniper_zoom_sounds", "1", FCVAR_ARCHIVE );
 #endif
 
 //=============================================================================
@@ -184,6 +188,8 @@ void CTFSniperRifle::Precache()
 	PrecacheModel( SNIPER_DOT_SPRITE_BLUE );
 
 	PrecacheScriptSound( "doomsday.warhead" );
+	PrecacheScriptSound( SNIPER_ZOOM_IN_SOUND );
+	PrecacheScriptSound( SNIPER_ZOOM_OUT_SOUND );
 }
 
 //-----------------------------------------------------------------------------
@@ -534,6 +540,13 @@ void CTFSniperRifle::ZoomIn( void )
 
 	BaseClass::ZoomIn();
 
+#ifdef CLIENT_DLL
+	if ( tfgrub_sniper_zoom_sounds.GetBool() && prediction->IsFirstTimePredicted() )
+	{
+		EmitSound( SNIPER_ZOOM_IN_SOUND );
+	}
+#endif
+
 	pPlayer->m_Shared.AddCond( TF_COND_AIMING );
 	pPlayer->TeamFortress_SetSpeed();
 
@@ -574,6 +587,8 @@ bool CTFSniperRifle::IsFullyCharged( void ) const
 //-----------------------------------------------------------------------------
 void CTFSniperRifle::ZoomOut( void )
 {
+	bool bWasZoomed = IsZoomed();
+
 	BaseClass::ZoomOut();
 
 	// Stop aiming
@@ -581,6 +596,13 @@ void CTFSniperRifle::ZoomOut( void )
 
 	if ( !pPlayer )
 		return;
+
+#ifdef CLIENT_DLL
+	if ( tfgrub_sniper_zoom_sounds.GetBool() && bWasZoomed && prediction->IsFirstTimePredicted() )
+	{
+		EmitSound( SNIPER_ZOOM_OUT_SOUND );
+	}
+#endif
 
 	pPlayer->m_Shared.RemoveCond( TF_COND_AIMING );
 	pPlayer->TeamFortress_SetSpeed();
@@ -1663,9 +1685,9 @@ bool CSniperDot::ShouldDraw( void )
 
 void CSniperDot::ClientThink( void )
 {
-	C_TFPlayer* pPlayer = ToTFPlayer(GetOwnerEntity());
+	C_TFPlayer* pPlayer = ToTFPlayer( GetOwnerEntity() );
 	int bHasMvmLaser = 1;
-	CALL_ATTRIB_HOOK_INT_ON_OTHER(pPlayer, bHasMvmLaser, sniper_has_laserdot);
+	CALL_ATTRIB_HOOK_INT_ON_OTHER( pPlayer, bHasMvmLaser, sniper_has_laserdot );
 	// snipers have laser sights in PvE mode
 	// Custom Fortress - or if has the attribute
 	if ( TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS || bHasMvmLaser)

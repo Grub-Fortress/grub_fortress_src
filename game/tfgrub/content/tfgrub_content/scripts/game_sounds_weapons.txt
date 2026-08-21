@@ -8224,3 +8224,21 @@
 	"volume"	"1"
 	"wave"		")weapons/kritzkrieg_heal.wav"
 }
+
+"Weapon_SniperRifle.ZoomIn"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"weapons/knife_open8.wav"
+}
+
+"Weapon_SniperRifle.ZoomOut"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"weapons/knife_open2.wav"
+}
