@@ -3423,8 +3423,19 @@ CON_COMMAND(showquitconfirmdialog, "Show a quit confirmation dialog")
 void CHudMainMenuOverride::ShowBetaPopup()
 {
 //	ShowMessageBox( "#TFGrub_BetaPopupTitle", "#TFGrub_BetaPopupMessage", "#GameUI_OK" ); // Old TF2 Styled logic, I personally didn't like how it looked -Grub
-	vgui::MessageBox *pBox = new vgui::MessageBox( "#TFGrub_BetaPopupTitle", "#TFGrub_BetaPopupMessage", GetParent() );
 
-	pBox->SetOKButtonText("#GameUI_OK");
-	pBox->DoModal();
+//	vgui::MessageBox *pBox = new vgui::MessageBox( "#TFGrub_BetaPopupTitle", "#TFGrub_BetaPopupMessage", GetParent() );
+
+//	pBox->SetOKButtonText("#GameUI_OK");
+//	pBox->DoModal();
+
+	ShowConfirmDialog( "#TFGrub_BetaPopupTitle",
+		"#TFGrub_BetaPopupMessage",
+		"#TFGrub_BetaPopupDontShowAgain",
+		"#GameUI_OK", []( bool bConfirmed, void* pContext )
+		{
+			if ( bConfirmed )
+				engine->ClientCmd_Unrestricted( "tfgrub_showpopup 0\n" );
+		} );
+
 }
